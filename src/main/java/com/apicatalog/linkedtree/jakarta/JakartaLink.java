@@ -1,27 +1,31 @@
 package com.apicatalog.linkedtree.jakarta;
 
+import java.net.URI;
 import java.util.Collection;
 
 import com.apicatalog.linkedtree.Link;
 import com.apicatalog.linkedtree.LinkedFragment;
-import com.apicatalog.linkedtree.LinkedTree;
 
-public class JakartaLinkedTree implements LinkedTree {
+import jakarta.json.JsonObject;
 
-    protected Collection<LinkedFragment> fragments;
+public class JakartaLink implements Link {
 
-    public JakartaLinkedTree(Collection<LinkedFragment> fragments) {
-        this.fragments = fragments;
+    @Override
+    public URI uri() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
     public Collection<LinkedFragment> fragments() {
-        return fragments;
-    }
-
-    @Override
-    public Collection<Link> links() {
         // TODO Auto-generated method stub
         return null;
     }
+
+    @Override
+    public LinkedFragment target() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
 }

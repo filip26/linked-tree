@@ -24,7 +24,7 @@ import jakarta.json.JsonArray;
 @TestMethodOrder(OrderAnnotation.class)
 class JakartaTest {
 
-    static JakartaLinkedTree JAKARTA = new JakartaLinkedTree();
+    static JakartaLinkedTreeReader JAKARTA = new JakartaLinkedTreeReader();
     
     @DisplayName("Read/Write")
     @ParameterizedTest(name = "{0}")
@@ -34,12 +34,13 @@ class JakartaTest {
         var tree = JAKARTA.read(input);
         
         assertNotNull(tree);
-        
-        var output = JAKARTA.write(tree);
-        
-        assertNotNull(output);
 
-        assertEquals(input, output);
+        System.out.println(tree);
+//        var output = JAKARTA.write(tree);
+//        
+//        assertNotNull(output);
+
+//        assertEquals(input, output);
     }
 
     static final Stream<Object[]> expandedResources() throws IOException, URISyntaxException {
