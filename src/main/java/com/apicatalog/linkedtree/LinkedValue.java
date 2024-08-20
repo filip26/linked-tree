@@ -25,4 +25,14 @@ public non-sealed interface LinkedValue extends LinkedData {
      */
 //    Optional<String> language();
 
+//    public enum DirectionType {
+//
+//        LTR,
+//
+//        RTL,
+//
+//        NULL
+//
+//    }
+
 }

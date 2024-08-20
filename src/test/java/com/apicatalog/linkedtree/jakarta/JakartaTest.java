@@ -15,7 +15,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.apicatalog.linkedtree.LinkedTree;
+import com.apicatalog.linkedtree.LinkedFragment;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -24,16 +24,18 @@ import jakarta.json.JsonArray;
 @TestMethodOrder(OrderAnnotation.class)
 class JakartaTest {
 
+    static JakartaLinkedTree JAKARTA = new JakartaLinkedTree();
+    
     @DisplayName("Read/Write")
     @ParameterizedTest(name = "{0}")
     @MethodSource({ "expandedResources" })
     void readWrite(String name, JsonArray input) {
     
-        var tree = JakartaLinkedTree.read(input);
+        var tree = JAKARTA.read(input);
         
         assertNotNull(tree);
         
-        var output = JakartaLinkedTree.write(tree);
+        var output = JAKARTA.write(tree);
         
         assertNotNull(output);
 
@@ -41,11 +43,11 @@ class JakartaTest {
     }
 
     static final Stream<Object[]> expandedResources() throws IOException, URISyntaxException {
-        return Files.walk(Paths.get(LinkedTree.class.getResource("").toURI()), 1)
+        return Files.walk(Paths.get(LinkedFragment.class.getResource("").toURI()), 1)
                 .filter(name -> name.toString().endsWith("out.jsonld"))
                 .sorted()
                 .map(path -> {
-                    try (var reader = Json.createReader(LinkedTree.class.getResourceAsStream(path.getFileName().toString()))) {
+                    try (var reader = Json.createReader(LinkedFragment.class.getResourceAsStream(path.getFileName().toString()))) {
                         return new Object[] { path.getFileName().toString(), reader.readArray() };
                     }
                 });

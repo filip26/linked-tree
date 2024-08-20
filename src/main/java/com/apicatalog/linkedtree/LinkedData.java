@@ -1,6 +1,6 @@
 package com.apicatalog.linkedtree;
 
-public sealed interface LinkedData permits LinkedTree, LinkedContainer, LinkedNode, LinkedValue {
+public sealed interface LinkedData permits LinkedTree, LinkedContainer, LinkedFragment, LinkedValue {
 
     default boolean isTree() {
         return false;
@@ -14,11 +14,11 @@ public sealed interface LinkedData permits LinkedTree, LinkedContainer, LinkedNo
         return false;
     }
     
-    default LinkedNode asNode() {
+    default LinkedFragment asNode() {
         throw new ClassCastException();
     }
 
-    default LinkedNode asTree() {
+    default LinkedFragment asTree() {
         throw new ClassCastException();
     }
 

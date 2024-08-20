@@ -4,7 +4,7 @@ import java.util.Collection;
 
 public non-sealed interface LinkedContainer extends LinkedData {
 
-    Collection<LinkedData> nodes();
+    Collection<LinkedData> data();
     
     String containerType();
 }
