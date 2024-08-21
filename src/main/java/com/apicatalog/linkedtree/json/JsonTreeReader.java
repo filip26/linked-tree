@@ -1,8 +1,8 @@
 package com.apicatalog.linkedtree.json;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -87,6 +87,7 @@ public class JsonTreeReader {
     protected LinkedFragment readFragment(JsonObject value) {
 
         String id = null;
+        Collection<String> types = Collections.emptySet();
 
         final Map<String, Collection<LinkedData>> properties = new HashMap<>(value.size());
 
@@ -95,15 +96,18 @@ public class JsonTreeReader {
             if ("@id".equals(entry.getKey())) {
                 if (ValueType.STRING.equals(entry.getValue().getValueType())) {
 
-                    final String idValue = ((JsonString) entry.getValue()).getString();
+                    id = ((JsonString) entry.getValue()).getString();
 
-                    if (!idValue.startsWith("_:")) {
-                        id = idValue;
-                    }
+//                    if (!idValue.startsWith("_:")) {
+//                        id = idValue;
+//                    }
                 }
 
             } else if ("@type".equals(entry.getKey())) {
-                // TODO
+                
+                types = entry.getValue().asJsonArray().stream().map(JsonString.class::cast)
+                        .map(JsonString::getString)
+                        .toList();
 
             } else if (entry.getKey().startsWith("@")) {
 
@@ -117,13 +121,13 @@ public class JsonTreeReader {
             final GenericLink link = getOrCreate(id);
             final GenericLinkedNode node = GenericLinkedNode.of(
                     link,
-                    null,
+                    types,
                     properties);
             link.add(node);
             return node;
         }
 
-        return GenericLinkedNode.of(null, null, properties);
+        return GenericLinkedNode.of(null, types, properties);
     }
 
     protected GenericLink getOrCreate(String uri) {

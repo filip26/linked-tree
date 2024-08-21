@@ -10,7 +10,7 @@ import com.apicatalog.linkedtree.LinkedFragment;
 public class GenericLinkedNode implements LinkedFragment {
     
     protected Link id;
-    protected Collection<String> type; 
+    protected Collection<String> types; 
     
     protected Map<String, Collection<LinkedData>> data;
     
@@ -21,7 +21,7 @@ public class GenericLinkedNode implements LinkedFragment {
     public static GenericLinkedNode of(Link id, Collection<String> type, Map<String, Collection<LinkedData>> data) {
         final GenericLinkedNode node = new GenericLinkedNode();
         node.id = id;
-        node.type = type;
+        node.types = type;
         node.data = data;
         return node;
     }
@@ -33,7 +33,7 @@ public class GenericLinkedNode implements LinkedFragment {
 
     @Override
     public Collection<String> type() {
-        return type;
+        return types;
     }
 
     @Override
@@ -42,7 +42,7 @@ public class GenericLinkedNode implements LinkedFragment {
     }
 
     @Override
-    public Collection<LinkedData> data(String term) {
+    public Collection<LinkedData> values(String term) {
         return data.get(term);
     }
 

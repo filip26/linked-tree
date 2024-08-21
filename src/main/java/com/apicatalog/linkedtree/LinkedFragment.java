@@ -14,5 +14,16 @@ public non-sealed interface LinkedFragment extends LinkedData {
     
     Collection<String> terms();
 
-    Collection<LinkedData> data(String term);
+    Collection<LinkedData> values(String term);
+    
+    @Override
+    default boolean isNode() {
+        return true;
+    }
+
+    @Override
+    default LinkedFragment asNode() {
+        return this;
+    }
+
 }

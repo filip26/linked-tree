@@ -6,6 +6,17 @@ import java.util.Collections;
 public non-sealed interface LinkedTree extends LinkedData {
 
     static LinkedTree EMPTY = new LinkedTree() {};
+
+    @Override
+    default boolean isTree() {
+        return true;
+    }
+
+    @Override
+    default LinkedTree asTree() {
+        return this;
+    }
+    
     
     /**
      * root fragments
