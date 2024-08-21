@@ -7,19 +7,19 @@ import com.apicatalog.linkedtree.Link;
 import com.apicatalog.linkedtree.LinkedData;
 import com.apicatalog.linkedtree.LinkedFragment;
 
-public class GenericLinkedNode implements LinkedFragment {
+public class GenericLinkedFragment implements LinkedFragment {
     
     protected Link id;
     protected Collection<String> types; 
     
     protected Map<String, Collection<LinkedData>> data;
     
-    protected GenericLinkedNode() {
+    protected GenericLinkedFragment() {
         
     }
     
-    public static GenericLinkedNode of(Link id, Collection<String> type, Map<String, Collection<LinkedData>> data) {
-        final GenericLinkedNode node = new GenericLinkedNode();
+    public static GenericLinkedFragment of(Link id, Collection<String> type, Map<String, Collection<LinkedData>> data) {
+        final GenericLinkedFragment node = new GenericLinkedFragment();
         node.id = id;
         node.types = type;
         node.data = data;

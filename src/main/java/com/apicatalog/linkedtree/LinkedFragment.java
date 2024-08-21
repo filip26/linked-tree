@@ -17,12 +17,12 @@ public non-sealed interface LinkedFragment extends LinkedData {
     Collection<LinkedData> values(String term);
     
     @Override
-    default boolean isNode() {
+    default boolean isFragment() {
         return true;
     }
 
     @Override
-    default LinkedFragment asNode() {
+    default LinkedFragment asFragment() {
         return this;
     }
 

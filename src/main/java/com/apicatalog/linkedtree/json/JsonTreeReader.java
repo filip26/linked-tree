@@ -1,20 +1,29 @@
 package com.apicatalog.linkedtree.json;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 
 import com.apicatalog.linkedtree.LinkedData;
 import com.apicatalog.linkedtree.LinkedFragment;
+import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.LinkedTree;
-import com.apicatalog.linkedtree.LinkedValue;
+import com.apicatalog.linkedtree.io.LinkedFragmentAdapter;
+import com.apicatalog.linkedtree.io.LinkedLiteralAdapter;
 import com.apicatalog.linkedtree.primitive.GenericLink;
-import com.apicatalog.linkedtree.primitive.GenericLinkedNode;
+import com.apicatalog.linkedtree.primitive.GenericLinkedFragment;
+import com.apicatalog.linkedtree.primitive.GenericLinkedLiteral;
 
 import jakarta.json.JsonArray;
+import jakarta.json.JsonNumber;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
@@ -22,15 +31,19 @@ import jakarta.json.JsonValue.ValueType;
 
 public class JsonTreeReader {
 
-//    Collection<LinkedNodeAdapter<? extends LinkedFragment>> nodeReaders;
-//    Map<String, LinkedValueAdapter<JsonValue, LinkedValue>> valueReaders;
+    protected static final DecimalFormat xsdNumberFormat =
+            new DecimalFormat("0.0##############E0", new DecimalFormatSymbols(Locale.ENGLISH));
 
-//    Collection<LinkedDataWriter<JsonObject, JsonValue>> nodeWriters;
+    static { xsdNumberFormat.setMinimumFractionDigits(1); }
+
+    protected LinkedFragmentAdapter fragmentAdapter;
+    protected Map<String, LinkedLiteralAdapter> literalAdapters;
 
     protected Map<String, GenericLink> links;
 
     public JsonTreeReader() {
         this.links = new HashMap<>();
+        this.literalAdapters = new HashMap<>();
 //        this.nodeReaders = new ArrayList<>();
 //        this.valueReaders = new HashMap<>();
 //        this.nodeWriters = new ArrayList<>();
@@ -104,7 +117,7 @@ public class JsonTreeReader {
                 }
 
             } else if ("@type".equals(entry.getKey())) {
-                
+
                 types = entry.getValue().asJsonArray().stream().map(JsonString.class::cast)
                         .map(JsonString::getString)
                         .toList();
@@ -119,7 +132,7 @@ public class JsonTreeReader {
 
         if (id != null) {
             final GenericLink link = getOrCreate(id);
-            final GenericLinkedNode node = GenericLinkedNode.of(
+            final GenericLinkedFragment node = GenericLinkedFragment.of(
                     link,
                     types,
                     properties);
@@ -127,7 +140,7 @@ public class JsonTreeReader {
             return node;
         }
 
-        return GenericLinkedNode.of(null, types, properties);
+        return GenericLinkedFragment.of(null, types, properties);
     }
 
     protected GenericLink getOrCreate(String uri) {
@@ -141,13 +154,156 @@ public class JsonTreeReader {
         return link;
     }
 
-    protected LinkedValue readLiteral(JsonObject value) {
+    protected LinkedLiteral readLiteral(final JsonObject valueJsonObject) {
 
-        // for each adapter
-        // adapter.read(value) == null contine;
+//        final String value = getLiteralValue(valueObject);
+//        final String datatype = getLiteralDataType(valueObject);
+//        final String language = getLiteralLanguage(valueObject);
+//
+//        // for each adapter
+//        // adapter.read(value) == null contine;
+//
+////        return JsonLdLiteral.of();
+//        return GenericLinkedLiteral.of(value, datatype, language, null); // TODO
+//    }
+//
+//    protected static String getLiteralValue(JsonObject item) {
 
-//        return JsonLdLiteral.of();
-        return null;
+        final JsonValue value = valueJsonObject.get("@value");
+
+        String datatype = valueJsonObject.containsKey("@type")
+                && ValueType.STRING.equals(valueJsonObject.get("@type").getValueType())
+                        ? valueJsonObject.getString("@type")
+                        : null;
+
+        // 6.
+//        if (datatype != null && !"@json".equals(datatype) && !UriUtils.isAbsoluteUri(datatype, uriValidation)) {
+//            LOGGER.log(Level.WARNING, "Datatype [{0}] is not an absolute IRI nor @json and value is skipped.", datatype);
+//            return Optional.empty();
+//        }
+
+//        if (item.containsKey(Keywords.LANGUAGE)
+//                && (JsonUtils.isNotString(item.get(Keywords.LANGUAGE))
+//                        || !LanguageTag.isWellFormed(item.getString(Keywords.LANGUAGE)))) {
+//            LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed string and value is skipped.", item.get(Keywords.LANGUAGE));
+//            return Optional.empty();
+//        }
+
+        String valueString = null;
+
+        if ("@json".equals(datatype)) {
+//            valueString = JsonCanonicalizer.canonicalize(value);
+//            datatype = RdfConstants.JSON;
+
+        } else if (value != null && ValueType.TRUE.equals(value.getValueType())) {
+
+            valueString = "true";
+
+            if (datatype == null) {
+                datatype = XsdConstants.BOOLEAN;
+            }
+
+        } else if (value != null && ValueType.FALSE.equals(value.getValueType())) {
+
+            valueString = "false";
+
+            if (datatype == null) {
+                datatype = XsdConstants.BOOLEAN;
+            }
+
+        } else if (value != null && ValueType.NUMBER.equals(value.getValueType())) {
+
+            JsonNumber number = ((JsonNumber) value);
+
+            if ((!number.isIntegral() && number.doubleValue() % -1 != 0)
+                    || XsdConstants.DOUBLE.equals(datatype)
+                    || XsdConstants.FLOAT.equals(datatype)
+                    || number.bigDecimalValue().compareTo(BigDecimal.ONE.movePointRight(21)) >= 0) {
+
+                valueString = toXsdDouble(number.bigDecimalValue());
+
+                if (datatype == null) {
+                    datatype = XsdConstants.DOUBLE;
+                }
+
+                // 10.
+            } else {
+
+                valueString = number.bigIntegerValue().toString();
+
+                if (datatype == null) {
+                    datatype = XsdConstants.INTEGER;
+                }
+
+            }
+
+            // 12.
+        } else if (datatype == null) {
+
+            datatype = XsdConstants.STRING;
+        }
+
+        if (valueString == null) {
+
+            if (value == null || !ValueType.STRING.equals(value.getValueType())) {
+                return null;
+            }
+
+            valueString = ((JsonString) value).getString();
+        }
+
+        return GenericLinkedLiteral.of(valueString, datatype, getLiteralLanguage(valueJsonObject), null); // TODO
+
+//        final JsonValue jsonValue = valueObject.get("@value");
+//
+//        if (jsonValue != null) {
+//            switch (jsonValue.getValueType()) {
+//            case FALSE:
+//                return "false";
+//
+//            case TRUE:
+//                return "true";
+//
+//            case STRING:
+//                return ((JsonString) jsonValue).getString();
+//
+//            case NUMBER:
+//                return ((JsonNumber) jsonValue).numberValue().toString();
+//
+//            case NULL:
+//                return null;
+//
+//            default:
+//                throw new IllegalArgumentException();
+//            }
+//        }
+//        return null;
+    }
+
+    protected static String getLiteralDataType(JsonObject valueObject) {
+
+        final JsonValue jsonType = valueObject.get("@type");
+        if (jsonType == null || ValueType.NULL.equals(jsonType.getValueType())) {
+            return null;
+        }
+        if (!ValueType.STRING.equals(jsonType.getValueType())) {
+            throw new IllegalArgumentException();
+        }
+
+        return ((JsonString) jsonType).getString();
+    }
+
+    protected static String getLiteralLanguage(JsonObject valueObject) {
+
+        final JsonValue jsonType = valueObject.get("@language");
+        if (jsonType == null || ValueType.NULL.equals(jsonType.getValueType())) {
+            return null;
+        }
+        if (!ValueType.STRING.equals(jsonType.getValueType())) {
+            throw new IllegalArgumentException();
+        }
+
+        return ((JsonString) jsonType).getString();
     }
 
 //    protected LinkedFragment genericObject(JakartaNodeContext context, JsonObject value) {
@@ -175,5 +331,9 @@ public class JsonTreeReader {
 ////        }
 //        throw new IllegalStateException();
 //    }
+
+    private static final String toXsdDouble(BigDecimal bigDecimal) {
+        return xsdNumberFormat.format(bigDecimal);
+    }
 
 }

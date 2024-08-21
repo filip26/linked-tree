@@ -1,20 +1,20 @@
 package com.apicatalog.linkedtree;
 
-public sealed interface LinkedData permits LinkedTree, LinkedContainer, LinkedFragment, LinkedValue {
+public sealed interface LinkedData permits LinkedTree, LinkedContainer, LinkedFragment, LinkedLiteral {
 
     default boolean isTree() {
         return false;
     }
     
-    default boolean isNode() {
+    default boolean isFragment() {
         return false;
     }
 
-    default boolean isValue() {
+    default boolean isLiteral() {
         return false;
     }
     
-    default LinkedFragment asNode() {
+    default LinkedFragment asFragment() {
         throw new ClassCastException();
     }
 
@@ -22,7 +22,7 @@ public sealed interface LinkedData permits LinkedTree, LinkedContainer, LinkedFr
         throw new ClassCastException();
     }
 
-    default LinkedValue asValue() {
+    default LinkedLiteral asLiteral() {
         throw new ClassCastException();
     }
 }

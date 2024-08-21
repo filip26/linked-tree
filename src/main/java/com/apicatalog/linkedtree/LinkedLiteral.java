@@ -1,6 +1,16 @@
 package com.apicatalog.linkedtree;
 
-public non-sealed interface LinkedValue extends LinkedData {
+public non-sealed interface LinkedLiteral extends LinkedData {
+
+    @Override
+    default boolean isLiteral() {
+        return true;
+    }
+
+    @Override
+    default LinkedLiteral asLiteral() {
+        return this;
+    }
 
     /**
      * Get the lexical value of the literal.
@@ -19,11 +29,12 @@ public non-sealed interface LinkedValue extends LinkedData {
     String datatype();
 
     /**
-     * An optional language tag. If this value is specified, {@link #datatype()} returns rdf:langString.
+     * An optional language tag. If this value is specified, {@link #datatype()}
+     * returns rdf:langString.
      *
-     * @return language tag or {@link Optional#empty()} if not set
+     * @return language tag or <code>null</code> if not set
      */
-//    Optional<String> language();
+    String language();
 
 //    public enum DirectionType {
 //
