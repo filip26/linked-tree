@@ -1,11 +1,10 @@
 package com.apicatalog.linkedtree;
 
-import java.net.URI;
 import java.util.Collection;
 
 public interface Link {
 
-    URI uri();
+    String uri();
     
     /**
      * All fragments using the same id found in a tree - never adapted

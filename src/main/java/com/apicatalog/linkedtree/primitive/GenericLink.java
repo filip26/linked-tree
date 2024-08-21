@@ -1,24 +1,25 @@
-package com.apicatalog.linkedtree.json;
+package com.apicatalog.linkedtree.primitive;
 
-import java.net.URI;
 import java.util.Collection;
 
 import com.apicatalog.linkedtree.Link;
 import com.apicatalog.linkedtree.LinkedFragment;
 
-import jakarta.json.JsonObject;
-
 public class GenericLink implements Link {
 
-    protected URI uri;
+    protected String uri;
     
+    protected GenericLink() {
+    }
     
-    public GenericLink(URI uri) {
-        this.uri = uri;
+    public static GenericLink of(String uri) {
+        final GenericLink link = new GenericLink();
+        link.uri = uri;
+        return link;
     }
     
     @Override
-    public URI uri() {
+    public String uri() {
         return uri;
     }
 

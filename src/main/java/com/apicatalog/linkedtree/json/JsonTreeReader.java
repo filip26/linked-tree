@@ -11,6 +11,8 @@ import com.apicatalog.linkedtree.LinkedData;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.LinkedValue;
+import com.apicatalog.linkedtree.primitive.GenericLink;
+import com.apicatalog.linkedtree.primitive.GenericLinkedNode;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
@@ -128,7 +130,7 @@ public class JsonTreeReader {
 
         GenericLink link = links.get(uri);
         if (link == null) {
-            link = new GenericLink(URI.create(uri));
+            link = GenericLink.of(uri);
             links.put(uri, link);
         }
 
