@@ -19,8 +19,8 @@ public class JsonTreeWriter {
 
         final JsonArrayBuilder builder = Json.createArrayBuilder();
 
-        for (final LinkedFragment fragment : tree.fragments()) {
-            builder.add(writeFragment(fragment));
+        for (final LinkedNode fragment : tree.nodes()) {
+            builder.add(writeNode(fragment));
         }
 
         return builder.build();
@@ -59,7 +59,7 @@ public class JsonTreeWriter {
     public JsonObject writeContainer(final LinkedContainer container) {
 
         final JsonArrayBuilder array = Json.createArrayBuilder();
-            
+
         for (final LinkedNode node : container.nodes()) {
             array.add(writeNode(node));
         }
@@ -67,22 +67,13 @@ public class JsonTreeWriter {
         return Json.createObjectBuilder()
                 .add(container.containerType(), array)
                 .build();
-    
+
     }
 
-    
     JsonValue writeNode(LinkedNode data) {
 
         if (data == null) {
             return JsonValue.NULL;
-        }
-
-        if (data.isFragment()) {
-            return writeFragment(data.asFragment());
-        }
-
-        if (data.isLiteral()) {
-            return writeLiteral(data.asLiteral());
         }
 
         if (data.isTree()) {
@@ -90,6 +81,12 @@ public class JsonTreeWriter {
         }
         if (data.isContainer()) {
             return writeContainer(data.asContainer());
+        }
+        if (data.isFragment()) {
+            return writeFragment(data.asFragment());
+        }
+        if (data.isLiteral()) {
+            return writeLiteral(data.asLiteral());
         }
 
         throw new IllegalStateException();

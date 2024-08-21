@@ -4,19 +4,20 @@ import java.util.Collection;
 
 import com.apicatalog.linkedtree.Link;
 import com.apicatalog.linkedtree.LinkedFragment;
+import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.LinkedTree;
 
 public class JsonLinkedTree implements LinkedTree {
 
-    protected Collection<LinkedFragment> fragments;
+    protected Collection<LinkedNode> nodes;
 
-    public JsonLinkedTree(Collection<LinkedFragment> fragments) {
-        this.fragments = fragments;
+    public JsonLinkedTree(Collection<LinkedNode> nodes) {
+        this.nodes = nodes;
     }
 
     @Override
-    public Collection<LinkedFragment> fragments() {
-        return fragments;
+    public Collection<LinkedNode> nodes() {
+        return nodes;
     }
 
     @Override

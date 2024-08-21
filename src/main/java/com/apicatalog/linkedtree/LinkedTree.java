@@ -3,9 +3,10 @@ package com.apicatalog.linkedtree;
 import java.util.Collection;
 import java.util.Collections;
 
-public non-sealed interface LinkedTree extends LinkedNode {
+public interface LinkedTree extends LinkedFragment, LinkedContainer {
 
-    static LinkedTree EMPTY = new LinkedTree() {};
+    static LinkedTree EMPTY = new LinkedTree() {
+    };
 
     @Override
     default boolean isTree() {
@@ -17,13 +18,13 @@ public non-sealed interface LinkedTree extends LinkedNode {
         return this;
     }
     
-    
     /**
      * root fragments
      * 
-     * @return a collection of root fragments
+     * @return a collection of root nodes
      */
-    default Collection<LinkedFragment> fragments() {
+    @Override
+    default Collection<LinkedNode> nodes() {
         return Collections.emptyList();
     }
 
@@ -34,6 +35,11 @@ public non-sealed interface LinkedTree extends LinkedNode {
      */
     default Collection<Link> links() {
         return Collections.emptyList();
+    }
+    
+    @Override
+    default String containerType() {
+        return "@graph";
     }
 
     // TODO predicates. i.e. terms???

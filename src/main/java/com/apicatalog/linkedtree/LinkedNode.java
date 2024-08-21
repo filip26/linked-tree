@@ -1,6 +1,6 @@
 package com.apicatalog.linkedtree;
 
-public sealed interface LinkedNode permits LinkedTree, LinkedContainer, LinkedFragment, LinkedLiteral {
+public sealed interface LinkedNode permits LinkedContainer, LinkedFragment, LinkedLiteral {
 
     default boolean isTree() {
         return false;

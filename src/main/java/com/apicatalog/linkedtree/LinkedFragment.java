@@ -1,6 +1,7 @@
 package com.apicatalog.linkedtree;
 
 import java.util.Collection;
+import java.util.Collections;
 
 public non-sealed interface LinkedFragment extends LinkedNode {
 
@@ -8,13 +9,21 @@ public non-sealed interface LinkedFragment extends LinkedNode {
      * An optional unique fragment identifier. The same identifier can be shared
      * among many fragments allowing composition.
      */
-    Link id();
+    default Link id() {
+        return null;
+    }
 
-    Collection<String> type();
+    default Collection<String> type() {
+        return Collections.emptySet();
+    }
     
-    Collection<String> terms();
+    default Collection<String> terms() {
+        return Collections.emptySet();
+    }
 
-    Collection<LinkedNode> values(String term);
+    default Collection<LinkedNode> values(String term) {
+        return Collections.emptySet();
+    }
     
     @Override
     default boolean isFragment() {

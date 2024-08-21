@@ -59,15 +59,15 @@ public class JsonTreeReader {
             return LinkedTree.EMPTY;
         }
 
-        final Collection<LinkedFragment> fragments = new ArrayList<>(items.size());
-        final JsonLinkedTree tree = new JsonLinkedTree(fragments);
+        final Collection<LinkedNode> nodes = new ArrayList<>(items.size());
+        final JsonLinkedTree tree = new JsonLinkedTree(nodes);
 
         for (final JsonValue item : items) {
 
             if (item == null || !ValueType.OBJECT.equals(item.getValueType())) {
                 throw new IllegalArgumentException();
             }
-            fragments.add(readFragment(item.asJsonObject()));
+            nodes.add(readNode(item.asJsonObject()));
         }
 
         return tree;
