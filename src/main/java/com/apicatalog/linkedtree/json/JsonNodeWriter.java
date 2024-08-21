@@ -1,7 +1,6 @@
-package com.apicatalog.linkedtree.jakarta;
+package com.apicatalog.linkedtree.json;
 
-public class JakartaNodeWriter 
-//implements LinkedDataWriter<JsonObject> 
+public class JsonNodeWriter
 {
 
 //    @Override

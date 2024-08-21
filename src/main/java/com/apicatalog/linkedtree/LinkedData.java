@@ -18,7 +18,7 @@ public sealed interface LinkedData permits LinkedTree, LinkedContainer, LinkedFr
         throw new ClassCastException();
     }
 
-    default LinkedFragment asTree() {
+    default LinkedTree asTree() {
         throw new ClassCastException();
     }
 

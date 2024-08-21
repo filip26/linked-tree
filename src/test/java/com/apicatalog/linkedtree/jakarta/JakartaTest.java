@@ -16,6 +16,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.apicatalog.linkedtree.LinkedFragment;
+import com.apicatalog.linkedtree.json.JsonTreeReader;
+import com.apicatalog.linkedtree.json.JsonTreeWriter;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -24,23 +26,24 @@ import jakarta.json.JsonArray;
 @TestMethodOrder(OrderAnnotation.class)
 class JakartaTest {
 
-    static JakartaLinkedTreeReader JAKARTA = new JakartaLinkedTreeReader();
+    static JsonTreeReader READER = new JsonTreeReader();
+    static JsonTreeWriter WRITER = new JsonTreeWriter();
     
     @DisplayName("Read/Write")
     @ParameterizedTest(name = "{0}")
     @MethodSource({ "expandedResources" })
     void readWrite(String name, JsonArray input) {
     
-        var tree = JAKARTA.read(input);
+        var tree = READER.read(input);
         
         assertNotNull(tree);
 
         System.out.println(tree);
-//        var output = JAKARTA.write(tree);
-//        
-//        assertNotNull(output);
+        var output = WRITER.write(tree);
+        
+        assertNotNull(output);
 
-//        assertEquals(input, output);
+        assertEquals(input, output);
     }
 
     static final Stream<Object[]> expandedResources() throws IOException, URISyntaxException {

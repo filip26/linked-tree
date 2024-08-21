@@ -1,4 +1,4 @@
-package com.apicatalog.linkedtree.jakarta;
+package com.apicatalog.linkedtree.json;
 
 import java.util.Collection;
 import java.util.Map;

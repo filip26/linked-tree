@@ -1,34 +1,34 @@
-package com.apicatalog.linkedtree.jakarta;
+package com.apicatalog.linkedtree.json;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.apicatalog.linkedtree.Link;
 import com.apicatalog.linkedtree.LinkedData;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.LinkedValue;
 
-import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
 
-public class JakartaLinkedTreeReader {
+public class JsonTreeReader {
 
 //    Collection<LinkedNodeAdapter<? extends LinkedFragment>> nodeReaders;
 //    Map<String, LinkedValueAdapter<JsonValue, LinkedValue>> valueReaders;
 
 //    Collection<LinkedDataWriter<JsonObject, JsonValue>> nodeWriters;
 
-    protected Collection<JsonObject> jsonFragments;
+    protected Map<String, GenericLink> links;
 
-    public JakartaLinkedTreeReader() {
+    public JsonTreeReader() {
+        this.links = new HashMap<>();
 //        this.nodeReaders = new ArrayList<>();
 //        this.valueReaders = new HashMap<>();
 //        this.nodeWriters = new ArrayList<>();
@@ -44,7 +44,7 @@ public class JakartaLinkedTreeReader {
         }
 
         final Collection<LinkedFragment> fragments = new ArrayList<>(items.size());
-        final JakartaLinkedTree tree = new JakartaLinkedTree(fragments);
+        final JsonLinkedTree tree = new JsonLinkedTree(fragments);
 
         for (final JsonValue item : items) {
 
@@ -89,48 +89,50 @@ public class JakartaLinkedTreeReader {
         final Map<String, Collection<LinkedData>> properties = new HashMap<>(value.size());
 
         for (final Entry<String, JsonValue> entry : value.entrySet()) {
-            switch (entry.getKey()) {
-            case "@id":
-                id = ((JsonString) entry.getValue()).getString();
-                break;
-            case "@type":
-                break;
-            default:
+
+            if ("@id".equals(entry.getKey())) {
+                if (ValueType.STRING.equals(entry.getValue().getValueType())) {
+
+                    final String idValue = ((JsonString) entry.getValue()).getString();
+
+                    if (!idValue.startsWith("_:")) {
+                        id = idValue;
+                    }
+                }
+
+            } else if ("@type".equals(entry.getKey())) {
+                // TODO
+
+            } else if (entry.getKey().startsWith("@")) {
+
+            } else {
                 properties.put(entry.getKey(), readValueArray(entry.getValue().asJsonArray()));
+
             }
         }
+
+        if (id != null) {
+            final GenericLink link = getOrCreate(id);
+            final GenericLinkedNode node = GenericLinkedNode.of(
+                    link,
+                    null,
+                    properties);
+            link.add(node);
+            return node;
+        }
+
         return GenericLinkedNode.of(null, null, properties);
-//        final String id = value.getString("@id");       
-
-//    // id -> link
-//    // types
-//
-//        for (final LinkedNodeAdapter<JsonObject, JsonValue, LinkedFragment> reader : nodeReaders) {
-        // if (reader.accepts(null)) {
-////            final LinkedFragment node = reader.read(context, link, null, value);
-//////            link.target(node);
-////            return node;
-////        }
-//        }
-//        return GenericLinkedNode.of(null, null, null)
     }
 
-    protected Link getOrCreate(String uri) {
-        return null;
-    }
+    protected GenericLink getOrCreate(String uri) {
 
-    protected LinkedData readObject(JsonValue value) {
+        GenericLink link = links.get(uri);
+        if (link == null) {
+            link = new GenericLink(URI.create(uri));
+            links.put(uri, link);
+        }
 
-//        if (JsonUtils.isNotObject(value)) {
-//            throw new DocumentError(ErrorType.Invalid, "Document");
-//        }
-
-        final JsonObject object = value.asJsonObject();
-
-//        return object.containsKey(Keywords.VALUE)
-//                ? readLiteral(object)
-//                : genericObject(object);
-        return null;
+        return link;
     }
 
     protected LinkedValue readLiteral(JsonObject value) {
@@ -143,6 +145,15 @@ public class JakartaLinkedTreeReader {
     }
 
 //    protected LinkedFragment genericObject(JakartaNodeContext context, JsonObject value) {
+
+//  for (final LinkedNodeAdapter<JsonObject, JsonValue, LinkedFragment> reader : nodeReaders) {
+    // if (reader.accepts(null)) {
+////      final LinkedFragment node = reader.read(context, link, null, value);
+//////      link.target(node);
+////      return node;
+////  }
+//  }
+//  return GenericLinkedNode.of(null, null, null)
 //
 //        final String id = value.getString("@id");
 ////        final Link link = id != null ? context.link(id) : null;
