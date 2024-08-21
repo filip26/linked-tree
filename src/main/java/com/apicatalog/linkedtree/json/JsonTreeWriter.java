@@ -26,6 +26,10 @@ public class JsonTreeWriter {
         return builder.build();
     }
 
+    JsonObject writeTree(LinkedTree tree) {
+        return Json.createObjectBuilder().add(Keywords.GRAPH, write(tree)).build();
+    }
+
     public JsonObject writeFragment(final LinkedFragment fragment) {
 
         final JsonObjectBuilder builder = Json.createObjectBuilder();
@@ -67,7 +71,7 @@ public class JsonTreeWriter {
     }
 
     
-    public JsonValue writeNode(LinkedNode data) {
+    JsonValue writeNode(LinkedNode data) {
 
         if (data == null) {
             return JsonValue.NULL;
@@ -82,7 +86,7 @@ public class JsonTreeWriter {
         }
 
         if (data.isTree()) {
-            return write(data.asTree());
+            return writeTree(data.asTree());
         }
         if (data.isContainer()) {
             return writeContainer(data.asContainer());

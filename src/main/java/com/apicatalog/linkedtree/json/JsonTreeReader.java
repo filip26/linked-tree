@@ -99,16 +99,19 @@ public class JsonTreeReader {
     
     protected LinkedNode readNode(JsonObject jsonObject) {
 
-        if (isListObject(jsonObject)) {
+        if (isContainer(jsonObject, Keywords.LIST)) {
             return readList(jsonObject);
+        }
+        if (isContainer(jsonObject, Keywords.GRAPH)) {
+            return readGraph(jsonObject);
         }
         
         return readFragment(jsonObject);
     }
 
-    protected static boolean isListObject(JsonObject jsonObject) {
+    protected static boolean isContainer(JsonObject jsonObject, String name) {
         return jsonObject != null 
-                && jsonObject.containsKey(Keywords.LIST); 
+                && jsonObject.containsKey(name); 
     }
     
     protected LinkedContainer readList(JsonObject jsonObject) {
@@ -123,7 +126,14 @@ public class JsonTreeReader {
         
         return GenericLinkedContainer.of(Keywords.LIST, nodes);
     }
-    
+
+    protected LinkedTree readGraph(JsonObject jsonObject) {
+        
+        final JsonArray graph = jsonObject.getJsonArray(Keywords.GRAPH);
+        
+        return read(graph);
+    }
+
     protected LinkedFragment readFragment(JsonObject value) {
 
         String id = null;
