@@ -1,10 +1,9 @@
 package com.apicatalog.linkedtree.json;
 
-import java.io.StringReader;
-
-import com.apicatalog.linkedtree.LinkedData;
+import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedLiteral;
+import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.LinkedTree;
 
 import jakarta.json.Json;
@@ -13,7 +12,6 @@ import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
-import jakarta.json.stream.JsonParser;
 
 public class JsonTreeWriter {
 
@@ -36,7 +34,7 @@ public class JsonTreeWriter {
             builder.add("@id", fragment.id().uri().toString());
         }
 
-        if (fragment.type() != null) {
+        if (fragment.type() != null && !fragment.type().isEmpty()) {
             builder.add("@type", Json.createArrayBuilder(fragment.type()));
         }
 
@@ -44,8 +42,8 @@ public class JsonTreeWriter {
 
             final JsonArrayBuilder termValues = Json.createArrayBuilder();
 
-            for (final LinkedData value : fragment.values(term)) {
-                termValues.add(writeData(value));
+            for (final LinkedNode value : fragment.values(term)) {
+                termValues.add(writeNode(value));
             }
 
             builder.add(term, termValues);
@@ -54,7 +52,22 @@ public class JsonTreeWriter {
         return builder.build();
     }
 
-    public JsonValue writeData(LinkedData data) {
+    public JsonObject writeContainer(final LinkedContainer container) {
+
+        final JsonArrayBuilder array = Json.createArrayBuilder();
+            
+        for (final LinkedNode node : container.nodes()) {
+            array.add(writeNode(node));
+        }
+
+        return Json.createObjectBuilder()
+                .add(container.containerType(), array)
+                .build();
+    
+    }
+
+    
+    public JsonValue writeNode(LinkedNode data) {
 
         if (data == null) {
             return JsonValue.NULL;
@@ -70,6 +83,9 @@ public class JsonTreeWriter {
 
         if (data.isTree()) {
             return write(data.asTree());
+        }
+        if (data.isContainer()) {
+            return writeContainer(data.asContainer());
         }
 
         throw new IllegalStateException();

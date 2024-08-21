@@ -10,15 +10,16 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 
-import com.apicatalog.linkedtree.LinkedData;
+import com.apicatalog.linkedtree.LinkedContainer;
+import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.io.LinkedFragmentAdapter;
 import com.apicatalog.linkedtree.io.LinkedLiteralAdapter;
 import com.apicatalog.linkedtree.primitive.GenericLink;
+import com.apicatalog.linkedtree.primitive.GenericLinkedContainer;
 import com.apicatalog.linkedtree.primitive.GenericLinkedFragment;
 import com.apicatalog.linkedtree.primitive.GenericLinkedLiteral;
 
@@ -72,9 +73,9 @@ public class JsonTreeReader {
         return tree;
     }
 
-    protected Collection<LinkedData> readValueArray(JsonArray values) {
+    protected Collection<LinkedNode> readValueArray(JsonArray values) {
 
-        final Collection<LinkedData> data = new ArrayList<>(values.size());
+        final Collection<LinkedNode> data = new ArrayList<>(values.size());
 
         for (JsonValue item : values) {
             data.add(readValue(item));
@@ -83,7 +84,7 @@ public class JsonTreeReader {
         return data;
     }
 
-    protected LinkedData readValue(JsonValue value) {
+    protected LinkedNode readValue(JsonValue value) {
 
 //      if (JsonUtils.isNotObject(value)) {
 //      throw new DocumentError(ErrorType.Invalid, "Document");
@@ -91,18 +92,44 @@ public class JsonTreeReader {
 
         final JsonObject object = value.asJsonObject();
 
-        return object.containsKey("@value")
+        return object.containsKey(Keywords.VALUE)
                 ? readLiteral(object)
-                : readFragment(object);
+                : readNode(object);
+    }
+    
+    protected LinkedNode readNode(JsonObject jsonObject) {
 
+        if (isListObject(jsonObject)) {
+            return readList(jsonObject);
+        }
+        
+        return readFragment(jsonObject);
     }
 
+    protected static boolean isListObject(JsonObject jsonObject) {
+        return jsonObject != null 
+                && jsonObject.containsKey(Keywords.LIST); 
+    }
+    
+    protected LinkedContainer readList(JsonObject jsonObject) {
+        
+        final JsonArray list = jsonObject.getJsonArray(Keywords.LIST);
+        
+        final Collection<LinkedNode> nodes = new ArrayList<>(list.size());
+        
+        for (JsonValue item : list) {
+            nodes.add(readValue(item));
+        }
+        
+        return GenericLinkedContainer.of(Keywords.LIST, nodes);
+    }
+    
     protected LinkedFragment readFragment(JsonObject value) {
 
         String id = null;
         Collection<String> types = Collections.emptySet();
 
-        final Map<String, Collection<LinkedData>> properties = new HashMap<>(value.size());
+        final Map<String, Collection<LinkedNode>> properties = new HashMap<>(value.size());
 
         for (final Entry<String, JsonValue> entry : value.entrySet()) {
 
@@ -121,12 +148,12 @@ public class JsonTreeReader {
                 types = entry.getValue().asJsonArray().stream().map(JsonString.class::cast)
                         .map(JsonString::getString)
                         .toList();
-
+                
             } else if (entry.getKey().startsWith("@")) {
-
+                throw new IllegalStateException("An unknown keyword " + entry.getKey());
+                
             } else {
                 properties.put(entry.getKey(), readValueArray(entry.getValue().asJsonArray()));
-
             }
         }
 

@@ -1,6 +1,6 @@
 package com.apicatalog.linkedtree;
 
-public non-sealed interface LinkedLiteral extends LinkedData {
+public non-sealed interface LinkedLiteral extends LinkedNode {
 
     @Override
     default boolean isLiteral() {
