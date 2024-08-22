@@ -1,4 +1,4 @@
-package com.apicatalog.linkedtree.json;
+package com.apicatalog.linkedtree.jsonld;
 
 final class XsdConstants {
 

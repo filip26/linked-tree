@@ -1,4 +1,4 @@
-package com.apicatalog.linkedtree.json;
+package com.apicatalog.linkedtree.jsonld;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -73,7 +73,7 @@ public class JsonTreeReader {
         return tree;
     }
 
-    protected Collection<LinkedNode> readValueArray(JsonArray values) {
+    protected LinkedContainer readValueArray(JsonArray values) {
 
         final Collection<LinkedNode> data = new ArrayList<>(values.size());
 
@@ -81,7 +81,7 @@ public class JsonTreeReader {
             data.add(readValue(item));
         }
 
-        return data;
+        return GenericLinkedContainer.of(LinkedContainer.Type.UnorderedSet, data);
     }
 
     protected LinkedNode readValue(JsonValue value) {
@@ -102,6 +102,9 @@ public class JsonTreeReader {
         if (isContainer(jsonObject, Keywords.LIST)) {
             return readList(jsonObject);
         }
+        if (isContainer(jsonObject, Keywords.REVERSE)) {
+            return readReverse(jsonObject);
+        }        
         if (isContainer(jsonObject, Keywords.GRAPH)) {
             return readGraph(jsonObject);
         }
@@ -113,7 +116,8 @@ public class JsonTreeReader {
         return jsonObject != null 
                 && jsonObject.containsKey(name); 
     }
-    
+
+    // list is a collection attribute
     protected LinkedContainer readList(JsonObject jsonObject) {
         
         final JsonArray list = jsonObject.getJsonArray(Keywords.LIST);
@@ -124,13 +128,27 @@ public class JsonTreeReader {
             nodes.add(readValue(item));
         }
         
-        return GenericLinkedContainer.of(Keywords.LIST, nodes);
+        return GenericLinkedContainer.of(LinkedContainer.Type.OrderedList, nodes);
+    }
+
+    protected LinkedContainer readReverse(JsonObject jsonObject) {
+        
+//        final JsonArray list = jsonObject.getJsonObject(Keywords.REVERSE);
+        
+//        final Collection<LinkedNode> nodes = new ArrayList<>(list.size());
+        
+//        for (JsonValue item : list) {
+//            nodes.add(readValue(item));
+//        }
+        
+//        return GenericLinkedContainer.of(Keywords.LIST, nodes);
+        return null;
     }
 
     protected LinkedTree readGraph(JsonObject jsonObject) {
         
         final JsonArray graph = jsonObject.getJsonArray(Keywords.GRAPH);
-        
+        //TODO read as a separate tree
         return read(graph);
     }
 
@@ -138,8 +156,9 @@ public class JsonTreeReader {
 
         String id = null;
         Collection<String> types = Collections.emptySet();
+        String index = null;
 
-        final Map<String, Collection<LinkedNode>> properties = new HashMap<>(value.size());
+        final Map<String, LinkedContainer> properties = new HashMap<>(value.size());
 
         for (final Entry<String, JsonValue> entry : value.entrySet()) {
 
@@ -159,6 +178,10 @@ public class JsonTreeReader {
                         .map(JsonString::getString)
                         .toList();
                 
+            } else if ("@index".equals(entry.getKey())) {
+                
+                index = ((JsonString) entry.getValue()).getString();
+                
             } else if (entry.getKey().startsWith("@")) {
                 throw new IllegalStateException("An unknown keyword " + entry.getKey());
                 
@@ -172,12 +195,14 @@ public class JsonTreeReader {
             final GenericLinkedFragment node = GenericLinkedFragment.of(
                     link,
                     types,
-                    properties);
+                    properties,
+                    index
+                    );
             link.add(node);
             return node;
         }
 
-        return GenericLinkedFragment.of(null, types, properties);
+        return GenericLinkedFragment.of(null, types, properties, index);
     }
 
     protected GenericLink getOrCreate(String uri) {

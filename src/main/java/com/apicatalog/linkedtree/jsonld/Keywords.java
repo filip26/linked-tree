@@ -1,4 +1,4 @@
-package com.apicatalog.linkedtree.json;
+package com.apicatalog.linkedtree.jsonld;
 
 import java.util.Arrays;
 import java.util.Collection;

@@ -1,4 +1,4 @@
-package com.apicatalog.linkedtree.json;
+package com.apicatalog.linkedtree.jsonld;
 
 import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedFragment;
@@ -44,19 +44,21 @@ public class JsonTreeWriter {
 
         for (final String term : fragment.terms()) {
 
-            final JsonArrayBuilder termValues = Json.createArrayBuilder();
-
-            for (final LinkedNode value : fragment.values(term)) {
-                termValues.add(writeNode(value));
-            }
-
-            builder.add(term, termValues);
+            builder.add(term, writeContainer(fragment.values(term)));
+            
+//            final JsonArrayBuilder termValues = Json.createArrayBuilder();
+//
+//            for (final LinkedNode value : fragment.values(term)) {
+//                termValues.add(writeNode(value));
+//            }
+//
+//            builder.add(term, termValues);
         }
 
         return builder.build();
     }
 
-    public JsonObject writeContainer(final LinkedContainer container) {
+    public JsonValue writeContainer(final LinkedContainer container) {
 
         final JsonArrayBuilder array = Json.createArrayBuilder();
 
@@ -64,9 +66,13 @@ public class JsonTreeWriter {
             array.add(writeNode(node));
         }
 
-        return Json.createObjectBuilder()
-                .add(container.containerType(), array)
-                .build();
+        if (LinkedContainer.Type.OrderedList.equals(container.containerType())) {
+            return Json.createObjectBuilder()
+                    .add(Keywords.LIST, array)
+                    .build();
+            
+        }
+        return array.build();
 
     }
 

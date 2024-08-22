@@ -1,12 +1,11 @@
 package com.apicatalog.linkedtree;
 
-public sealed interface LinkedNode permits LinkedContainer, LinkedFragment, LinkedLiteral {
+public sealed interface LinkedNode permits LinkedContainer, LinkedTree, LinkedFragment, LinkedLiteral {
 
     default boolean isTree() {
         return false;
     }
 
-    //TODO unify container and tree
     default boolean isContainer() {
         return false;
     }
@@ -34,4 +33,9 @@ public sealed interface LinkedNode permits LinkedContainer, LinkedFragment, Link
     default LinkedContainer asContainer() {
         throw new ClassCastException();
     }
+    
+    //TODO not sure about this - @index should not be supported, JSON-LD specific feature 
+//    default String index() {
+//        return null;
+//    }
 }

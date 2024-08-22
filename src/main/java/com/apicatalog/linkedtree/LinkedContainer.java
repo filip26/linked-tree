@@ -1,13 +1,25 @@
 package com.apicatalog.linkedtree;
 
 import java.util.Collection;
+import java.util.Collections;
 
 public non-sealed interface LinkedContainer extends LinkedNode {
 
-    Collection<LinkedNode> nodes();
+    public static LinkedContainer EMPTY = new LinkedContainer() {};
     
-    String containerType();
+    public enum Type {
+        OrderedList,
+        UnorderedSet
+    };
     
+    default Type containerType() {
+        return Type.UnorderedSet;
+    }
+    
+    default Collection<LinkedNode> nodes() {
+        return Collections.emptyList();
+    }
+        
     @Override
     default boolean isContainer() {
         return true;

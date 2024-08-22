@@ -8,13 +8,13 @@ import com.apicatalog.linkedtree.LinkedNode;
 public class GenericLinkedContainer implements LinkedContainer {
 
     protected Collection<LinkedNode> nodes;
-    protected String containerType;
+    protected Type containerType;
 
     protected GenericLinkedContainer() {
         // protected
     }
 
-    public static GenericLinkedContainer of(String type, Collection<LinkedNode> nodes) {
+    public static GenericLinkedContainer of(Type type, Collection<LinkedNode> nodes) {
         final GenericLinkedContainer container = new GenericLinkedContainer();
         container.containerType = type;
         container.nodes = nodes;
@@ -27,7 +27,7 @@ public class GenericLinkedContainer implements LinkedContainer {
     }
 
     @Override
-    public String containerType() {
+    public Type containerType() {
         return containerType;
     }
 

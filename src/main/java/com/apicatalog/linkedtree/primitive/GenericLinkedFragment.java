@@ -4,25 +4,27 @@ import java.util.Collection;
 import java.util.Map;
 
 import com.apicatalog.linkedtree.Link;
-import com.apicatalog.linkedtree.LinkedNode;
+import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedFragment;
 
 public class GenericLinkedFragment implements LinkedFragment {
     
     protected Link id;
-    protected Collection<String> types; 
+    protected Collection<String> types;
+    protected String index;
     
-    protected Map<String, Collection<LinkedNode>> data;
+    protected Map<String, LinkedContainer> data;
     
     protected GenericLinkedFragment() {
         
     }
     
-    public static GenericLinkedFragment of(Link id, Collection<String> type, Map<String, Collection<LinkedNode>> data) {
+    public static GenericLinkedFragment of(Link id, Collection<String> type, Map<String, LinkedContainer> data, String index) {
         final GenericLinkedFragment node = new GenericLinkedFragment();
         node.id = id;
         node.types = type;
         node.data = data;
+        node.index = index;
         return node;
     }
     
@@ -42,8 +44,12 @@ public class GenericLinkedFragment implements LinkedFragment {
     }
 
     @Override
-    public Collection<LinkedNode> values(String term) {
+    public LinkedContainer values(String term) {
         return data.get(term);
+    }
+    
+    public String index() {
+        return index;
     }
 
 }
