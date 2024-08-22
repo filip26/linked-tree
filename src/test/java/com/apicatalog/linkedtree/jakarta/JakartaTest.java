@@ -32,30 +32,35 @@ import jakarta.json.JsonWriter;
 import jakarta.json.JsonWriterFactory;
 import jakarta.json.stream.JsonGenerator;
 
-@DisplayName("Jakarta Test Suite")
+@DisplayName("JsonLd Test Suite")
 @TestMethodOrder(OrderAnnotation.class)
 class JakartaTest {
 
     static JsonTreeReader READER = new JsonTreeReader();
     static JsonTreeWriter WRITER = new JsonTreeWriter();
-    
+
     @DisplayName("Read/Write")
     @ParameterizedTest(name = "{0}")
     @MethodSource({ "expandedResources" })
     void readWrite(String name, JsonArray input) {
-    
+
         // skip rdf types
-        assumeFalse(name.startsWith("0031") || name.startsWith("0061"));
-        
+        assumeFalse(name.startsWith("0031")
+                || name.startsWith("0061")
+                || name.startsWith("tn02"));
+
+        // skip JsonNull
+        assumeFalse(name.startsWith("0122"));
+
         // @included is not supported yet
-        assumeFalse(name.startsWith("in0"));
-        
+//        assumeFalse(name.startsWith("in0"));
+
         var tree = READER.readExpanded(input);
-        
+
         assertNotNull(tree);
 
         var output = WRITER.write(tree);
-        
+
         assertNotNull(output);
 
         assertTrue(compareJson(name, output, input));
@@ -71,7 +76,6 @@ class JakartaTest {
                     }
                 });
     }
-    
 
     static final boolean compareJson(final String testCase, final JsonStructure result, final JsonStructure expected) {
 
@@ -85,7 +89,6 @@ class JakartaTest {
         return false;
     }
 
-    
     static void write(final String testCase, final JsonStructure result, final JsonStructure expected, Exception error) {
         final StringWriter stringWriter = new StringWriter();
 

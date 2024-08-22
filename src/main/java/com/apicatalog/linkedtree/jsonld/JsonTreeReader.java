@@ -111,9 +111,9 @@ public class JsonTreeReader {
         if (isContainer(jsonObject, Keywords.LIST)) {
             return readList(jsonObject);
         }
-        if (isContainer(jsonObject, Keywords.REVERSE)) {
-            return readReverse(jsonObject);
-        }        
+//        if (isContainer(jsonObject, Keywords.REVERSE)) {
+//            return readReverse(jsonObject);
+//        }        
         if (isContainer(jsonObject, Keywords.GRAPH)) {
             return readGraph(jsonObject);
         }
@@ -164,6 +164,7 @@ public class JsonTreeReader {
         Collection<String> types = Collections.emptySet();
 
         final Map<String, LinkedContainer> properties = new HashMap<>(jsonObject.size() - 1);
+        Map<String, JsonValue> meta = new HashMap<>();
 
         for (final Entry<String, JsonValue> entry : jsonObject.entrySet()) {
 
@@ -188,7 +189,7 @@ public class JsonTreeReader {
                         .toList();
                 
             } else if (entry.getKey().startsWith("@")) {
-                throw new IllegalStateException("An unknown keyword " + entry.getKey());
+                meta.put(entry.getKey(), entry.getValue());
                 
             } else {
                 properties.put(entry.getKey(), readValueArray(entry.getValue().asJsonArray()));
@@ -201,14 +202,15 @@ public class JsonTreeReader {
                     link,
                     types,
                     properties,
-                    nodes
+                    nodes,
+                    new JsonLdMeta(meta)
                     );
             link.add(node);
             return node;
         }
 
         //TODO read as a separate tree
-        return GenericLinkedTree.of(null, types, properties, nodes);
+        return GenericLinkedTree.of(null, types, properties, nodes, new JsonLdMeta(meta));
     }
 
     protected LinkedFragment readFragment(JsonObject value) {

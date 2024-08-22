@@ -18,21 +18,24 @@ public class GenericLinkedTree implements LinkedTree {
     protected Map<String, LinkedContainer> data;
     
     protected Collection<LinkedNode> nodes;
+    
+    protected Object meta;
 
     protected GenericLinkedTree(Collection<LinkedNode> nodes) {
         this.nodes = nodes;
     }
 
     public static GenericLinkedTree of(Collection<LinkedNode> nodes) {
-        return of(null, Collections.emptySet(), Collections.emptyMap(), nodes);
+        return of(null, Collections.emptySet(), Collections.emptyMap(), nodes, null);
     }
     
-    public static GenericLinkedTree of(Link id, Collection<String> type, Map<String, LinkedContainer> data, Collection<LinkedNode> nodes) {
+    public static GenericLinkedTree of(Link id, Collection<String> type, Map<String, LinkedContainer> data, Collection<LinkedNode> nodes, Object meta) {
         final GenericLinkedTree tree = new GenericLinkedTree(nodes);
         tree.id = id;
         tree.types = type;
         tree.data = data;
         tree.nodes = nodes; 
+        tree.meta = meta;
         return tree;    
     }
 
@@ -66,5 +69,10 @@ public class GenericLinkedTree implements LinkedTree {
     public Collection<Link> links() {
         // TODO Auto-generated method stub
         return null;
+    }
+    
+    @Override
+    public Object metadata() {
+        return meta;
     }
 }
