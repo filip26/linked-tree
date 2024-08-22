@@ -6,6 +6,7 @@ import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.jsonld.primitive.JsonLdFragment;
+import com.apicatalog.linkedtree.jsonld.primitive.JsonLdLiteral;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -217,6 +218,11 @@ public class JsonTreeWriter {
 
         if (type != null) {
             result.add(Keywords.TYPE, Json.createValue(type));
+        }
+        
+        if (literal instanceof JsonLdLiteral jsonLdLiteral
+                && jsonLdLiteral.index() != null) {
+            result.add(Keywords.INDEX, jsonLdLiteral.index());
         }
 
         return result.build();

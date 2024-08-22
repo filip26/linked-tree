@@ -19,9 +19,9 @@ import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.io.LinkedFragmentAdapter;
 import com.apicatalog.linkedtree.io.LinkedLiteralAdapter;
 import com.apicatalog.linkedtree.jsonld.primitive.JsonLdFragment;
+import com.apicatalog.linkedtree.jsonld.primitive.JsonLdLiteral;
 import com.apicatalog.linkedtree.primitive.GenericLink;
 import com.apicatalog.linkedtree.primitive.GenericLinkedContainer;
-import com.apicatalog.linkedtree.primitive.GenericLinkedLiteral;
 import com.apicatalog.linkedtree.primitive.GenericLinkedTree;
 
 import jakarta.json.JsonArray;
@@ -372,7 +372,13 @@ public class JsonTreeReader {
             valueString = ((JsonString) value).getString();
         }
 
-        return GenericLinkedLiteral.of(valueString, datatype, getLiteralLanguage(valueJsonObject), null); // TODO
+        String index = null;
+        
+        if (valueJsonObject.containsKey(Keywords.INDEX)) {
+            index = valueJsonObject.getString(Keywords.INDEX);            
+        }
+
+        return JsonLdLiteral.of(valueString, datatype, getLiteralLanguage(valueJsonObject), null, index); // TODO
 
 //        final JsonValue jsonValue = valueObject.get("@value");
 //
