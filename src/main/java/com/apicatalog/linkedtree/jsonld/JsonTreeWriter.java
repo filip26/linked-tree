@@ -5,8 +5,7 @@ import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.LinkedTree;
-import com.apicatalog.linkedtree.jsonld.primitive.JsonLdFragment;
-import com.apicatalog.linkedtree.jsonld.primitive.JsonLdLiteral;
+import com.apicatalog.linkedtree.jsonld.primitive.JsonLdMeta;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -47,9 +46,12 @@ public class JsonTreeWriter {
         if (fragment.type() != null && !fragment.type().isEmpty()) {
             builder.add("@type", Json.createArrayBuilder(fragment.type()));
         }
-        if (fragment instanceof JsonLdFragment jsonLdFragment
-                && jsonLdFragment.index() != null) {
-            builder.add("@index", jsonLdFragment.index());
+
+        if (fragment.metadata() != null
+                && fragment.metadata() instanceof JsonLdMeta meta
+                ) {
+            
+            meta.write(builder);
         }
 
         for (final String term : fragment.terms()) {
@@ -220,9 +222,10 @@ public class JsonTreeWriter {
             result.add(Keywords.TYPE, Json.createValue(type));
         }
         
-        if (literal instanceof JsonLdLiteral jsonLdLiteral
-                && jsonLdLiteral.index() != null) {
-            result.add(Keywords.INDEX, jsonLdLiteral.index());
+        if (literal.metadata() != null
+                && literal.metadata() instanceof JsonLdMeta meta
+                ) {
+            meta.write(result);
         }
 
         return result.build();

@@ -45,5 +45,4 @@ public non-sealed interface LinkedLiteral extends LinkedNode {
 //        NULL
 //
 //    }
-
 }

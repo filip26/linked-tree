@@ -18,10 +18,11 @@ import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.io.LinkedFragmentAdapter;
 import com.apicatalog.linkedtree.io.LinkedLiteralAdapter;
-import com.apicatalog.linkedtree.jsonld.primitive.JsonLdFragment;
-import com.apicatalog.linkedtree.jsonld.primitive.JsonLdLiteral;
+import com.apicatalog.linkedtree.jsonld.primitive.JsonLdMeta;
 import com.apicatalog.linkedtree.primitive.GenericLink;
 import com.apicatalog.linkedtree.primitive.GenericLinkedContainer;
+import com.apicatalog.linkedtree.primitive.GenericLinkedFragment;
+import com.apicatalog.linkedtree.primitive.GenericLinkedLiteral;
 import com.apicatalog.linkedtree.primitive.GenericLinkedTree;
 
 import jakarta.json.JsonArray;
@@ -214,8 +215,8 @@ public class JsonTreeReader {
 
         String id = null;
         Collection<String> types = Collections.emptySet();
-        String index = null;
-
+        Map<String, JsonValue> meta = new HashMap<>();
+        
         final Map<String, LinkedContainer> properties = new HashMap<>(value.size());
 
         for (final Entry<String, JsonValue> entry : value.entrySet()) {
@@ -235,13 +236,9 @@ public class JsonTreeReader {
                 types = entry.getValue().asJsonArray().stream().map(JsonString.class::cast)
                         .map(JsonString::getString)
                         .toList();
-                
-            } else if ("@index".equals(entry.getKey())) {
-                
-                index = ((JsonString) entry.getValue()).getString();
-                
-            } else if (entry.getKey().startsWith("@")) {
-                throw new IllegalStateException("An unknown keyword " + entry.getKey());
+                                
+            } else if (entry.getKey().startsWith("@")) {                
+                meta.put(entry.getKey(), entry.getValue());
                 
             } else {
                 properties.put(entry.getKey(), readValueArray(entry.getValue().asJsonArray()));
@@ -250,17 +247,17 @@ public class JsonTreeReader {
 
         if (id != null) {
             final GenericLink link = getOrCreate(id);
-            final JsonLdFragment node = JsonLdFragment.of(
+            final GenericLinkedFragment node = GenericLinkedFragment.of(
                     link,
                     types,
                     properties,
-                    index
+                    new JsonLdMeta(meta)
                     );
             link.add(node);
             return node;
         }
 
-        return JsonLdFragment.of(null, types, properties, index);
+        return GenericLinkedFragment.of(null, types, properties, new JsonLdMeta(meta));
     }
 
     protected GenericLink getOrCreate(String uri) {
@@ -372,13 +369,17 @@ public class JsonTreeReader {
             valueString = ((JsonString) value).getString();
         }
 
-        String index = null;
+        final Map<String, JsonValue> meta = new HashMap<>();
         
-        if (valueJsonObject.containsKey(Keywords.INDEX)) {
-            index = valueJsonObject.getString(Keywords.INDEX);            
+        for (final Map.Entry<String, JsonValue> jsonEntry : valueJsonObject.entrySet()) {
+            if (Keywords.anyMatch(jsonEntry.getKey(), Keywords.VALUE, Keywords.LANGUAGE, Keywords.TYPE)) {
+                continue;
+            }
+            meta.put(jsonEntry.getKey(), jsonEntry.getValue());
         }
-
-        return JsonLdLiteral.of(valueString, datatype, getLiteralLanguage(valueJsonObject), null, index); // TODO
+        
+        // TODO direction
+        return GenericLinkedLiteral.of(valueString, datatype, getLiteralLanguage(valueJsonObject), null, new JsonLdMeta(meta));
 
 //        final JsonValue jsonValue = valueObject.get("@value");
 //

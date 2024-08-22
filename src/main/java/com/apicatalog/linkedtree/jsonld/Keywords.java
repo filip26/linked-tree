@@ -128,12 +128,10 @@ final class Keywords {
         return true;
     }
 
-    @Deprecated
     public static boolean anyMatch(final String key, final String... keywords) {
         return Arrays.asList(keywords).contains(key);
     }
 
-    @Deprecated
     public static boolean allMatch(final Collection<String> values, final String... keywords) {
         return Arrays.asList(keywords).containsAll(values);
     }

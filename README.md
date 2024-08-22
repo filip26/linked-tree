@@ -9,7 +9,7 @@ The project is an experiment, please share feedback.
 ## Goals
 
   * easily work with linked data programmatically  
-  * 1:1 translation from/into different representations (JSON-LD, RDF forms, CBOR-LD, etc.)
   * fast intrinsic canonicalization
   * finest processing granularity, i.e. a statement level
+  * translation from/into different representations (JSON-LD, RDF forms, CBOR-LD, etc.)
   * language-agnostic

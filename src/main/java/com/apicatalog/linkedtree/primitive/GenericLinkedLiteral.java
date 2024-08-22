@@ -8,15 +8,18 @@ public class GenericLinkedLiteral implements LinkedLiteral {
     protected String datatype;
     protected String language;
     
+    protected Object meta;
+    
     protected GenericLinkedLiteral() {
         
     }
     
-    public static GenericLinkedLiteral of(String value, String datatype, String language, String direction) {
+    public static GenericLinkedLiteral of(String value, String datatype, String language, String direction, Object meta) {
         final GenericLinkedLiteral node = new GenericLinkedLiteral();
         node.value = value;
         node.datatype = datatype;
         node.language = language;
+        node.meta = meta;
         return node;
     }
     
@@ -33,6 +36,11 @@ public class GenericLinkedLiteral implements LinkedLiteral {
     @Override
     public String language() {
         return language;
+    }
+
+    @Override
+    public Object metadata() {
+        return meta;
     }
     
 }

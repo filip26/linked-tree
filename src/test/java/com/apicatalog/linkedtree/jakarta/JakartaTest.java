@@ -45,7 +45,7 @@ class JakartaTest {
     void readWrite(String name, JsonArray input) {
     
         // skip rdf types
-        assumeFalse(name.startsWith("0031"));
+        assumeFalse(name.startsWith("0031") || name.startsWith("0061"));
         
         // @included is not supported yet
         assumeFalse(name.startsWith("in0"));

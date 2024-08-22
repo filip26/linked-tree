@@ -14,15 +14,18 @@ public class GenericLinkedFragment implements LinkedFragment {
     
     protected Map<String, LinkedContainer> data;
     
+    protected Object meta;
+    
     protected GenericLinkedFragment() {
-        
+        // protected
     }
     
-    public static GenericLinkedFragment of(Link id, Collection<String> type, Map<String, LinkedContainer> data) {
+    public static GenericLinkedFragment of(Link id, Collection<String> type, Map<String, LinkedContainer> data, Object meta) {
         final GenericLinkedFragment node = new GenericLinkedFragment();
         node.id = id;
         node.types = type;
         node.data = data;
+        node.meta = meta;
         return node;
     }
     
@@ -44,5 +47,10 @@ public class GenericLinkedFragment implements LinkedFragment {
     @Override
     public LinkedContainer values(String term) {
         return data.get(term);
+    }
+    
+    @Override
+    public Object metadata() {
+        return meta;
     }
 }
