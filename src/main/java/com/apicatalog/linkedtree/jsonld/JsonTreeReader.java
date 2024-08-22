@@ -54,25 +54,31 @@ public class JsonTreeReader {
 //        nodeWriters.add(new JakartaNodeWriter());
     }
 
-    public LinkedTree read(JsonArray items) {
+    public LinkedTree readExpanded(JsonArray jsonNodes) {
 
-        if (items.isEmpty()) {
+        if (jsonNodes.isEmpty()) {
             return LinkedTree.EMPTY;
         }
+        return GenericLinkedTree.of(readNodes(jsonNodes));
+    }
 
-        final Collection<LinkedNode> nodes = new ArrayList<>(items.size());
-        //FIXME type
-        final GenericLinkedTree tree = GenericLinkedTree.of(LinkedContainer.Type.UnorderedSet, nodes);
+    public Collection<LinkedNode> readNodes(final JsonArray jsonNodes) {
 
-        for (final JsonValue item : items) {
-
-            if (item == null || !ValueType.OBJECT.equals(item.getValueType())) {
-                throw new IllegalArgumentException();
-            }
-            nodes.add(readNode(item.asJsonObject()));
+        if (jsonNodes.isEmpty()) {
+            return Collections.emptyList();
         }
 
-        return tree;
+        final Collection<LinkedNode> nodes = new ArrayList<>(jsonNodes.size());
+
+        for (final JsonValue jsonValue : jsonNodes) {
+
+            if (jsonValue == null || !ValueType.OBJECT.equals(jsonValue.getValueType())) {
+                throw new IllegalArgumentException();
+            }
+            nodes.add(readNode(jsonValue.asJsonObject()));
+        }
+
+        return nodes;
     }
 
     protected LinkedContainer readValueArray(JsonArray values) {
@@ -150,8 +156,58 @@ public class JsonTreeReader {
     protected LinkedTree readGraph(JsonObject jsonObject) {
         
         final JsonArray graph = jsonObject.getJsonArray(Keywords.GRAPH);
+
+        final Collection<LinkedNode> nodes = readNodes(graph);
+        
+        String id = null;
+        Collection<String> types = Collections.emptySet();
+
+        final Map<String, LinkedContainer> properties = new HashMap<>(jsonObject.size() - 1);
+
+        for (final Entry<String, JsonValue> entry : jsonObject.entrySet()) {
+
+            if ("@graph".equals(entry.getKey())) {
+                continue;
+            }
+            
+            if ("@id".equals(entry.getKey())) {
+                if (ValueType.STRING.equals(entry.getValue().getValueType())) {
+
+                    id = ((JsonString) entry.getValue()).getString();
+
+//                    if (!idValue.startsWith("_:")) {
+//                        id = idValue;
+//                    }
+                }
+
+            } else if ("@type".equals(entry.getKey())) {
+
+                types = entry.getValue().asJsonArray().stream().map(JsonString.class::cast)
+                        .map(JsonString::getString)
+                        .toList();
+                
+            } else if (entry.getKey().startsWith("@")) {
+                throw new IllegalStateException("An unknown keyword " + entry.getKey());
+                
+            } else {
+                properties.put(entry.getKey(), readValueArray(entry.getValue().asJsonArray()));
+            }
+        }
+
+        if (id != null) {
+            final GenericLink link = getOrCreate(id);
+            final GenericLinkedTree node = GenericLinkedTree.of(
+                    link,
+                    types,
+                    properties,
+                    nodes
+                    );
+            link.add(node);
+            return node;
+        }
+
         //TODO read as a separate tree
-        return read(graph);
+        return GenericLinkedTree.of(null, types, properties, nodes);
     }
 
     protected LinkedFragment readFragment(JsonObject value) {

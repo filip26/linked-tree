@@ -27,12 +27,16 @@ public class JsonTreeWriter {
     }
 
     JsonObject writeTree(LinkedTree tree) {
-        return Json.createObjectBuilder().add(Keywords.GRAPH, write(tree)).build();
+
+        final JsonObjectBuilder builder = Json.createObjectBuilder()
+                .add(Keywords.GRAPH, write(tree));
+
+        writeFragment(tree, builder);
+        
+        return builder.build();
     }
 
-    public JsonObject writeFragment(final LinkedFragment fragment) {
-
-        final JsonObjectBuilder builder = Json.createObjectBuilder();
+    public JsonObjectBuilder writeFragment(final LinkedFragment fragment, JsonObjectBuilder builder) {
 
         if (fragment.id() != null) {
             builder.add("@id", fragment.id().uri().toString());
@@ -45,7 +49,7 @@ public class JsonTreeWriter {
         for (final String term : fragment.terms()) {
 
             builder.add(term, writeContainer(fragment.values(term)));
-            
+
 //            final JsonArrayBuilder termValues = Json.createArrayBuilder();
 //
 //            for (final LinkedNode value : fragment.values(term)) {
@@ -55,7 +59,7 @@ public class JsonTreeWriter {
 //            builder.add(term, termValues);
         }
 
-        return builder.build();
+        return builder;
     }
 
     public JsonValue writeContainer(final LinkedContainer container) {
@@ -70,7 +74,7 @@ public class JsonTreeWriter {
             return Json.createObjectBuilder()
                     .add(Keywords.LIST, array)
                     .build();
-            
+
         }
         return array.build();
 
@@ -89,7 +93,7 @@ public class JsonTreeWriter {
             return writeContainer(data.asContainer());
         }
         if (data.isFragment()) {
-            return writeFragment(data.asFragment());
+            return writeFragment(data.asFragment(), Json.createObjectBuilder()).build();
         }
         if (data.isLiteral()) {
             return writeLiteral(data.asLiteral());
@@ -141,7 +145,6 @@ public class JsonTreeWriter {
 
                     type = XsdConstants.BOOLEAN;
                 }
-
 
                 // 2.4.3.
             } else if (XsdConstants.INTEGER.equals(literal.datatype()) || XsdConstants.INT.equals(literal.datatype()) || XsdConstants.LONG.equals(literal.datatype())) {

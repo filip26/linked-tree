@@ -50,7 +50,7 @@ class JakartaTest {
         // @included is not supported yet
         assumeFalse(name.startsWith("in0"));
         
-        var tree = READER.read(input);
+        var tree = READER.readExpanded(input);
         
         assertNotNull(tree);
 

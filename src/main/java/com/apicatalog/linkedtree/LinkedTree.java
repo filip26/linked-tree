@@ -3,7 +3,7 @@ package com.apicatalog.linkedtree;
 import java.util.Collection;
 import java.util.Collections;
 
-public non-sealed interface LinkedTree extends LinkedContainer, LinkedFragment, LinkedNode {
+public non-sealed interface LinkedTree extends LinkedFragment, LinkedNode {
 
     static LinkedTree EMPTY = new LinkedTree() {
     };
@@ -17,16 +17,15 @@ public non-sealed interface LinkedTree extends LinkedContainer, LinkedFragment, 
     default LinkedTree asTree() {
         return this;
     }
-    
-//    /**
-//     * root fragments
-//     * 
-//     * @return a collection of root nodes
-//     */
-//    @Override
-//    default Collection<LinkedNode> nodes() {
-//        return Collections.emptyList();
-//    }
+
+    /**
+     * root fragments
+     * 
+     * @return a collection of root nodes
+     */
+    default Collection<LinkedNode> nodes() {
+        return Collections.emptyList();
+    }
 
     /**
      * identifiable fragments
