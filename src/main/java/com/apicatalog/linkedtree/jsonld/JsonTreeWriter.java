@@ -5,6 +5,7 @@ import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.LinkedTree;
+import com.apicatalog.linkedtree.jsonld.primitive.JsonLdFragment;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -32,7 +33,7 @@ public class JsonTreeWriter {
                 .add(Keywords.GRAPH, write(tree));
 
         writeFragment(tree, builder);
-        
+
         return builder.build();
     }
 
@@ -45,18 +46,13 @@ public class JsonTreeWriter {
         if (fragment.type() != null && !fragment.type().isEmpty()) {
             builder.add("@type", Json.createArrayBuilder(fragment.type()));
         }
+        if (fragment instanceof JsonLdFragment jsonLdFragment
+                && jsonLdFragment.index() != null) {
+            builder.add("@index", jsonLdFragment.index());
+        }
 
         for (final String term : fragment.terms()) {
-
             builder.add(term, writeContainer(fragment.values(term)));
-
-//            final JsonArrayBuilder termValues = Json.createArrayBuilder();
-//
-//            for (final LinkedNode value : fragment.values(term)) {
-//                termValues.add(writeNode(value));
-//            }
-//
-//            builder.add(term, termValues);
         }
 
         return builder;

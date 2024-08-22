@@ -11,7 +11,6 @@ public class GenericLinkedFragment implements LinkedFragment {
     
     protected Link id;
     protected Collection<String> types;
-    protected String index;
     
     protected Map<String, LinkedContainer> data;
     
@@ -19,12 +18,11 @@ public class GenericLinkedFragment implements LinkedFragment {
         
     }
     
-    public static GenericLinkedFragment of(Link id, Collection<String> type, Map<String, LinkedContainer> data, String index) {
+    public static GenericLinkedFragment of(Link id, Collection<String> type, Map<String, LinkedContainer> data) {
         final GenericLinkedFragment node = new GenericLinkedFragment();
         node.id = id;
         node.types = type;
         node.data = data;
-        node.index = index;
         return node;
     }
     
@@ -47,9 +45,4 @@ public class GenericLinkedFragment implements LinkedFragment {
     public LinkedContainer values(String term) {
         return data.get(term);
     }
-    
-    public String index() {
-        return index;
-    }
-
 }

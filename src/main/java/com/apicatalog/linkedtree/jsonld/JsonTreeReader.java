@@ -12,15 +12,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.apicatalog.linkedtree.LinkedContainer;
-import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedLiteral;
+import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.io.LinkedFragmentAdapter;
 import com.apicatalog.linkedtree.io.LinkedLiteralAdapter;
+import com.apicatalog.linkedtree.jsonld.primitive.JsonLdFragment;
 import com.apicatalog.linkedtree.primitive.GenericLink;
 import com.apicatalog.linkedtree.primitive.GenericLinkedContainer;
-import com.apicatalog.linkedtree.primitive.GenericLinkedFragment;
 import com.apicatalog.linkedtree.primitive.GenericLinkedLiteral;
 import com.apicatalog.linkedtree.primitive.GenericLinkedTree;
 
@@ -250,7 +250,7 @@ public class JsonTreeReader {
 
         if (id != null) {
             final GenericLink link = getOrCreate(id);
-            final GenericLinkedFragment node = GenericLinkedFragment.of(
+            final JsonLdFragment node = JsonLdFragment.of(
                     link,
                     types,
                     properties,
@@ -260,7 +260,7 @@ public class JsonTreeReader {
             return node;
         }
 
-        return GenericLinkedFragment.of(null, types, properties, index);
+        return JsonLdFragment.of(null, types, properties, index);
     }
 
     protected GenericLink getOrCreate(String uri) {

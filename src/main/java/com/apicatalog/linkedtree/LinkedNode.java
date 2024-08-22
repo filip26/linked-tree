@@ -17,7 +17,7 @@ public sealed interface LinkedNode permits LinkedContainer, LinkedTree, LinkedFr
     default boolean isLiteral() {
         return false;
     }
-    
+
     default LinkedFragment asFragment() {
         throw new ClassCastException();
     }
@@ -29,13 +29,8 @@ public sealed interface LinkedNode permits LinkedContainer, LinkedTree, LinkedFr
     default LinkedLiteral asLiteral() {
         throw new ClassCastException();
     }
-    
+
     default LinkedContainer asContainer() {
         throw new ClassCastException();
     }
-    
-    //TODO not sure about this - @index should not be supported, JSON-LD specific feature 
-//    default String index() {
-//        return null;
-//    }
 }
