@@ -142,6 +142,7 @@ public class JsonTreeWriter {
                     type = XsdConstants.BOOLEAN;
                 }
 
+
                 // 2.4.3.
             } else if (XsdConstants.INTEGER.equals(literal.datatype()) || XsdConstants.INT.equals(literal.datatype()) || XsdConstants.LONG.equals(literal.datatype())) {
 

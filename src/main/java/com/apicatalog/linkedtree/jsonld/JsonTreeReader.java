@@ -22,6 +22,7 @@ import com.apicatalog.linkedtree.primitive.GenericLink;
 import com.apicatalog.linkedtree.primitive.GenericLinkedContainer;
 import com.apicatalog.linkedtree.primitive.GenericLinkedFragment;
 import com.apicatalog.linkedtree.primitive.GenericLinkedLiteral;
+import com.apicatalog.linkedtree.primitive.GenericLinkedTree;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonNumber;
@@ -60,7 +61,8 @@ public class JsonTreeReader {
         }
 
         final Collection<LinkedNode> nodes = new ArrayList<>(items.size());
-        final JsonLinkedTree tree = new JsonLinkedTree(nodes);
+        //FIXME type
+        final GenericLinkedTree tree = GenericLinkedTree.of(LinkedContainer.Type.UnorderedSet, nodes);
 
         for (final JsonValue item : items) {
 

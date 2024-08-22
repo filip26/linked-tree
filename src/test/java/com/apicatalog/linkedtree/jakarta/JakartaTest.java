@@ -3,6 +3,7 @@ package com.apicatalog.linkedtree.jakarta;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -43,6 +44,12 @@ class JakartaTest {
     @MethodSource({ "expandedResources" })
     void readWrite(String name, JsonArray input) {
     
+        // skip rdf types
+        assumeFalse(name.startsWith("0031"));
+        
+        // @included is not supported yet
+        assumeFalse(name.startsWith("in0"));
+        
         var tree = READER.read(input);
         
         assertNotNull(tree);

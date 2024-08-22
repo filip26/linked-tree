@@ -1,20 +1,26 @@
-package com.apicatalog.linkedtree.jsonld;
+package com.apicatalog.linkedtree.primitive;
 
 import java.util.Collection;
 
 import com.apicatalog.linkedtree.Link;
-import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.LinkedTree;
 
-public class JsonLinkedTree implements LinkedTree {
+public class GenericLinkedTree implements LinkedTree {
 
     protected Collection<LinkedNode> nodes;
+    protected Type containerType;
 
-    public JsonLinkedTree(Collection<LinkedNode> nodes) {
+    protected GenericLinkedTree(Collection<LinkedNode> nodes) {
         this.nodes = nodes;
     }
 
+    public static GenericLinkedTree of(Type type, Collection<LinkedNode> nodes) {
+        final GenericLinkedTree tree = new GenericLinkedTree(nodes);
+        tree.containerType = type;
+        return tree;
+    }
+    
     @Override
     public Collection<LinkedNode> nodes() {
         return nodes;

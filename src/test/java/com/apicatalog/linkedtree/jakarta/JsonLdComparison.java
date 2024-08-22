@@ -74,16 +74,16 @@ final class JsonLdComparison {
         }
 
         // For values of @list, the order of these items is significant
-//FIXME        if (Keywords.LIST.equals(parentProperty)) {
-//
-//            for (int i=0; i < array1.size(); i++) {
-//                if (!equals(array1.get(i), array2.get(i))) {
-//                    return false;
-//                }
-//            }
-//
-//            return true;
-//        }
+        if ("@list".equals(parentProperty)) {
+
+            for (int i=0; i < array1.size(); i++) {
+                if (!equals(array1.get(i), array2.get(i))) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
 
         return arraysEqualsUnordered(array1, array2);
     }
