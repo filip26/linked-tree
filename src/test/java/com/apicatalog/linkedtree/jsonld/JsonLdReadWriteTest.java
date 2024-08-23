@@ -64,7 +64,7 @@ class JsonLdReadWriteTest {
     }
 
     static final Stream<Object[]> literalResources() throws IOException, URISyntaxException {
-        return resources("literal", ".jsonld");
+        return resources("custom", ".jsonld");
     }
 
     static final Stream<Object[]> resources(String folder, String suffix) throws IOException, URISyntaxException {

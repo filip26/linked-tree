@@ -1,0 +1,13 @@
+[
+  {
+    "@id": "http://example.org/test#example2",
+    "http://example.org/test#property4": 
+[ 
+          {
+            "@value": "dGVzdCBY",
+            "@type": "https://test/base64array" 
+          }
+        ]
+
+  }
+]

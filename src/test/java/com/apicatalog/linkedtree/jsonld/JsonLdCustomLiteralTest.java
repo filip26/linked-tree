@@ -10,10 +10,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Collections;
-import java.util.stream.Stream;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
@@ -45,8 +42,9 @@ class JsonLdCustomLiteralTest {
     @Test
     void base64ByteArray() throws IOException, URISyntaxException {
 
-        JsonArray input = resource("literal/base64.jsonld");
-        
+        JsonArray input = resource("custom/base64-1.jsonld");
+        JsonArray output = resource("custom/base64-2.jsonld");
+
         var tree = READER.readExpanded(input);
 
         assertNotNull(tree);
@@ -58,38 +56,21 @@ class JsonLdCustomLiteralTest {
                 .asFragment()
                 .values("http://example.org/test#property4")
                 .single()
-                .asLiteral()
-                ;
-        
+                .asLiteral();
+
         assertNotNull(literal);
         assertEquals("RW5jb2RlIHRvIEJhc2U2NCBmb3JtYXQ=", literal.value());
         assertTrue(literal instanceof ByteArrayValue);
-        assertArrayEquals("Encode to Base64 format".getBytes(), ((ByteArrayValue)literal).byteArrayValue());
-        
-        var output = WRITER.writeExpanded(tree);
+        assertArrayEquals("Encode to Base64 format".getBytes(), ((ByteArrayValue) literal).byteArrayValue());
+
+        ((Base64ByteArray) literal).byteArrayValue("test X".getBytes());
+        assertEquals("dGVzdCBY", literal.value());
+
+        JsonArray copy = WRITER.writeExpanded(tree);
 
         assertNotNull(output);
 
-        assertTrue(compareJson("", output, input));
-    }
-
-    static final Stream<Object[]> expandedResources() throws IOException, URISyntaxException {
-        return resources("expansion", "-out.jsonld");
-    }
-
-    static final Stream<Object[]> literalResources() throws IOException, URISyntaxException {
-        return resources("literal", ".jsonld");
-    }
-
-    static final Stream<Object[]> resources(String folder, String suffix) throws IOException, URISyntaxException {
-        return Files.walk(Paths.get(JsonLdKeyword.class.getResource(folder).toURI()), 1)
-                .filter(name -> name.toString().endsWith(suffix))
-                .sorted()
-                .map(path -> {
-                    try (var reader = Json.createReader(JsonLdKeyword.class.getResourceAsStream(folder + "/" + path.getFileName().toString()))) {
-                        return new Object[] { path.getFileName().toString(), reader.readArray() };
-                    }
-                });
+        assertTrue(compareJson("", copy, output));
     }
 
     static final JsonArray resource(String name) throws IOException, URISyntaxException {
