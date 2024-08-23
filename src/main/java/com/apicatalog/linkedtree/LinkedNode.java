@@ -33,10 +33,9 @@ public sealed interface LinkedNode permits LinkedContainer, LinkedTree, LinkedFr
     default LinkedContainer asContainer() {
         throw new ClassCastException();
     }
-    
 
     /**
-     * A serialization format specific data or/and related to processing
+     * A serialization format specific data or/and related to processing.
      * 
      * @return custom data
      */

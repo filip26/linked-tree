@@ -3,7 +3,7 @@ package com.apicatalog.linkedtree.jsonld;
 import java.util.Arrays;
 import java.util.Collection;
 
-final class JsonLdKeyword {
+public final class JsonLdKeyword {
 
     public static final String ANY = "@any";
 
@@ -85,12 +85,7 @@ final class JsonLdKeyword {
             // framing
             DEFAULT, EMBED, ALWAYS, ONCE, NEVER, EXPLICIT, NULL, OMIT_DEFAULT, REQUIRE_ALL, MERGED,
             // star
-            ANNOTATION
-            );
-
-
-    protected JsonLdKeyword() {
-    }
+            ANNOTATION);
 
     public static boolean contains(final String value) {
         return ALL_KEYWORDS.contains(value);
@@ -110,7 +105,7 @@ final class JsonLdKeyword {
         }
 
         // vanilla approach is 3 times faster than stream.allMatch
-        for (int i=1; i < value.length(); i++) {
+        for (int i = 1; i < value.length(); i++) {
             if (!Character.isAlphabetic(value.charAt(i))) {
                 return false;
             }

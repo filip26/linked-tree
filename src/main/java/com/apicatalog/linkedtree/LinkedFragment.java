@@ -16,7 +16,7 @@ public non-sealed interface LinkedFragment extends LinkedNode {
     default Collection<String> type() {
         return Collections.emptySet();
     }
-    
+
     default Collection<String> terms() {
         return Collections.emptySet();
     }
@@ -24,7 +24,7 @@ public non-sealed interface LinkedFragment extends LinkedNode {
     default LinkedContainer values(String term) {
         return LinkedContainer.EMPTY;
     }
-    
+
     @Override
     default boolean isFragment() {
         return true;

@@ -28,7 +28,7 @@ public non-sealed interface LinkedTree extends LinkedFragment, LinkedNode {
     }
 
     /**
-     * identifiable fragments
+     * identifiable fragments index
      * 
      * @return a collection of links found in the tree
      */

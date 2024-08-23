@@ -1,4 +1,4 @@
-package com.apicatalog.linkedtree.jsonld;
+package com.apicatalog.linkedtree.jsonld.io;
 
 import java.io.StringReader;
 
@@ -11,6 +11,7 @@ import com.apicatalog.linkedtree.json.JsonDecimal;
 import com.apicatalog.linkedtree.json.JsonInteger;
 import com.apicatalog.linkedtree.json.JsonLiteral;
 import com.apicatalog.linkedtree.json.JsonScalar;
+import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 import com.apicatalog.linkedtree.jsonld.primitive.JsonLdMeta;
 import com.apicatalog.linkedtree.literal.NumericValue;
 import com.apicatalog.linkedtree.literal.LangString;
@@ -25,9 +26,9 @@ import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser;
 
-public class JsonTreeWriter {
+public class JsonLdTreeWriter {
 
-    public JsonArray write(LinkedTree tree) {
+    public JsonArray writeExpanded(LinkedTree tree) {
 
         final JsonArrayBuilder builder = Json.createArrayBuilder();
 
@@ -41,7 +42,7 @@ public class JsonTreeWriter {
     JsonObject writeTree(LinkedTree tree) {
 
         final JsonObjectBuilder builder = Json.createObjectBuilder()
-                .add(JsonLdKeyword.GRAPH, write(tree));
+                .add(JsonLdKeyword.GRAPH, writeExpanded(tree));
 
         writeFragment(tree, builder);
 

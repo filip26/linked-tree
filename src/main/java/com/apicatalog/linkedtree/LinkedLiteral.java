@@ -20,8 +20,7 @@ public non-sealed interface LinkedLiteral extends LinkedNode {
     String value();
 
     /**
-     * An absolute IRI denoting the datatype IRI of the literal. If the value is
-     * rdf:langString, {@link #language()} value is present.
+     * An absolute IRI denoting the datatype IRI of the literal.
      *
      * @return an absolute IRI, never <code>null</code>
      */

@@ -13,13 +13,12 @@ import jakarta.json.JsonValue;
 
 /**
  *
- * @see <a href="https://w3c.github.io/json-ld-api/tests/#json-ld-object-comparison">JSON-LD Object comparison</a>
+ * @see <a href=
+ *      "https://w3c.github.io/json-ld-api/tests/#json-ld-object-comparison">JSON-LD
+ *      Object comparison</a>
  *
  */
-final class JsonLdComparison {
-
-    private JsonLdComparison() {
-    }
+public final class JsonLdComparison {
 
     public static final boolean equals(final JsonValue value1, final JsonValue value2) {
 
@@ -78,7 +77,7 @@ final class JsonLdComparison {
         // For values of @list, the order of these items is significant
         if ("@list".equals(parentProperty)) {
 
-            for (int i=0; i < array1.size(); i++) {
+            for (int i = 0; i < array1.size(); i++) {
                 if (!equals(array1.get(i), array2.get(i))) {
                     return false;
                 }

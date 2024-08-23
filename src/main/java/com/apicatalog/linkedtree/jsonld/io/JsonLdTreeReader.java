@@ -1,4 +1,4 @@
-package com.apicatalog.linkedtree.jsonld;
+package com.apicatalog.linkedtree.jsonld.io;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -19,6 +19,7 @@ import com.apicatalog.linkedtree.json.JsonDecimal;
 import com.apicatalog.linkedtree.json.JsonInteger;
 import com.apicatalog.linkedtree.json.JsonLiteral;
 import com.apicatalog.linkedtree.json.JsonScalar;
+import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 import com.apicatalog.linkedtree.jsonld.primitive.JsonLdMeta;
 import com.apicatalog.linkedtree.primitive.GenericLangString;
 import com.apicatalog.linkedtree.primitive.GenericLink;
@@ -35,14 +36,14 @@ import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
 
-public class JsonTreeReader {
+public class JsonLdTreeReader {
 
     protected LinkedFragmentAdapter fragmentAdapter;
     protected Map<String, LinkedLiteralAdapter> literalAdapters;
 
     protected Map<String, GenericLink> links;
 
-    public JsonTreeReader() {
+    public JsonLdTreeReader() {
         this.links = new HashMap<>();
         this.literalAdapters = new HashMap<>();
 //        this.nodeReaders = new ArrayList<>();
@@ -291,8 +292,6 @@ public class JsonTreeReader {
                         ? valueJsonObject.getString("@type")
                         : null;
 
-        String valueString = null;
-
         if (JsonLdKeyword.JSON.equals(datatype)) {
             return JsonLiteral.of(value, getMeta(valueJsonObject, JsonLdKeyword.VALUE, JsonLdKeyword.TYPE));
 
@@ -330,18 +329,21 @@ public class JsonTreeReader {
                         getMeta(valueJsonObject, JsonLdKeyword.TYPE, JsonLdKeyword.VALUE));
             }
 
-        } else if (datatype == null) {
+        }
 
+        if (value == null || !ValueType.STRING.equals(value.getValueType())) {
+            return null;
+        }
+
+        if (datatype == null) {
             datatype = XsdConstants.STRING;
         }
 
-        if (valueString == null) {
+        String valueString = ((JsonString) value).getString();
 
-            if (value == null || !ValueType.STRING.equals(value.getValueType())) {
-                return null;
-            }
-
-            valueString = ((JsonString) value).getString();
+        final LinkedLiteralAdapter adapter = literalAdapters.get(datatype);
+        if (adapter != null) {
+            return adapter.read(valueString, getMeta(valueJsonObject, JsonLdKeyword.VALUE, JsonLdKeyword.TYPE));
         }
 
         if (XsdConstants.STRING.equals(datatype)) {
@@ -357,31 +359,6 @@ public class JsonTreeReader {
                 valueString,
                 datatype,
                 getMeta(valueJsonObject, JsonLdKeyword.VALUE, JsonLdKeyword.TYPE));
-
-//        final JsonValue jsonValue = valueObject.get("@value");
-//
-//        if (jsonValue != null) {
-//            switch (jsonValue.getValueType()) {
-//            case FALSE:
-//                return "false";
-//
-//            case TRUE:
-//                return "true";
-//
-//            case STRING:
-//                return ((JsonString) jsonValue).getString();
-//
-//            case NUMBER:
-//                return ((JsonNumber) jsonValue).numberValue().toString();
-//
-//            case NULL:
-//                return null;
-//
-//            default:
-//                throw new IllegalArgumentException();
-//            }
-//        }
-//        return null;
     }
 
     protected static JsonLdMeta getMeta(JsonObject valueJsonObject, String... filter) {
@@ -420,6 +397,11 @@ public class JsonTreeReader {
         }
 
         return ((JsonString) jsonType).getString();
+    }
+
+    public JsonLdTreeReader add(LinkedLiteralAdapter adapter) {
+        literalAdapters.put(adapter.datatype(), adapter);
+        return this;
     }
 
 //    protected LinkedFragment genericObject(JakartaNodeContext context, JsonObject value) {
