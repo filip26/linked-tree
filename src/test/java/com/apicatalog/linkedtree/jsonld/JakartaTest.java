@@ -42,16 +42,8 @@ class JakartaTest {
     @MethodSource({ "expandedResources" })
     void readWrite(String name, JsonArray input) {
 
-        // skip rdf types
-        assumeFalse(name.startsWith("0031")
-                || name.startsWith("0061")
-                || name.startsWith("tn02"));
-
         // skip JsonNull
         assumeFalse(name.startsWith("0122"));
-
-        // @included is not supported yet
-//        assumeFalse(name.startsWith("in0"));
 
         var tree = READER.readExpanded(input);
 

@@ -1,8 +1,46 @@
 [
   {
     "@id": "http://example.org/test",
-    "http://example.org/vocab#test-default": [ { "@value": "hello", "@language": "en" }, { "@value": 1 }, { "@value": true } ],
-    "http://example.org/vocab#german": [ { "@value": "hallo", "@language": "de" }, { "@value": 2 }, { "@value": true } ],
-    "http://example.org/vocab#nolang": [ {"@value": "no language"}, { "@value": 3 }, { "@value": false } ]
+    "http://example.org/vocab#test-default": [
+      {
+        "@value": "hello",
+        "@language": "en"
+      },
+      {
+        "@value": 1,
+        "@type": "http://www.w3.org/2001/XMLSchema#integer"
+      },
+      {
+        "@value": true,
+        "@type": "http://www.w3.org/2001/XMLSchema#boolean"
+      }
+    ],
+    "http://example.org/vocab#german": [
+      {
+        "@value": "hallo",
+        "@language": "de"
+      },
+      {
+        "@value": 2,
+        "@type": "http://www.w3.org/2001/XMLSchema#integer"
+      },
+      {
+        "@value": true,
+        "@type": "http://www.w3.org/2001/XMLSchema#boolean"
+      }
+    ],
+    "http://example.org/vocab#nolang": [
+      {
+        "@value": "no language"
+      },
+      {
+        "@value": 3,
+        "@type": "http://www.w3.org/2001/XMLSchema#integer"
+      },
+      {
+        "@value": false,
+        "@type": "http://www.w3.org/2001/XMLSchema#boolean"
+      }
+    ]
   }
 ]

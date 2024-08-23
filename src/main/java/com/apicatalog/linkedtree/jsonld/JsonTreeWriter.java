@@ -7,10 +7,14 @@ import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.LinkedTree;
+import com.apicatalog.linkedtree.json.JsonDecimal;
+import com.apicatalog.linkedtree.json.JsonInteger;
 import com.apicatalog.linkedtree.json.JsonLiteral;
+import com.apicatalog.linkedtree.json.JsonScalar;
 import com.apicatalog.linkedtree.jsonld.primitive.JsonLdMeta;
+import com.apicatalog.linkedtree.literal.NumericValue;
+import com.apicatalog.linkedtree.literal.LangString;
 import com.apicatalog.linkedtree.rdf.RdfConstants;
-import com.apicatalog.linkedtree.value.LangString;
 import com.apicatalog.linkedtree.xsd.XsdConstants;
 
 import jakarta.json.Json;
@@ -121,7 +125,9 @@ public class JsonTreeWriter {
             if (XsdConstants.STRING.equals(literal.datatype())) {
                 convertedValue = Json.createValue(literal.value());
 
-                // 2.4.2.
+            } else if (literal instanceof JsonScalar jsonScalar) {
+                convertedValue = jsonScalar.jsonValue();
+
             } else if (XsdConstants.BOOLEAN.equals(literal.datatype())) {
 
                 if ("true".equalsIgnoreCase(literal.value())) {
@@ -137,53 +143,48 @@ public class JsonTreeWriter {
                     type = XsdConstants.BOOLEAN;
                 }
 
-                // 2.4.3.
+            } else if (literal instanceof JsonInteger jsonInteger) {
+
+                convertedValue = Json.createValue(jsonInteger.integerValue());
+
             } else if (XsdConstants.INTEGER.equals(literal.datatype()) || XsdConstants.INT.equals(literal.datatype()) || XsdConstants.LONG.equals(literal.datatype())) {
 
                 convertedValue = Json.createValue(Long.parseLong(literal.value()));
+
+            } else if (literal instanceof JsonDecimal jsonDecimal) {
+
+                convertedValue = Json.createValue(jsonDecimal.doubleValue());
 
             } else if (XsdConstants.DOUBLE.equals(literal.datatype()) || XsdConstants.FLOAT.equals(literal.datatype())) {
 
                 convertedValue = Json.createValue(Double.parseDouble(literal.value()));
 
-            } else if (RdfConstants.JSON.equals(literal.datatype())) {
+            } else if (literal instanceof NumericValue numericValue) {
 
-                if (literal instanceof JsonLiteral jsonLiteral) {
+                convertedValue = Json.createValue(numericValue.numberValue().doubleValue());
 
-                    convertedValue = jsonLiteral.jsonValue();
+            } else if (literal instanceof JsonLiteral jsonLiteral) {
 
-                } else {
-
-                    try (JsonParser parser = Json.createParser(new StringReader(literal.value()))) {
-
-                        parser.next();
-
-                        convertedValue = parser.getValue();
-                    }
-                }
-
+                convertedValue = jsonLiteral.jsonValue();
                 type = JsonLdKeyword.JSON;
 
-            } else if (literal.datatype() != null) {
+            } else if (RdfConstants.JSON.equals(literal.datatype())) {
+                try (JsonParser parser = Json.createParser(new StringReader(literal.value()))) {
 
-                type = literal.datatype();
+                    parser.next();
+
+                    convertedValue = parser.getValue();
+                }
+                type = JsonLdKeyword.JSON;
             }
         }
 
-//        if (literal.datatype() != null
-//                && RdfConstants.JSON.equals(literal.datatype())) {
-//
-//            try (JsonParser parser = Json.createParser(new StringReader(literal.value()))) {
-//
-//                parser.next();
-//
-//                convertedValue = parser.getValue();
-//                type = "@json";
-//
-//            } catch (Exception e) {
-////                throw new JsonLdError(JsonLdErrorCode.INVALID_JSON_LITERAL, e);
-//            }
-//
+        if (type == null
+                && !XsdConstants.STRING.equals(literal.datatype())
+                && literal.datatype() != null) {
+            type = literal.datatype();
+        }
+
 //            // 2.6.
 ////        } else if (RdfDirection.I18N_DATATYPE == rdfDirection
 ////                    && literal.datatype() != null

@@ -1,17 +1,25 @@
-[{
-   "@id": "http://example.com/IriCollissions",
-   "http://example.com/vocab/collidingTerm": [
+[
+  {
+    "@id": "http://example.com/IriCollissions",
+    "http://example.com/vocab/collidingTerm": [
       {
-         "@value": "value 1"
-      }, {
-         "@value": 2
-      }, {
-         "@value": 3
-      }, {
-         "@value": "four"
+        "@value": "value 1"
       },
       {
-         "@value": 5
+        "@value": 2,
+        "@type": "http://www.w3.org/2001/XMLSchema#integer"        
+      },
+      {
+        "@value": 3,
+        "@type": "http://www.w3.org/2001/XMLSchema#integer"        
+      },
+      {
+        "@value": "four"
+      },
+      {
+        "@value": 5,
+        "@type": "http://www.w3.org/2001/XMLSchema#integer"        
       }
-   ]
-}]
+    ]
+  }
+]

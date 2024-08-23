@@ -1,25 +1,67 @@
 [
- {
-   "http://example.org/coerceDefault": [
-     {"@value": "string"},
-     {"@value": true},
-     {"@value": false},
-     {"@value": 0},
-     {"@value": 1}
-   ],
-   "http://example.org/coerceId": [
-     {"@id": "http://example.com/string"},
-     {"@value": true},
-     {"@value": false},
-     {"@value": 0},
-     {"@value": 1}
-   ],
-   "http://example.org/coerceVocab": [
-     {"@id": "http://example.org/string"},
-     {"@value": true},
-     {"@value": false},
-     {"@value": 0},
-     {"@value": 1}
-   ]
- }
+  {
+    "http://example.org/coerceDefault": [
+      {
+        "@value": "string"
+      },
+      {
+        "@value": true,
+        "@type": "http://www.w3.org/2001/XMLSchema#boolean"
+      },
+      {
+        "@value": false,
+        "@type": "http://www.w3.org/2001/XMLSchema#boolean"
+      },
+      {
+        "@value": 0,
+        "@type": "http://www.w3.org/2001/XMLSchema#integer"
+      },
+      {
+        "@value": 1,
+        "@type": "http://www.w3.org/2001/XMLSchema#integer"
+      }
+    ],
+    "http://example.org/coerceId": [
+      {
+        "@id": "http://example.com/string"
+      },
+      {
+        "@value": true,
+        "@type": "http://www.w3.org/2001/XMLSchema#boolean"
+      },
+      {
+        "@value": false,
+        "@type": "http://www.w3.org/2001/XMLSchema#boolean"
+      },
+      {
+        "@value": 0,
+        "@type": "http://www.w3.org/2001/XMLSchema#integer"
+      },
+      {
+        "@value": 1,
+        "@type": "http://www.w3.org/2001/XMLSchema#integer"
+      }
+    ],
+    "http://example.org/coerceVocab": [
+      {
+        "@id": "http://example.org/string"
+      },
+      {
+        "@value": true,
+        "@type": "http://www.w3.org/2001/XMLSchema#boolean"        
+      },
+      {
+        "@value": false,
+        "@type": "http://www.w3.org/2001/XMLSchema#boolean"
+      },
+      {
+        "@value": 0,
+        "@type": "http://www.w3.org/2001/XMLSchema#integer"
+      },
+      {
+        "@value": 1,
+        "@type": "http://www.w3.org/2001/XMLSchema#integer"
+      }
+    ]
+  }
 ]

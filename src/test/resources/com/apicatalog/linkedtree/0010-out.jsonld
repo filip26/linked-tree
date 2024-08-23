@@ -1,5 +1,17 @@
-[{
-  "@id": "http://example.org/test",
-  "http://example.org/vocab#bool": [{"@value": true}],
-  "http://example.org/vocab#int": [{"@value": 123}]
-}]
+[
+  {
+    "@id": "http://example.org/test",
+    "http://example.org/vocab#bool": [
+      {
+        "@value": true,
+        "@type": "http://www.w3.org/2001/XMLSchema#boolean"
+      }
+    ],
+    "http://example.org/vocab#int": [
+      {
+        "@value": 123,
+        "@type": "http://www.w3.org/2001/XMLSchema#integer"
+      }
+    ]
+  }
+]

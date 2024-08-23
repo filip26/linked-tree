@@ -1,17 +1,45 @@
-[{
-  "@id": "http://example.org/id",
-  "http://example.com/mylist": [{
-    "@list": [
-      {"@value": 1},
-      {"@value": 2},
-      {"@value": 2},
-      {"@value": 3}
+[
+  {
+    "@id": "http://example.org/id",
+    "http://example.com/mylist": [
+      {
+        "@list": [
+          {
+            "@value": 1,
+            "@type": "http://www.w3.org/2001/XMLSchema#integer"
+          },
+          {
+            "@value": 2,
+            "@type": "http://www.w3.org/2001/XMLSchema#integer"
+          },
+          {
+            "@value": 2,
+            "@type": "http://www.w3.org/2001/XMLSchema#integer"
+          },
+          {
+            "@value": 3,
+            "@type": "http://www.w3.org/2001/XMLSchema#integer"
+          }
+        ]
+      }
+    ],
+    "http://example.com/myset": [
+      {
+        "@value": 1,
+        "@type": "http://www.w3.org/2001/XMLSchema#integer"
+      },
+      {
+        "@value": 2,
+        "@type": "http://www.w3.org/2001/XMLSchema#integer"
+      },
+      {
+        "@value": 2,
+        "@type": "http://www.w3.org/2001/XMLSchema#integer"
+      },
+      {
+        "@value": 3,
+        "@type": "http://www.w3.org/2001/XMLSchema#integer"
+      }
     ]
-  }],
-  "http://example.com/myset": [
-    {"@value": 1},
-    {"@value": 2},
-    {"@value": 2},
-    {"@value": 3}
-  ]
-}]
+  }
+]

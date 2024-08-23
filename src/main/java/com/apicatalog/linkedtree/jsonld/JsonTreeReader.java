@@ -1,13 +1,10 @@
 package com.apicatalog.linkedtree.jsonld;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -18,13 +15,16 @@ import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.io.LinkedFragmentAdapter;
 import com.apicatalog.linkedtree.io.LinkedLiteralAdapter;
+import com.apicatalog.linkedtree.json.JsonDecimal;
+import com.apicatalog.linkedtree.json.JsonInteger;
 import com.apicatalog.linkedtree.json.JsonLiteral;
+import com.apicatalog.linkedtree.json.JsonScalar;
 import com.apicatalog.linkedtree.jsonld.primitive.JsonLdMeta;
+import com.apicatalog.linkedtree.primitive.GenericLangString;
 import com.apicatalog.linkedtree.primitive.GenericLink;
 import com.apicatalog.linkedtree.primitive.GenericLinkedContainer;
 import com.apicatalog.linkedtree.primitive.GenericLinkedFragment;
 import com.apicatalog.linkedtree.primitive.GenericLinkedLiteral;
-import com.apicatalog.linkedtree.primitive.GenericLangString;
 import com.apicatalog.linkedtree.primitive.GenericLinkedTree;
 import com.apicatalog.linkedtree.xsd.XsdConstants;
 
@@ -36,12 +36,6 @@ import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
 
 public class JsonTreeReader {
-
-    protected static final DecimalFormat xsdNumberFormat = new DecimalFormat("0.0##############E0", new DecimalFormatSymbols(Locale.ENGLISH));
-
-    static {
-        xsdNumberFormat.setMinimumFractionDigits(1);
-    }
 
     protected LinkedFragmentAdapter fragmentAdapter;
     protected Map<String, LinkedLiteralAdapter> literalAdapters;
@@ -297,49 +291,20 @@ public class JsonTreeReader {
                         ? valueJsonObject.getString("@type")
                         : null;
 
-        // 6.
-//        if (datatype != null && !"@json".equals(datatype) && !UriUtils.isAbsoluteUri(datatype, uriValidation)) {
-//            LOGGER.log(Level.WARNING, "Datatype [{0}] is not an absolute IRI nor @json and value is skipped.", datatype);
-//            return Optional.empty();
-//        }
-
-//        if (item.containsKey(Keywords.LANGUAGE)
-//                && (JsonUtils.isNotString(item.get(Keywords.LANGUAGE))
-//                        || !LanguageTag.isWellFormed(item.getString(Keywords.LANGUAGE)))) {
-//            LOGGER.log(Level.WARNING, "Language tag [{0}] is not well formed string and value is skipped.", item.get(Keywords.LANGUAGE));
-//            return Optional.empty();
-//        }
-
         String valueString = null;
 
         if (JsonLdKeyword.JSON.equals(datatype)) {
+            return JsonLiteral.of(value, getMeta(valueJsonObject, JsonLdKeyword.VALUE, JsonLdKeyword.TYPE));
 
-            final Map<String, JsonValue> meta = new HashMap<>();
+        } else if (value != null &&
+                (ValueType.TRUE.equals(value.getValueType())
+                        || ValueType.FALSE.equals(value.getValueType()))) {
 
-            for (final Map.Entry<String, JsonValue> jsonEntry : valueJsonObject.entrySet()) {
-                if (JsonLdKeyword.anyMatch(jsonEntry.getKey(), JsonLdKeyword.VALUE, JsonLdKeyword.TYPE)) {
-                    continue;
-                }
-                meta.put(jsonEntry.getKey(), jsonEntry.getValue());
-            }
-
-            return JsonLiteral.of(value, new JsonLdMeta(meta));
-
-        } else if (value != null && ValueType.TRUE.equals(value.getValueType())) {
-
-            valueString = "true";
-
-            if (datatype == null) {
-                datatype = XsdConstants.BOOLEAN;
-            }
-
-        } else if (value != null && ValueType.FALSE.equals(value.getValueType())) {
-
-            valueString = "false";
-
-            if (datatype == null) {
-                datatype = XsdConstants.BOOLEAN;
-            }
+            return JsonScalar.of(value,
+                    datatype != null
+                            ? datatype
+                            : XsdConstants.BOOLEAN,
+                    getMeta(valueJsonObject, JsonLdKeyword.TYPE, JsonLdKeyword.VALUE));
 
         } else if (value != null && ValueType.NUMBER.equals(value.getValueType())) {
 
@@ -350,24 +315,21 @@ public class JsonTreeReader {
                     || XsdConstants.FLOAT.equals(datatype)
                     || number.bigDecimalValue().compareTo(BigDecimal.ONE.movePointRight(21)) >= 0) {
 
-                valueString = toXsdDouble(number.bigDecimalValue());
+                return JsonDecimal.of(number,
+                        datatype != null
+                                ? datatype
+                                : XsdConstants.DOUBLE,
+                        getMeta(valueJsonObject, JsonLdKeyword.TYPE, JsonLdKeyword.VALUE));
 
-                if (datatype == null) {
-                    datatype = XsdConstants.DOUBLE;
-                }
-
-                // 10.
             } else {
-
-                valueString = number.bigIntegerValue().toString();
-
-                if (datatype == null) {
-                    datatype = XsdConstants.INTEGER;
-                }
-
+                return JsonInteger.of(
+                        number,
+                        datatype != null
+                                ? datatype
+                                : XsdConstants.INTEGER,
+                        getMeta(valueJsonObject, JsonLdKeyword.TYPE, JsonLdKeyword.VALUE));
             }
 
-            // 12.
         } else if (datatype == null) {
 
             datatype = XsdConstants.STRING;
@@ -383,29 +345,18 @@ public class JsonTreeReader {
         }
 
         if (XsdConstants.STRING.equals(datatype)) {
-
-            final Map<String, JsonValue> meta = new HashMap<>();
-
-            for (final Map.Entry<String, JsonValue> jsonEntry : valueJsonObject.entrySet()) {
-                if (JsonLdKeyword.anyMatch(jsonEntry.getKey(), JsonLdKeyword.VALUE, JsonLdKeyword.TYPE, JsonLdKeyword.LANGUAGE)) {
-                    continue;
-                }
-                meta.put(jsonEntry.getKey(), jsonEntry.getValue());
-            }
             // TODO direction
-            return GenericLangString.of(valueString, getLiteralLanguage(valueJsonObject), null, new JsonLdMeta(meta));
+            return GenericLangString.of(
+                    valueString,
+                    getLiteralLanguage(valueJsonObject),
+                    null,
+                    getMeta(valueJsonObject, JsonLdKeyword.VALUE, JsonLdKeyword.TYPE, JsonLdKeyword.LANGUAGE));
         }
 
-        final Map<String, JsonValue> meta = new HashMap<>();
-
-        for (final Map.Entry<String, JsonValue> jsonEntry : valueJsonObject.entrySet()) {
-            if (JsonLdKeyword.anyMatch(jsonEntry.getKey(), JsonLdKeyword.VALUE, JsonLdKeyword.TYPE)) {
-                continue;
-            }
-            meta.put(jsonEntry.getKey(), jsonEntry.getValue());
-        }
-
-        return GenericLinkedLiteral.of(valueString, datatype, new JsonLdMeta(meta));
+        return GenericLinkedLiteral.of(
+                valueString,
+                datatype,
+                getMeta(valueJsonObject, JsonLdKeyword.VALUE, JsonLdKeyword.TYPE));
 
 //        final JsonValue jsonValue = valueObject.get("@value");
 //
@@ -431,6 +382,18 @@ public class JsonTreeReader {
 //            }
 //        }
 //        return null;
+    }
+
+    protected static JsonLdMeta getMeta(JsonObject valueJsonObject, String... filter) {
+        final Map<String, JsonValue> meta = new HashMap<>();
+
+        for (final Map.Entry<String, JsonValue> jsonEntry : valueJsonObject.entrySet()) {
+            if (JsonLdKeyword.anyMatch(jsonEntry.getKey(), filter)) {
+                continue;
+            }
+            meta.put(jsonEntry.getKey(), jsonEntry.getValue());
+        }
+        return new JsonLdMeta(meta);
     }
 
     protected static String getLiteralDataType(JsonObject valueObject) {
@@ -484,9 +447,5 @@ public class JsonTreeReader {
 ////        }
 //        throw new IllegalStateException();
 //    }
-
-    private static final String toXsdDouble(BigDecimal bigDecimal) {
-        return xsdNumberFormat.format(bigDecimal);
-    }
 
 }
