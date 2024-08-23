@@ -1,11 +1,17 @@
 package com.apicatalog.linkedtree.jsonld;
 
+import java.io.StringReader;
+
 import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.LinkedTree;
+import com.apicatalog.linkedtree.json.JsonLiteral;
 import com.apicatalog.linkedtree.jsonld.primitive.JsonLdMeta;
+import com.apicatalog.linkedtree.rdf.RdfConstants;
+import com.apicatalog.linkedtree.value.LangString;
+import com.apicatalog.linkedtree.xsd.XsdConstants;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -13,6 +19,7 @@ import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
+import jakarta.json.stream.JsonParser;
 
 public class JsonTreeWriter {
 
@@ -30,7 +37,7 @@ public class JsonTreeWriter {
     JsonObject writeTree(LinkedTree tree) {
 
         final JsonObjectBuilder builder = Json.createObjectBuilder()
-                .add(Keywords.GRAPH, write(tree));
+                .add(JsonLdKeyword.GRAPH, write(tree));
 
         writeFragment(tree, builder);
 
@@ -48,9 +55,8 @@ public class JsonTreeWriter {
         }
 
         if (fragment.metadata() != null
-                && fragment.metadata() instanceof JsonLdMeta meta
-                ) {
-            
+                && fragment.metadata() instanceof JsonLdMeta meta) {
+
             meta.write(builder);
         }
 
@@ -71,7 +77,7 @@ public class JsonTreeWriter {
 
         if (LinkedContainer.Type.OrderedList.equals(container.containerType())) {
             return Json.createObjectBuilder()
-                    .add(Keywords.LIST, array)
+                    .add(JsonLdKeyword.LIST, array)
                     .build();
 
         }
@@ -103,20 +109,6 @@ public class JsonTreeWriter {
 
     public JsonValue writeLiteral(LinkedLiteral literal) {
 
-//        final JsonObjectBuilder builder = Json.createObjectBuilder();
-//
-//        builder.add("@value", writeLiteralValue(value));
-//        if (value.datatype() != null && !XsdConstants.STRING.equals(value.datatype())) {
-//            builder.add("@type", value.datatype());
-//        }        
-//        if (value.language() != null) {
-//            builder.add("@language", value.language());
-//        }
-//        return builder.build();
-//    }
-//    
-//    protected static JsonValue writeLiteralValue(LinkedLiteral literal) {
-//        
         final JsonObjectBuilder result = Json.createObjectBuilder();
 
         JsonValue convertedValue = null;
@@ -153,6 +145,24 @@ public class JsonTreeWriter {
             } else if (XsdConstants.DOUBLE.equals(literal.datatype()) || XsdConstants.FLOAT.equals(literal.datatype())) {
 
                 convertedValue = Json.createValue(Double.parseDouble(literal.value()));
+
+            } else if (RdfConstants.JSON.equals(literal.datatype())) {
+
+                if (literal instanceof JsonLiteral jsonLiteral) {
+
+                    convertedValue = jsonLiteral.jsonValue();
+
+                } else {
+
+                    try (JsonParser parser = Json.createParser(new StringReader(literal.value()))) {
+
+                        parser.next();
+
+                        convertedValue = parser.getValue();
+                    }
+                }
+
+                type = JsonLdKeyword.JSON;
 
             } else if (literal.datatype() != null) {
 
@@ -210,21 +220,21 @@ public class JsonTreeWriter {
 //            type = literal.datatype();
 //        }
 
-        if (literal.language() != null) {
-            result.add(Keywords.LANGUAGE, Json.createValue(literal.language()));
+        if (literal instanceof LangString langString
+                && langString.language() != null) {
+            result.add(JsonLdKeyword.LANGUAGE, Json.createValue(langString.language()));
         }
 
-        result.add(Keywords.VALUE, (convertedValue != null)
+        result.add(JsonLdKeyword.VALUE, (convertedValue != null)
                 ? convertedValue
                 : Json.createValue(literal.value()));
 
         if (type != null) {
-            result.add(Keywords.TYPE, Json.createValue(type));
+            result.add(JsonLdKeyword.TYPE, Json.createValue(type));
         }
-        
+
         if (literal.metadata() != null
-                && literal.metadata() instanceof JsonLdMeta meta
-                ) {
+                && literal.metadata() instanceof JsonLdMeta meta) {
             meta.write(result);
         }
 

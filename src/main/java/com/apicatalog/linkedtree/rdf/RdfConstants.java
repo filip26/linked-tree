@@ -1,6 +1,6 @@
-package com.apicatalog.linkedtree.jsonld;
+package com.apicatalog.linkedtree.rdf;
 
-final class RdfConstants {
+public final class RdfConstants {
 
     public static final String DIRECTION = "http://www.w3.org/1999/02/22-rdf-syntax-ns#direction";
 
@@ -23,8 +23,4 @@ final class RdfConstants {
     public static final String LANGUAGE = "http://www.w3.org/1999/02/22-rdf-syntax-ns#language";
 
     public static final String I18N_BASE = "https://www.w3.org/ns/i18n#";
-
-    private RdfConstants() {
-    }
-
 }

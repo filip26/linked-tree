@@ -1,4 +1,4 @@
-package com.apicatalog.linkedtree.jakarta;
+package com.apicatalog.linkedtree.json;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -15,9 +15,6 @@ import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
 
 public final class JsonUtils {
-
-    JsonUtils() {
-    }
 
     public static final boolean contains(String text, JsonValue value) {
 

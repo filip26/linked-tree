@@ -1,9 +1,11 @@
-package com.apicatalog.linkedtree.jakarta;
+package com.apicatalog.linkedtree.jsonld;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
+
+import com.apicatalog.linkedtree.json.JsonUtils;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;

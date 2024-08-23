@@ -1,4 +1,4 @@
-package com.apicatalog.linkedtree.jakarta;
+package com.apicatalog.linkedtree.jsonld;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -21,8 +21,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.apicatalog.linkedtree.LinkedFragment;
-import com.apicatalog.linkedtree.jsonld.JsonTreeReader;
-import com.apicatalog.linkedtree.jsonld.JsonTreeWriter;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;

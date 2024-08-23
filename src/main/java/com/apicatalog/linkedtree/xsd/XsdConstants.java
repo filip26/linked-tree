@@ -1,6 +1,6 @@
-package com.apicatalog.linkedtree.jsonld;
+package com.apicatalog.linkedtree.xsd;
 
-final class XsdConstants {
+public final class XsdConstants {
 
     public static final String STRING = "http://www.w3.org/2001/XMLSchema#string";
 
@@ -15,7 +15,4 @@ final class XsdConstants {
     public static final String INT = "http://www.w3.org/2001/XMLSchema#int";
 
     public static final String LONG = "http://www.w3.org/2001/XMLSchema#long";
-
-    private XsdConstants() {
-    }
 }

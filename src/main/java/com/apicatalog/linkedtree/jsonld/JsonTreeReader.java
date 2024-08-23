@@ -18,12 +18,15 @@ import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.io.LinkedFragmentAdapter;
 import com.apicatalog.linkedtree.io.LinkedLiteralAdapter;
+import com.apicatalog.linkedtree.json.JsonLiteral;
 import com.apicatalog.linkedtree.jsonld.primitive.JsonLdMeta;
 import com.apicatalog.linkedtree.primitive.GenericLink;
 import com.apicatalog.linkedtree.primitive.GenericLinkedContainer;
 import com.apicatalog.linkedtree.primitive.GenericLinkedFragment;
 import com.apicatalog.linkedtree.primitive.GenericLinkedLiteral;
+import com.apicatalog.linkedtree.primitive.GenericLangString;
 import com.apicatalog.linkedtree.primitive.GenericLinkedTree;
+import com.apicatalog.linkedtree.xsd.XsdConstants;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonNumber;
@@ -34,10 +37,11 @@ import jakarta.json.JsonValue.ValueType;
 
 public class JsonTreeReader {
 
-    protected static final DecimalFormat xsdNumberFormat =
-            new DecimalFormat("0.0##############E0", new DecimalFormatSymbols(Locale.ENGLISH));
+    protected static final DecimalFormat xsdNumberFormat = new DecimalFormat("0.0##############E0", new DecimalFormatSymbols(Locale.ENGLISH));
 
-    static { xsdNumberFormat.setMinimumFractionDigits(1); }
+    static {
+        xsdNumberFormat.setMinimumFractionDigits(1);
+    }
 
     protected LinkedFragmentAdapter fragmentAdapter;
     protected Map<String, LinkedLiteralAdapter> literalAdapters;
@@ -101,65 +105,65 @@ public class JsonTreeReader {
 
         final JsonObject object = value.asJsonObject();
 
-        return object.containsKey(Keywords.VALUE)
+        return object.containsKey(JsonLdKeyword.VALUE)
                 ? readLiteral(object)
                 : readNode(object);
     }
-    
+
     protected LinkedNode readNode(JsonObject jsonObject) {
 
-        if (isContainer(jsonObject, Keywords.LIST)) {
+        if (isContainer(jsonObject, JsonLdKeyword.LIST)) {
             return readList(jsonObject);
         }
 //        if (isContainer(jsonObject, Keywords.REVERSE)) {
 //            return readReverse(jsonObject);
 //        }        
-        if (isContainer(jsonObject, Keywords.GRAPH)) {
+        if (isContainer(jsonObject, JsonLdKeyword.GRAPH)) {
             return readGraph(jsonObject);
         }
-        
+
         return readFragment(jsonObject);
     }
 
     protected static boolean isContainer(JsonObject jsonObject, String name) {
-        return jsonObject != null 
-                && jsonObject.containsKey(name); 
+        return jsonObject != null
+                && jsonObject.containsKey(name);
     }
 
     // list is a collection attribute
     protected LinkedContainer readList(JsonObject jsonObject) {
-        
-        final JsonArray list = jsonObject.getJsonArray(Keywords.LIST);
-        
+
+        final JsonArray list = jsonObject.getJsonArray(JsonLdKeyword.LIST);
+
         final Collection<LinkedNode> nodes = new ArrayList<>(list.size());
-        
+
         for (JsonValue item : list) {
             nodes.add(readValue(item));
         }
-        
+
         return GenericLinkedContainer.of(LinkedContainer.Type.OrderedList, nodes);
     }
 
     protected LinkedContainer readReverse(JsonObject jsonObject) {
-        
+
 //        final JsonArray list = jsonObject.getJsonObject(Keywords.REVERSE);
-        
+
 //        final Collection<LinkedNode> nodes = new ArrayList<>(list.size());
-        
+
 //        for (JsonValue item : list) {
 //            nodes.add(readValue(item));
 //        }
-        
+
 //        return GenericLinkedContainer.of(Keywords.LIST, nodes);
         return null;
     }
 
     protected LinkedTree readGraph(JsonObject jsonObject) {
-        
-        final JsonArray graph = jsonObject.getJsonArray(Keywords.GRAPH);
+
+        final JsonArray graph = jsonObject.getJsonArray(JsonLdKeyword.GRAPH);
 
         final Collection<LinkedNode> nodes = readNodes(graph);
-        
+
         String id = null;
         Collection<String> types = Collections.emptySet();
 
@@ -171,7 +175,7 @@ public class JsonTreeReader {
             if ("@graph".equals(entry.getKey())) {
                 continue;
             }
-            
+
             if ("@id".equals(entry.getKey())) {
                 if (ValueType.STRING.equals(entry.getValue().getValueType())) {
 
@@ -187,10 +191,10 @@ public class JsonTreeReader {
                 types = entry.getValue().asJsonArray().stream().map(JsonString.class::cast)
                         .map(JsonString::getString)
                         .toList();
-                
+
             } else if (entry.getKey().startsWith("@")) {
                 meta.put(entry.getKey(), entry.getValue());
-                
+
             } else {
                 properties.put(entry.getKey(), readValueArray(entry.getValue().asJsonArray()));
             }
@@ -203,13 +207,12 @@ public class JsonTreeReader {
                     types,
                     properties,
                     nodes,
-                    new JsonLdMeta(meta)
-                    );
+                    new JsonLdMeta(meta));
             link.add(node);
             return node;
         }
 
-        //TODO read as a separate tree
+        // TODO read as a separate tree
         return GenericLinkedTree.of(null, types, properties, nodes, new JsonLdMeta(meta));
     }
 
@@ -218,7 +221,7 @@ public class JsonTreeReader {
         String id = null;
         Collection<String> types = Collections.emptySet();
         Map<String, JsonValue> meta = new HashMap<>();
-        
+
         final Map<String, LinkedContainer> properties = new HashMap<>(value.size());
 
         for (final Entry<String, JsonValue> entry : value.entrySet()) {
@@ -238,10 +241,10 @@ public class JsonTreeReader {
                 types = entry.getValue().asJsonArray().stream().map(JsonString.class::cast)
                         .map(JsonString::getString)
                         .toList();
-                                
-            } else if (entry.getKey().startsWith("@")) {                
+
+            } else if (entry.getKey().startsWith("@")) {
                 meta.put(entry.getKey(), entry.getValue());
-                
+
             } else {
                 properties.put(entry.getKey(), readValueArray(entry.getValue().asJsonArray()));
             }
@@ -253,8 +256,7 @@ public class JsonTreeReader {
                     link,
                     types,
                     properties,
-                    new JsonLdMeta(meta)
-                    );
+                    new JsonLdMeta(meta));
             link.add(node);
             return node;
         }
@@ -310,9 +312,18 @@ public class JsonTreeReader {
 
         String valueString = null;
 
-        if ("@json".equals(datatype)) {
-//            valueString = JsonCanonicalizer.canonicalize(value);
-//            datatype = RdfConstants.JSON;
+        if (JsonLdKeyword.JSON.equals(datatype)) {
+
+            final Map<String, JsonValue> meta = new HashMap<>();
+
+            for (final Map.Entry<String, JsonValue> jsonEntry : valueJsonObject.entrySet()) {
+                if (JsonLdKeyword.anyMatch(jsonEntry.getKey(), JsonLdKeyword.VALUE, JsonLdKeyword.TYPE)) {
+                    continue;
+                }
+                meta.put(jsonEntry.getKey(), jsonEntry.getValue());
+            }
+
+            return JsonLiteral.of(value, new JsonLdMeta(meta));
 
         } else if (value != null && ValueType.TRUE.equals(value.getValueType())) {
 
@@ -371,17 +382,30 @@ public class JsonTreeReader {
             valueString = ((JsonString) value).getString();
         }
 
+        if (XsdConstants.STRING.equals(datatype)) {
+
+            final Map<String, JsonValue> meta = new HashMap<>();
+
+            for (final Map.Entry<String, JsonValue> jsonEntry : valueJsonObject.entrySet()) {
+                if (JsonLdKeyword.anyMatch(jsonEntry.getKey(), JsonLdKeyword.VALUE, JsonLdKeyword.TYPE, JsonLdKeyword.LANGUAGE)) {
+                    continue;
+                }
+                meta.put(jsonEntry.getKey(), jsonEntry.getValue());
+            }
+            // TODO direction
+            return GenericLangString.of(valueString, getLiteralLanguage(valueJsonObject), null, new JsonLdMeta(meta));
+        }
+
         final Map<String, JsonValue> meta = new HashMap<>();
-        
+
         for (final Map.Entry<String, JsonValue> jsonEntry : valueJsonObject.entrySet()) {
-            if (Keywords.anyMatch(jsonEntry.getKey(), Keywords.VALUE, Keywords.LANGUAGE, Keywords.TYPE)) {
+            if (JsonLdKeyword.anyMatch(jsonEntry.getKey(), JsonLdKeyword.VALUE, JsonLdKeyword.TYPE)) {
                 continue;
             }
             meta.put(jsonEntry.getKey(), jsonEntry.getValue());
         }
-        
-        // TODO direction
-        return GenericLinkedLiteral.of(valueString, datatype, getLiteralLanguage(valueJsonObject), null, new JsonLdMeta(meta));
+
+        return GenericLinkedLiteral.of(valueString, datatype, new JsonLdMeta(meta));
 
 //        final JsonValue jsonValue = valueObject.get("@value");
 //
@@ -424,7 +448,7 @@ public class JsonTreeReader {
 
     protected static String getLiteralLanguage(JsonObject valueObject) {
 
-        final JsonValue jsonType = valueObject.get("@language");
+        final JsonValue jsonType = valueObject.get(JsonLdKeyword.LANGUAGE);
         if (jsonType == null || ValueType.NULL.equals(jsonType.getValueType())) {
             return null;
         }

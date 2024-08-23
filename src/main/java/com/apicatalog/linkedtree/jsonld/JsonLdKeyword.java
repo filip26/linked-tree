@@ -3,7 +3,7 @@ package com.apicatalog.linkedtree.jsonld;
 import java.util.Arrays;
 import java.util.Collection;
 
-final class Keywords {
+final class JsonLdKeyword {
 
     public static final String ANY = "@any";
 
@@ -89,7 +89,7 @@ final class Keywords {
             );
 
 
-    protected Keywords() {
+    protected JsonLdKeyword() {
     }
 
     public static boolean contains(final String value) {

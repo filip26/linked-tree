@@ -17,7 +17,6 @@ public non-sealed interface LinkedLiteral extends LinkedNode {
      *
      * @return lexical value, never <code>null</code>
      */
-//    @Override
     String value();
 
     /**
@@ -27,22 +26,4 @@ public non-sealed interface LinkedLiteral extends LinkedNode {
      * @return an absolute IRI, never <code>null</code>
      */
     String datatype();
-
-    /**
-     * An optional language tag. If this value is specified, {@link #datatype()}
-     * returns rdf:langString.
-     *
-     * @return language tag or <code>null</code> if not set
-     */
-    String language();
-
-//    public enum DirectionType {
-//
-//        LTR,
-//
-//        RTL,
-//
-//        NULL
-//
-//    }
 }
