@@ -26,9 +26,17 @@ public non-sealed interface LinkedTree extends LinkedFragment, LinkedNode {
     default Collection<LinkedNode> nodes() {
         return Collections.emptyList();
     }
+    
+    default LinkedNode singleNode() {
+        Collection<LinkedNode> nodes = nodes();
+        if (nodes.size() != 1) {
+            throw new IllegalStateException();
+        }
+        return nodes.iterator().next();
+    }
 
     /**
-     * identifiable fragments index
+     * Identifiable fragments index
      * 
      * @return a collection of links found in the tree
      */

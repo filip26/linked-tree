@@ -48,10 +48,6 @@ public class JsonLdTreeReader {
         this.literalAdapters = new HashMap<>();
 //        this.nodeReaders = new ArrayList<>();
 //        this.valueReaders = new HashMap<>();
-//        this.nodeWriters = new ArrayList<>();
-
-//        nodeReaders.add(new JakartaNodeAdapter());
-//        nodeWriters.add(new JakartaNodeWriter());
     }
 
     public LinkedTree readExpanded(JsonArray jsonNodes) {

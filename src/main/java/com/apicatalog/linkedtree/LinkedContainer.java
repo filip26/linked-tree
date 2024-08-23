@@ -34,7 +34,7 @@ public non-sealed interface LinkedContainer extends LinkedNode {
     default LinkedNode single() {
         Collection<LinkedNode> nodes = nodes();
         if (nodes.size() != 1) {
-            throw new IllegalArgumentException();
+            throw new IllegalStateException();
         }
         return nodes.iterator().next();
     }

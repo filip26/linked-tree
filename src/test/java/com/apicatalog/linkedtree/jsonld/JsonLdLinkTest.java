@@ -1,9 +1,6 @@
 package com.apicatalog.linkedtree.jsonld;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
@@ -18,8 +15,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
-import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeWriter;
-import com.apicatalog.linkedtree.literal.ByteArrayValue;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -29,17 +24,15 @@ import jakarta.json.JsonWriter;
 import jakarta.json.JsonWriterFactory;
 import jakarta.json.stream.JsonGenerator;
 
-@DisplayName("JsonLd Custom Literal Suite")
+@DisplayName("JsonLd Link Suite")
 @TestMethodOrder(OrderAnnotation.class)
-class JsonLdCustomLiteralTest {
+class JsonLdLinkTest {
 
     static JsonLdTreeReader READER = new JsonLdTreeReader()
             .add(new Base64ByteArrayAdapter());
 
-    static JsonLdTreeWriter WRITER = new JsonLdTreeWriter();
-
     @Test
-    void base64ByteArray() throws IOException, URISyntaxException {
+    void rootSingleId() throws IOException, URISyntaxException {
 
         JsonArray input = resource("custom/base64-1.jsonld");
         JsonArray output = resource("custom/base64-2.jsonld");
@@ -47,29 +40,8 @@ class JsonLdCustomLiteralTest {
         var tree = READER.readExpanded(input);
 
         assertNotNull(tree);
+        assertNotNull(tree.links());
 
-        ByteArrayValue literal = tree
-                .singleNode()
-                .asFragment()
-                .values("http://example.org/test#property4")
-                .single()
-                .asLiteral() //TODO as param
-                .cast(ByteArrayValue.class)
-                ;
-
-        assertNotNull(literal);
-        assertEquals("RW5jb2RlIHRvIEJhc2U2NCBmb3JtYXQ=", literal.value());
-        assertTrue(literal instanceof ByteArrayValue);
-        assertArrayEquals("Encode to Base64 format".getBytes(), ((ByteArrayValue) literal).byteArrayValue());
-
-        ((Base64ByteArray) literal).byteArrayValue("test X".getBytes());
-        assertEquals("dGVzdCBY", literal.value());
-
-        JsonArray copy = WRITER.writeExpanded(tree);
-
-        assertNotNull(output);
-
-        assertTrue(compareJson("", copy, output));
     }
 
     static final JsonArray resource(String name) throws IOException, URISyntaxException {
