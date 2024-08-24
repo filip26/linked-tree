@@ -9,26 +9,26 @@ import com.apicatalog.linkedtree.LinkedNode;
 
 public class LanguageMap implements LangStringSelector {
 
-    protected Map<String, LangString> strings;
-    
-    protected LanguageMap() {
-        // TODO Auto-generated constructor stub
+    protected Map<String, LangString> langMap;
+
+    protected LanguageMap(Map<String, LangString> langMap) {
+        this.langMap = langMap;
     }
-    
+
     public static LanguageMap of(LinkedContainer container) {
-        
+
         final Map<String, LangString> map = new HashMap<>(container.size());
-        
+
         for (LinkedNode node : container.nodes()) {
             if (!node.isLiteral()) {
                 throw new IllegalArgumentException();
             }
-            
+
             if (node instanceof LangString langString) {
                 map.put(langString.language(), langString);
                 continue;
             }
-            
+
             throw new IllegalStateException();
 //TODO            
 //            final LinkedLiteral literal = node.asLiteral();
@@ -39,23 +39,28 @@ public class LanguageMap implements LangStringSelector {
 //                map.put(null, langString)
 //            }
         }
-        //TODO
-        return null;
+
+        return new LanguageMap(map);
     }
-    
+
     @Override
     public Collection<LangString> strings() {
-        return strings.values();
+        return langMap.values();
     }
 
     @Override
     public Collection<String> langCodes() {
-        return strings.keySet();
+        return langMap.keySet();
     }
 
     @Override
     public LangString get(String langCode) {
-        return strings.get(langCode);
+        return langMap.get(langCode);
+    }
+
+    @Override
+    public int size() {
+        return langMap.size();
     }
 
 }

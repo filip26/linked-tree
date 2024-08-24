@@ -42,4 +42,14 @@ public non-sealed interface LinkedContainer extends LinkedNode {
     default int size() {
         return nodes().size();
     }
+    
+    default LinkedLiteral singleLiteral() {
+        return single().asLiteral();
+    }
+
+    @SuppressWarnings("unchecked")
+    default <T> T singleLiteral(Class<T> clazz) {
+        return (T)single();
+    }
+
 }

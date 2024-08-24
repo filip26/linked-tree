@@ -11,7 +11,7 @@ import com.apicatalog.linkedtree.link.Link;
 public class VerifiableCredentialAdapter implements LinkedFragmentAdapter {
 
     static final String VC_TYPE = "https://www.w3.org/2018/credentials#VerifiableCredential";
-    
+
     @Override
     public boolean accepts(String id, Collection<String> types) {
         return types != null && types.contains(VC_TYPE);
@@ -19,13 +19,7 @@ public class VerifiableCredentialAdapter implements LinkedFragmentAdapter {
 
     @Override
     public LinkedFragment read(Link id, Collection<String> types, Map<String, LinkedContainer> properties, Object meta) {
-
-        final VerifiableCredential vc = new VerifiableCredential();
-        
-        final VerifiableCredential a = VerifiableCredential.of(properties, meta);
-        final AlumniCredential b = AlumniCredential.of(false);
-        // TODO Auto-generated method stub
-        return vc;
+        return VerifiableCredential.of(properties, meta);
     }
 
 }

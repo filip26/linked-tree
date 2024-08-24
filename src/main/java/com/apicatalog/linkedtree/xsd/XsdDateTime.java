@@ -21,8 +21,9 @@ public class XsdDateTime implements LinkedLiteral {
     }
 
     public Instant datetime() {
-        if (datetime == null) {
-
+        if (datetime == null && value != null) {
+            //TODO check
+            datetime = Instant.parse(value);
         }
 
         return datetime;
@@ -30,8 +31,8 @@ public class XsdDateTime implements LinkedLiteral {
 
     @Override
     public String value() {
-        if (value == null) {
-
+        if (value == null && datetime != null) {
+            //TODO
         }
         return value;
     }

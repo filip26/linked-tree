@@ -3,6 +3,7 @@ package com.apicatalog.linkedtree.jsonld;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -10,6 +11,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
+import java.time.Instant;
 import java.util.Collections;
 
 import org.junit.jupiter.api.DisplayName;
@@ -96,12 +98,21 @@ class JsonLdAdaptersTest {
         
         
         assertNotNull(vc);
-//        assertEquals("RW5jb2RlIHRvIEJhc2U2NCBmb3JtYXQ=", literal.value());
-//        assertTrue(literal instanceof ByteArrayValue);
-//        assertArrayEquals("Encode to Base64 format".getBytes(), ((ByteArrayValue) literal).byteArrayValue());
-//
-//        ((Base64ByteArray) literal).byteArrayValue("test X".getBytes());
-//        assertEquals("dGVzdCBY", literal.value());
+        assertNotNull(vc.name);
+        assertEquals(1, vc.name.size());
+        assertNotNull(vc.name.single());
+        assertEquals("Alumni Credential", vc.name.single().value());
+        assertNull(vc.name.single().language());
+        assertNotNull(vc.name.strings());
+        assertEquals(1, vc.name.strings().size());
+        assertNotNull(vc.name.langCodes());
+        assertEquals(1, vc.name.langCodes().size());
+        assertNotNull(vc.description);
+        
+        assertNotNull(vc.validFrom);
+        assertEquals(Instant.parse("2023-01-01T00:00:00Z"), vc.validFrom);
+        
+        assertNull(vc.validUntil);
 
     }
 
