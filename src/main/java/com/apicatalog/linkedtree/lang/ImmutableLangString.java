@@ -30,7 +30,7 @@ public class ImmutableLangString implements LangString {
     }
 
     @Override
-    public Object metadata() {
+    public Object pi() {
         return meta;
     }
 

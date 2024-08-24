@@ -47,7 +47,7 @@ class Base64ByteArray implements ByteArrayValue {
     }
 
     @Override
-    public Object metadata() {
+    public Object pi() {
         return meta;
     }
 }

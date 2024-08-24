@@ -54,7 +54,7 @@ public class GenericLinkedFragment implements LinkedFragment {
     }
     
     @Override
-    public Object metadata() {
+    public Object pi() {
         return meta;
     }
     

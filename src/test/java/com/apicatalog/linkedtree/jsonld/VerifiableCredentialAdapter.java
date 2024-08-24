@@ -22,7 +22,7 @@ public class VerifiableCredentialAdapter implements LinkedFragmentAdapter {
 
         final VerifiableCredential vc = new VerifiableCredential();
         
-        final VerifiableCredential a = VerifiableCredential.of(false);
+        final VerifiableCredential a = VerifiableCredential.of(properties, meta);
         final AlumniCredential b = AlumniCredential.of(false);
         // TODO Auto-generated method stub
         return vc;

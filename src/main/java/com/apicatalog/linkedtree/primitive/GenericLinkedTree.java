@@ -74,7 +74,7 @@ public class GenericLinkedTree implements LinkedTree {
     }
     
     @Override
-    public Object metadata() {
+    public Object pi() {
         return meta;
     }
 }

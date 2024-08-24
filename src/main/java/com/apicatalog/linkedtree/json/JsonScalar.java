@@ -37,7 +37,7 @@ public class JsonScalar implements LinkedLiteral {
     }
 
     @Override
-    public Object metadata() {
+    public Object pi() {
         return meta;
     }
 

@@ -59,8 +59,8 @@ public class JsonLdTreeWriter {
             builder.add("@type", Json.createArrayBuilder(fragment.type()));
         }
 
-        if (fragment.metadata() != null
-                && fragment.metadata() instanceof JsonLdMeta meta) {
+        if (fragment.pi() != null
+                && fragment.pi() instanceof JsonLdMeta meta) {
 
             meta.write(builder);
         }
@@ -235,8 +235,8 @@ public class JsonLdTreeWriter {
             result.add(JsonLdKeyword.TYPE, Json.createValue(type));
         }
 
-        if (literal.metadata() != null
-                && literal.metadata() instanceof JsonLdMeta meta) {
+        if (literal.pi() != null
+                && literal.pi() instanceof JsonLdMeta meta) {
             meta.write(result);
         }
 

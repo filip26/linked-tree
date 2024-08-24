@@ -47,7 +47,7 @@ public class JsonInteger implements NumericValue, IntegerValue {
     }
     
     @Override
-    public Object metadata() {
+    public Object pi() {
         return meta;
     }
 

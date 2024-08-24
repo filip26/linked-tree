@@ -35,11 +35,11 @@ public sealed interface LinkedNode permits LinkedContainer, LinkedTree, LinkedFr
     }
 
     /**
-     * A serialization format specific data or/and related to processing.
+     * A custom processing instructions (temporary solution).
      * 
      * @return custom data
      */
-    default Object metadata() {
+    default Object pi() {
         return null;
     }
 }

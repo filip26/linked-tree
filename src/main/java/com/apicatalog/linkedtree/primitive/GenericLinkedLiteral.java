@@ -32,7 +32,7 @@ public class GenericLinkedLiteral implements LinkedLiteral {
     }
 
     @Override
-    public Object metadata() {
+    public Object pi() {
         return meta;
     }
 
