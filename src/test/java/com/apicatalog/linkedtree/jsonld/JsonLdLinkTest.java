@@ -1,6 +1,8 @@
 package com.apicatalog.linkedtree.jsonld;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
@@ -32,15 +34,19 @@ class JsonLdLinkTest {
             .add(new Base64ByteArrayAdapter());
 
     @Test
-    void rootSingleId() throws IOException, URISyntaxException {
+    void rootSingleLink() throws IOException, URISyntaxException {
 
         JsonArray input = resource("custom/base64-1.jsonld");
-        JsonArray output = resource("custom/base64-2.jsonld");
 
         var tree = READER.readExpanded(input);
 
         assertNotNull(tree);
         assertNotNull(tree.links());
+        assertEquals(1, tree.links().size());
+        assertNotNull(tree.links().iterator().next());
+        assertNotNull(tree.links().iterator().next().fragments());
+        assertNotNull(tree.links().iterator().next().target());
+        assertTrue(tree.links().iterator().next().target().isFragment());
 
     }
 

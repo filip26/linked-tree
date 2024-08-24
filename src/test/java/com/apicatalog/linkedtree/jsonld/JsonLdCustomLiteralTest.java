@@ -51,11 +51,11 @@ class JsonLdCustomLiteralTest {
         ByteArrayValue literal = tree
                 .singleNode()
                 .asFragment()
-                .values("http://example.org/test#property4")
+                .property("http://example.org/test#property4")
                 .single()
-                .asLiteral() //TODO as param
-                .cast(ByteArrayValue.class)
-                ;
+//TODO                .singleLiteral(ByteArrayValue.class);
+                .asLiteral() // TODO as param
+                .cast(ByteArrayValue.class);
 
         assertNotNull(literal);
         assertEquals("RW5jb2RlIHRvIEJhc2U2NCBmb3JtYXQ=", literal.value());

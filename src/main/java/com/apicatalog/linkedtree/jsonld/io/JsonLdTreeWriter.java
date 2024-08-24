@@ -66,7 +66,7 @@ public class JsonLdTreeWriter {
         }
 
         for (final String term : fragment.terms()) {
-            builder.add(term, writeContainer(fragment.values(term)));
+            builder.add(term, writeContainer(fragment.property(term)));
         }
 
         return builder;

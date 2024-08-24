@@ -1,5 +1,6 @@
 package com.apicatalog.linkedtree.primitive;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import com.apicatalog.linkedtree.Link;
@@ -8,16 +9,21 @@ import com.apicatalog.linkedtree.LinkedFragment;
 public class GenericLink implements Link {
 
     protected String uri;
-    
+    protected Collection<LinkedFragment> fragments;
+    protected LinkedFragment target;
+
     protected GenericLink() {
+        // protected
     }
-    
+
     public static GenericLink of(String uri) {
         final GenericLink link = new GenericLink();
         link.uri = uri;
+        link.fragments = new ArrayList<>();
+        link.target = null;
         return link;
     }
-    
+
     @Override
     public String uri() {
         return uri;
@@ -25,18 +31,19 @@ public class GenericLink implements Link {
 
     @Override
     public Collection<LinkedFragment> fragments() {
-        // TODO Auto-generated method stub
-        return null;
+        return fragments;
     }
 
     @Override
     public LinkedFragment target() {
-        // TODO Auto-generated method stub
-        return null;
+        return target;
+    }
+
+    public void target(LinkedFragment fragment) {
+        this.target = fragment;
     }
 
     public void add(LinkedFragment node) {
-        // TODO Auto-generated method stub
+        this.fragments.add(node);
     }
-    
 }

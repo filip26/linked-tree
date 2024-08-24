@@ -43,9 +43,13 @@ public class GenericLinkedFragment implements LinkedFragment {
     public Collection<String> terms() {
         return data.keySet();
     }
+    
+    public Map<String, LinkedContainer> entries() {
+        return data;
+    }
 
     @Override
-    public LinkedContainer values(String term) {
+    public LinkedContainer property(String term) {
         return data.get(term);
     }
     
@@ -53,4 +57,6 @@ public class GenericLinkedFragment implements LinkedFragment {
     public Object metadata() {
         return meta;
     }
+    
+    
 }

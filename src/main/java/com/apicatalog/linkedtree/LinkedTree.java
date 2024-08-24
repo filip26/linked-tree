@@ -6,6 +6,16 @@ import java.util.Collections;
 public non-sealed interface LinkedTree extends LinkedFragment, LinkedNode {
 
     static LinkedTree EMPTY = new LinkedTree() {
+
+        @Override
+        public Collection<LinkedNode> nodes() {
+            return Collections.emptyList();
+        }
+
+        @Override
+        public Collection<Link> links() {
+            return Collections.emptyList();
+        }
     };
 
     @Override
@@ -23,10 +33,13 @@ public non-sealed interface LinkedTree extends LinkedFragment, LinkedNode {
      * 
      * @return a collection of root nodes
      */
-    default Collection<LinkedNode> nodes() {
-        return Collections.emptyList();
-    }
-    
+    Collection<LinkedNode> nodes();
+
+    /**
+     * expect a single root note
+     * 
+     * @return a root node
+     */
     default LinkedNode singleNode() {
         Collection<LinkedNode> nodes = nodes();
         if (nodes.size() != 1) {
@@ -40,9 +53,7 @@ public non-sealed interface LinkedTree extends LinkedFragment, LinkedNode {
      * 
      * @return a collection of links found in the tree
      */
-    default Collection<Link> links() {
-        return Collections.emptyList();
-    }
+    Collection<Link> links();
 
     // TODO predicates. i.e. terms???
 }

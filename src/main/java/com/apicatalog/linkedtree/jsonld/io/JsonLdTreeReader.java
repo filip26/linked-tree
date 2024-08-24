@@ -7,7 +7,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
+import com.apicatalog.linkedtree.Link;
 import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedLiteral;
@@ -41,10 +43,7 @@ public class JsonLdTreeReader {
     protected LinkedFragmentAdapter fragmentAdapter;
     protected Map<String, LinkedLiteralAdapter> literalAdapters;
 
-    protected Map<String, GenericLink> links;
-
     public JsonLdTreeReader() {
-        this.links = new HashMap<>();
         this.literalAdapters = new HashMap<>();
 //        this.nodeReaders = new ArrayList<>();
 //        this.valueReaders = new HashMap<>();
@@ -55,10 +54,46 @@ public class JsonLdTreeReader {
         if (jsonNodes.isEmpty()) {
             return LinkedTree.EMPTY;
         }
-        return GenericLinkedTree.of(readNodes(jsonNodes));
+
+        final Map<String, Link> links = new HashMap<>();
+
+        final LinkedTree tree = GenericLinkedTree.of(readNodes(jsonNodes, links), links);
+
+        for (final Link link : links.values()) {
+            ((GenericLink) link).target(adapt(((GenericLink) link), mergeTypes(link.fragments()), merge(link.fragments()), null));
+        }
+
+        return tree;
     }
 
-    public Collection<LinkedNode> readNodes(final JsonArray jsonNodes) {
+    protected static Collection<String> mergeTypes(Collection<LinkedFragment> fragments) {
+        return fragments.stream()
+                .map(LinkedFragment::type)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toSet());
+    }
+
+    protected static Map<String, LinkedContainer> merge(Collection<LinkedFragment> fragments) {
+
+        final Map<String, LinkedContainer> map = new HashMap<>(fragments.stream().map(LinkedFragment::terms)
+                .mapToInt(Collection::size).sum());
+
+        fragments.forEach(fragment -> toMap(fragment, map));
+
+        return map;
+    }
+
+    protected static Map<String, LinkedContainer> toMap(LinkedFragment fragment, final Map<String, LinkedContainer> map) {
+        if (fragment instanceof GenericLinkedFragment generic) {
+            map.putAll(generic.entries());
+        }
+        for (final String term : fragment.terms()) {
+            map.put(term, fragment.property(term));
+        }
+        return map;
+    }
+
+    public Collection<LinkedNode> readNodes(final JsonArray jsonNodes, Map<String, Link> links) {
 
         if (jsonNodes.isEmpty()) {
             return Collections.emptyList();
@@ -71,24 +106,24 @@ public class JsonLdTreeReader {
             if (jsonValue == null || !ValueType.OBJECT.equals(jsonValue.getValueType())) {
                 throw new IllegalArgumentException();
             }
-            nodes.add(readNode(jsonValue.asJsonObject()));
+            nodes.add(readNode(jsonValue.asJsonObject(), links));
         }
 
         return nodes;
     }
 
-    protected LinkedContainer readValueArray(JsonArray values) {
+    protected LinkedContainer readValueArray(JsonArray values, Map<String, Link> links) {
 
         final Collection<LinkedNode> data = new ArrayList<>(values.size());
 
-        for (JsonValue item : values) {
-            data.add(readValue(item));
+        for (final JsonValue item : values) {
+            data.add(readValue(item, links));
         }
 
         return GenericLinkedContainer.of(LinkedContainer.Type.UnorderedSet, data);
     }
 
-    protected LinkedNode readValue(JsonValue value) {
+    protected LinkedNode readValue(JsonValue value, Map<String, Link> links) {
 
 //      if (JsonUtils.isNotObject(value)) {
 //      throw new DocumentError(ErrorType.Invalid, "Document");
@@ -98,13 +133,13 @@ public class JsonLdTreeReader {
 
         return object.containsKey(JsonLdKeyword.VALUE)
                 ? readLiteral(object)
-                : readNode(object);
+                : readNode(object, links);
     }
 
-    protected LinkedNode readNode(JsonObject jsonObject) {
+    protected LinkedNode readNode(JsonObject jsonObject, Map<String, Link> links) {
 
         if (isContainer(jsonObject, JsonLdKeyword.LIST)) {
-            return readList(jsonObject);
+            return readList(jsonObject, links);
         }
 //        if (isContainer(jsonObject, Keywords.REVERSE)) {
 //            return readReverse(jsonObject);
@@ -113,7 +148,7 @@ public class JsonLdTreeReader {
             return readGraph(jsonObject);
         }
 
-        return readFragment(jsonObject);
+        return readFragment(jsonObject, links);
     }
 
     protected static boolean isContainer(JsonObject jsonObject, String name) {
@@ -122,14 +157,14 @@ public class JsonLdTreeReader {
     }
 
     // list is a collection attribute
-    protected LinkedContainer readList(JsonObject jsonObject) {
+    protected LinkedContainer readList(JsonObject jsonObject, Map<String, Link> links) {
 
         final JsonArray list = jsonObject.getJsonArray(JsonLdKeyword.LIST);
 
         final Collection<LinkedNode> nodes = new ArrayList<>(list.size());
 
-        for (JsonValue item : list) {
-            nodes.add(readValue(item));
+        for (final JsonValue item : list) {
+            nodes.add(readValue(item, links));
         }
 
         return GenericLinkedContainer.of(LinkedContainer.Type.OrderedList, nodes);
@@ -153,7 +188,9 @@ public class JsonLdTreeReader {
 
         final JsonArray graph = jsonObject.getJsonArray(JsonLdKeyword.GRAPH);
 
-        final Collection<LinkedNode> nodes = readNodes(graph);
+        final Map<String, Link> links = new HashMap<>();
+
+        final Collection<LinkedNode> nodes = readNodes(graph, links);
 
         String id = null;
         Collection<String> types = Collections.emptySet();
@@ -187,27 +224,31 @@ public class JsonLdTreeReader {
                 meta.put(entry.getKey(), entry.getValue());
 
             } else {
-                properties.put(entry.getKey(), readValueArray(entry.getValue().asJsonArray()));
+                properties.put(entry.getKey(), readValueArray(entry.getValue().asJsonArray(), links));
             }
         }
 
+        for (final Link link : links.values()) {
+            ((GenericLink) link).target(adapt(((GenericLink)link), mergeTypes(link.fragments()), merge(link.fragments()), null));
+        }
+
         if (id != null) {
-            final GenericLink link = getOrCreate(id);
+            final GenericLink link = getOrCreate(id, links);
             final GenericLinkedTree node = GenericLinkedTree.of(
                     link,
                     types,
                     properties,
                     nodes,
+                    links,
                     new JsonLdMeta(meta));
             link.add(node);
             return node;
         }
 
-        // TODO read as a separate tree
-        return GenericLinkedTree.of(null, types, properties, nodes, new JsonLdMeta(meta));
+        return GenericLinkedTree.of(null, types, properties, nodes, links, new JsonLdMeta(meta));
     }
 
-    protected LinkedFragment readFragment(JsonObject value) {
+    protected LinkedFragment readFragment(JsonObject value, Map<String, Link> links) {
 
         String id = null;
         Collection<String> types = Collections.emptySet();
@@ -237,12 +278,12 @@ public class JsonLdTreeReader {
                 meta.put(entry.getKey(), entry.getValue());
 
             } else {
-                properties.put(entry.getKey(), readValueArray(entry.getValue().asJsonArray()));
+                properties.put(entry.getKey(), readValueArray(entry.getValue().asJsonArray(), links));
             }
         }
 
         if (id != null) {
-            final GenericLink link = getOrCreate(id);
+            final GenericLink link = getOrCreate(id, links);
             final GenericLinkedFragment node = GenericLinkedFragment.of(
                     link,
                     types,
@@ -252,12 +293,20 @@ public class JsonLdTreeReader {
             return node;
         }
 
-        return GenericLinkedFragment.of(null, types, properties, new JsonLdMeta(meta));
+        return adapt(null, types, properties, new JsonLdMeta(meta));
     }
 
-    protected GenericLink getOrCreate(String uri) {
+    protected LinkedFragment adapt(GenericLink id, Collection<String> type, Map<String, LinkedContainer> data, Object meta) {
+        return GenericLinkedFragment.of(
+                id,
+                type,
+                data,
+                meta);
+    }
 
-        GenericLink link = links.get(uri);
+    protected static GenericLink getOrCreate(String uri, Map<String, Link> links) {
+
+        GenericLink link = (GenericLink) links.get(uri);
         if (link == null) {
             link = GenericLink.of(uri);
             links.put(uri, link);
