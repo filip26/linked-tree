@@ -30,11 +30,11 @@ import jakarta.json.stream.JsonGenerator;
 @TestMethodOrder(OrderAnnotation.class)
 class JsonLdLinkTest {
 
-    static JsonLdTreeReader READER = new JsonLdTreeReader()
-            .add(new Base64ByteArrayAdapter());
+    static JsonLdTreeReader READER = JsonLdTreeReader
+            .with(new Base64ByteArrayAdapter());
 
     @Test
-    void rootSingleLink() throws IOException, URISyntaxException {
+    void singleRootLink() throws IOException, URISyntaxException {
 
         JsonArray input = resource("custom/base64-1.jsonld");
 
@@ -48,6 +48,22 @@ class JsonLdLinkTest {
         assertNotNull(tree.links().iterator().next().target());
         assertTrue(tree.links().iterator().next().target().isFragment());
 
+    }
+
+    @Test
+    void signedVcLinks() throws IOException, URISyntaxException {
+
+        JsonArray input = resource("custom/signed-vc-1.jsonld");
+
+        var tree = READER.readExpanded(input);
+
+        assertNotNull(tree);
+        assertNotNull(tree.links());
+        assertEquals(3, tree.links().size());
+        assertNotNull(tree.links().iterator().next());
+        assertNotNull(tree.links().iterator().next().fragments());
+        assertNotNull(tree.links().iterator().next().target());
+        assertTrue(tree.links().iterator().next().target().isFragment());
     }
 
     static final JsonArray resource(String name) throws IOException, URISyntaxException {

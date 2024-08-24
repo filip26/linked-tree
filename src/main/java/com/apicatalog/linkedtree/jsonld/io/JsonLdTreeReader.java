@@ -2,11 +2,13 @@ package com.apicatalog.linkedtree.jsonld.io;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.apicatalog.linkedtree.Link;
@@ -43,10 +45,24 @@ public class JsonLdTreeReader {
     protected LinkedFragmentAdapter fragmentAdapter;
     protected Map<String, LinkedLiteralAdapter> literalAdapters;
 
-    public JsonLdTreeReader() {
-        this.literalAdapters = new HashMap<>();
-//        this.nodeReaders = new ArrayList<>();
-//        this.valueReaders = new HashMap<>();
+    protected JsonLdTreeReader() {
+    }
+
+    public static JsonLdTreeReader with(LinkedLiteralAdapter... literalAdapters) {
+        return with(null, literalAdapters);
+    }
+
+    public static JsonLdTreeReader with(LinkedFragmentAdapter fragmentAdapter, LinkedLiteralAdapter... literalAdapters) {
+        final JsonLdTreeReader reader = new JsonLdTreeReader();
+        reader.fragmentAdapter = fragmentAdapter;
+        reader.literalAdapters = literalAdapters != null
+                ? Arrays.stream(literalAdapters)
+                        .collect(
+                                Collectors.toMap(
+                                        LinkedLiteralAdapter::datatype,
+                                        Function.identity()))
+                : Collections.emptyMap();
+        return reader;
     }
 
     public LinkedTree readExpanded(JsonArray jsonNodes) {
@@ -229,7 +245,7 @@ public class JsonLdTreeReader {
         }
 
         for (final Link link : links.values()) {
-            ((GenericLink) link).target(adapt(((GenericLink)link), mergeTypes(link.fragments()), merge(link.fragments()), null));
+            ((GenericLink) link).target(adapt(((GenericLink) link), mergeTypes(link.fragments()), merge(link.fragments()), null));
         }
 
         if (id != null) {
@@ -297,6 +313,14 @@ public class JsonLdTreeReader {
     }
 
     protected LinkedFragment adapt(GenericLink id, Collection<String> type, Map<String, LinkedContainer> data, Object meta) {
+
+        if (fragmentAdapter != null && fragmentAdapter.accepts(id != null ? id.uri() : null, type)) {
+            final LinkedFragment fragment = fragmentAdapter.read(id, type, data, meta);
+            if (fragment != null) {
+                return fragment;
+            }
+        }
+
         return GenericLinkedFragment.of(
                 id,
                 type,
@@ -442,11 +466,6 @@ public class JsonLdTreeReader {
         }
 
         return ((JsonString) jsonType).getString();
-    }
-
-    public JsonLdTreeReader add(LinkedLiteralAdapter adapter) {
-        literalAdapters.put(adapter.datatype(), adapter);
-        return this;
     }
 
 //    protected LinkedFragment genericObject(JakartaNodeContext context, JsonObject value) {

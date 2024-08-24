@@ -35,8 +35,8 @@ import jakarta.json.stream.JsonGenerator;
 @TestMethodOrder(OrderAnnotation.class)
 class JsonLdReadWriteTest {
 
-    static JsonLdTreeReader READER = new JsonLdTreeReader()
-            .add(new Base64ByteArrayAdapter());
+    static JsonLdTreeReader READER = JsonLdTreeReader
+            .with(new VerifiableCredentialAdapter(), new Base64ByteArrayAdapter());
 
     static JsonLdTreeWriter WRITER = new JsonLdTreeWriter();
 
@@ -78,7 +78,6 @@ class JsonLdReadWriteTest {
                 });
     }
 
-    
     static final boolean compareJson(final String testCase, final JsonStructure result, final JsonStructure expected) {
 
         if (JsonLdComparison.equals(expected, result)) {

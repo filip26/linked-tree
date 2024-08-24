@@ -29,12 +29,14 @@ import jakarta.json.JsonWriter;
 import jakarta.json.JsonWriterFactory;
 import jakarta.json.stream.JsonGenerator;
 
-@DisplayName("JsonLd Custom Literal Suite")
+@DisplayName("JsonLd Adapters Suite")
 @TestMethodOrder(OrderAnnotation.class)
-class JsonLdCustomLiteralTest {
+class JsonLdAdaptersTest {
 
-    static JsonLdTreeReader READER = new JsonLdTreeReader()
-            .add(new Base64ByteArrayAdapter());
+    static JsonLdTreeReader READER = JsonLdTreeReader
+            .with(
+                    new VerifiableCredentialAdapter(),
+                    new Base64ByteArrayAdapter());
 
     static JsonLdTreeWriter WRITER = new JsonLdTreeWriter();
 
@@ -70,6 +72,33 @@ class JsonLdCustomLiteralTest {
         assertNotNull(output);
 
         assertTrue(compareJson("", copy, output));
+    }
+
+    @Test
+    void verifiableCredential() throws IOException, URISyntaxException {
+
+        JsonArray input = resource("custom/signed-vc-1.jsonld");
+
+        var tree = READER.readExpanded(input);
+
+        assertNotNull(tree);
+
+        VerifiableCredential vc = tree
+                .singleNode()
+                .asFragment()
+                .id()
+                .target()
+                .cast(VerifiableCredential.class)
+                ;
+
+        assertNotNull(vc);
+//        assertEquals("RW5jb2RlIHRvIEJhc2U2NCBmb3JtYXQ=", literal.value());
+//        assertTrue(literal instanceof ByteArrayValue);
+//        assertArrayEquals("Encode to Base64 format".getBytes(), ((ByteArrayValue) literal).byteArrayValue());
+//
+//        ((Base64ByteArray) literal).byteArrayValue("test X".getBytes());
+//        assertEquals("dGVzdCBY", literal.value());
+
     }
 
     static final JsonArray resource(String name) throws IOException, URISyntaxException {
