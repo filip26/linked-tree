@@ -38,4 +38,8 @@ public non-sealed interface LinkedContainer extends LinkedNode {
         }
         return nodes.iterator().next();
     }
+
+    default int size() {
+        return nodes().size();
+    }
 }

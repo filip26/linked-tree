@@ -25,8 +25,8 @@ import com.apicatalog.linkedtree.json.JsonLiteral;
 import com.apicatalog.linkedtree.json.JsonScalar;
 import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 import com.apicatalog.linkedtree.jsonld.primitive.JsonLdMeta;
-import com.apicatalog.linkedtree.primitive.GenericLangString;
-import com.apicatalog.linkedtree.primitive.GenericLink;
+import com.apicatalog.linkedtree.lang.ImmutableLangString;
+import com.apicatalog.linkedtree.primitive.MutableLink;
 import com.apicatalog.linkedtree.primitive.GenericLinkedContainer;
 import com.apicatalog.linkedtree.primitive.GenericLinkedFragment;
 import com.apicatalog.linkedtree.primitive.GenericLinkedLiteral;
@@ -76,7 +76,7 @@ public class JsonLdTreeReader {
         final LinkedTree tree = GenericLinkedTree.of(readNodes(jsonNodes, links), links);
 
         for (final Link link : links.values()) {
-            ((GenericLink) link).target(adapt(((GenericLink) link), mergeTypes(link.fragments()), merge(link.fragments()), null));
+            ((MutableLink) link).target(adapt(((MutableLink) link), mergeTypes(link.fragments()), merge(link.fragments()), null));
         }
 
         return tree;
@@ -245,11 +245,11 @@ public class JsonLdTreeReader {
         }
 
         for (final Link link : links.values()) {
-            ((GenericLink) link).target(adapt(((GenericLink) link), mergeTypes(link.fragments()), merge(link.fragments()), null));
+            ((MutableLink) link).target(adapt(((MutableLink) link), mergeTypes(link.fragments()), merge(link.fragments()), null));
         }
 
         if (id != null) {
-            final GenericLink link = getOrCreate(id, links);
+            final MutableLink link = getOrCreate(id, links);
             final GenericLinkedTree node = GenericLinkedTree.of(
                     link,
                     types,
@@ -257,7 +257,7 @@ public class JsonLdTreeReader {
                     nodes,
                     links,
                     new JsonLdMeta(meta));
-            link.add(node);
+            link.addFragment(node);
             return node;
         }
 
@@ -299,20 +299,20 @@ public class JsonLdTreeReader {
         }
 
         if (id != null) {
-            final GenericLink link = getOrCreate(id, links);
+            final MutableLink link = getOrCreate(id, links);
             final GenericLinkedFragment node = GenericLinkedFragment.of(
                     link,
                     types,
                     properties,
                     new JsonLdMeta(meta));
-            link.add(node);
+            link.addFragment(node);
             return node;
         }
 
         return adapt(null, types, properties, new JsonLdMeta(meta));
     }
 
-    protected LinkedFragment adapt(GenericLink id, Collection<String> type, Map<String, LinkedContainer> data, Object meta) {
+    protected LinkedFragment adapt(MutableLink id, Collection<String> type, Map<String, LinkedContainer> data, Object meta) {
 
         if (fragmentAdapter != null && fragmentAdapter.accepts(id != null ? id.uri() : null, type)) {
             final LinkedFragment fragment = fragmentAdapter.read(id, type, data, meta);
@@ -328,11 +328,11 @@ public class JsonLdTreeReader {
                 meta);
     }
 
-    protected static GenericLink getOrCreate(String uri, Map<String, Link> links) {
+    protected static MutableLink getOrCreate(String uri, Map<String, Link> links) {
 
-        GenericLink link = (GenericLink) links.get(uri);
+        MutableLink link = (MutableLink) links.get(uri);
         if (link == null) {
-            link = GenericLink.of(uri);
+            link = MutableLink.of(uri);
             links.put(uri, link);
         }
 
@@ -417,7 +417,7 @@ public class JsonLdTreeReader {
 
         if (XsdConstants.STRING.equals(datatype)) {
             // TODO direction
-            return GenericLangString.of(
+            return ImmutableLangString.of(
                     valueString,
                     getLiteralLanguage(valueJsonObject),
                     null,

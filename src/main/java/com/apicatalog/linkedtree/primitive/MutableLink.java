@@ -6,22 +6,20 @@ import java.util.Collection;
 import com.apicatalog.linkedtree.Link;
 import com.apicatalog.linkedtree.LinkedFragment;
 
-public class GenericLink implements Link {
+public class MutableLink implements Link {
 
-    protected String uri;
+    protected final String uri;
     protected Collection<LinkedFragment> fragments;
     protected LinkedFragment target;
 
-    protected GenericLink() {
-        // protected
+    protected MutableLink(String uri, Collection<LinkedFragment> fragments) {
+        this.uri = uri;
+        this.fragments = fragments;
+        this.target = null;
     }
 
-    public static GenericLink of(String uri) {
-        final GenericLink link = new GenericLink();
-        link.uri = uri;
-        link.fragments = new ArrayList<>();
-        link.target = null;
-        return link;
+    public static MutableLink of(String uri) {
+        return new MutableLink(uri, new ArrayList<>());
     }
 
     @Override
@@ -43,7 +41,7 @@ public class GenericLink implements Link {
         this.target = fragment;
     }
 
-    public void add(LinkedFragment node) {
+    public void addFragment(LinkedFragment node) {
         this.fragments.add(node);
     }
 }

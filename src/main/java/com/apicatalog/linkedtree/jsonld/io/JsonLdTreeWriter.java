@@ -13,8 +13,8 @@ import com.apicatalog.linkedtree.json.JsonLiteral;
 import com.apicatalog.linkedtree.json.JsonScalar;
 import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 import com.apicatalog.linkedtree.jsonld.primitive.JsonLdMeta;
+import com.apicatalog.linkedtree.lang.LangString;
 import com.apicatalog.linkedtree.literal.NumericValue;
-import com.apicatalog.linkedtree.literal.LangString;
 import com.apicatalog.linkedtree.rdf.RdfConstants;
 import com.apicatalog.linkedtree.xsd.XsdConstants;
 
@@ -49,7 +49,7 @@ public class JsonLdTreeWriter {
         return builder.build();
     }
 
-    public JsonObjectBuilder writeFragment(final LinkedFragment fragment, JsonObjectBuilder builder) {
+    JsonObjectBuilder writeFragment(final LinkedFragment fragment, JsonObjectBuilder builder) {
 
         if (fragment.id() != null) {
             builder.add("@id", fragment.id().uri().toString());
@@ -72,7 +72,7 @@ public class JsonLdTreeWriter {
         return builder;
     }
 
-    public JsonValue writeContainer(final LinkedContainer container) {
+    JsonValue writeContainer(final LinkedContainer container) {
 
         final JsonArrayBuilder array = Json.createArrayBuilder();
 
@@ -112,7 +112,7 @@ public class JsonLdTreeWriter {
         throw new IllegalStateException();
     }
 
-    public JsonValue writeLiteral(LinkedLiteral literal) {
+    JsonValue writeLiteral(LinkedLiteral literal) {
 
         final JsonObjectBuilder result = Json.createObjectBuilder();
 

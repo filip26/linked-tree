@@ -90,7 +90,8 @@ class JsonLdAdaptersTest {
                 .target()
                 .cast(VerifiableCredential.class)
                 ;
-
+        
+        
         assertNotNull(vc);
 //        assertEquals("RW5jb2RlIHRvIEJhc2U2NCBmb3JtYXQ=", literal.value());
 //        assertTrue(literal instanceof ByteArrayValue);

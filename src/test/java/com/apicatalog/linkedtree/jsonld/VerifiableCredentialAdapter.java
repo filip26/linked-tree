@@ -10,11 +10,11 @@ import com.apicatalog.linkedtree.io.LinkedFragmentAdapter;
 
 public class VerifiableCredentialAdapter implements LinkedFragmentAdapter {
 
-    static final String VCDM_10_TYPE = "https://www.w3.org/2018/credentials#VerifiableCredential";
+    static final String VC_TYPE = "https://www.w3.org/2018/credentials#VerifiableCredential";
     
     @Override
     public boolean accepts(String id, Collection<String> types) {
-        return types != null && types.contains(VCDM_10_TYPE);
+        return types != null && types.contains(VC_TYPE);
     }
 
     @Override
@@ -22,6 +22,8 @@ public class VerifiableCredentialAdapter implements LinkedFragmentAdapter {
 
         final VerifiableCredential vc = new VerifiableCredential();
         
+        final VerifiableCredential a = VerifiableCredential.of(false);
+        final AlumniCredential b = AlumniCredential.of(false);
         // TODO Auto-generated method stub
         return vc;
     }
