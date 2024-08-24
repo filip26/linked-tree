@@ -20,6 +20,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeWriter;
 import com.apicatalog.linkedtree.literal.ByteArrayValue;
+import com.apicatalog.linkedtree.xsd.adapter.XsdDateTimeAdapter;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -36,7 +37,9 @@ class JsonLdAdaptersTest {
     static JsonLdTreeReader READER = JsonLdTreeReader
             .with(
                     new VerifiableCredentialAdapter(),
-                    new Base64ByteArrayAdapter());
+                    new Base64ByteArrayAdapter(),
+                    new XsdDateTimeAdapter()
+                    );
 
     static JsonLdTreeWriter WRITER = new JsonLdTreeWriter();
 

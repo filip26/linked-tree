@@ -3,9 +3,9 @@ package com.apicatalog.linkedtree.primitive;
 import java.util.Collection;
 import java.util.Map;
 
-import com.apicatalog.linkedtree.Link;
 import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedFragment;
+import com.apicatalog.linkedtree.link.Link;
 
 public class GenericLinkedFragment implements LinkedFragment {
     

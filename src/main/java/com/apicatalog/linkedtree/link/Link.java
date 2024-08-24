@@ -1,6 +1,8 @@
-package com.apicatalog.linkedtree;
+package com.apicatalog.linkedtree.link;
 
 import java.util.Collection;
+
+import com.apicatalog.linkedtree.LinkedFragment;
 
 public interface Link {
 

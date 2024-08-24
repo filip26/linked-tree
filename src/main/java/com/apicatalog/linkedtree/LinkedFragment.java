@@ -3,6 +3,8 @@ package com.apicatalog.linkedtree;
 import java.util.Collection;
 import java.util.Collections;
 
+import com.apicatalog.linkedtree.link.Link;
+
 public non-sealed interface LinkedFragment extends LinkedNode {
 
     /**
