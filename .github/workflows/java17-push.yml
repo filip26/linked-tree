@@ -19,4 +19,5 @@ jobs:
       with:
         java-version: 17
     - name: Build with Maven
+      working-directory: ./java
       run: mvn package 
