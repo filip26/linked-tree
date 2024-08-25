@@ -12,7 +12,6 @@ import com.apicatalog.linkedtree.json.JsonInteger;
 import com.apicatalog.linkedtree.json.JsonLiteral;
 import com.apicatalog.linkedtree.json.JsonScalar;
 import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
-import com.apicatalog.linkedtree.jsonld.primitive.JsonLdMeta;
 import com.apicatalog.linkedtree.lang.LangString;
 import com.apicatalog.linkedtree.literal.NumericValue;
 import com.apicatalog.linkedtree.rdf.RdfConstants;

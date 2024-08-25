@@ -27,7 +27,6 @@ import com.apicatalog.linkedtree.json.JsonInteger;
 import com.apicatalog.linkedtree.json.JsonLiteral;
 import com.apicatalog.linkedtree.json.JsonScalar;
 import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
-import com.apicatalog.linkedtree.jsonld.primitive.JsonLdMeta;
 import com.apicatalog.linkedtree.lang.ImmutableLangString;
 import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.link.MutableLink;
@@ -139,7 +138,7 @@ public class JsonLdTreeReader {
             data.add(readValue(item, links));
         }
 
-        return GenericLinkedContainer.of(LinkedContainer.Type.UnorderedSet, data);
+        return new GenericLinkedContainer(LinkedContainer.Type.UnorderedSet, data);
     }
 
     protected LinkedNode readValue(JsonValue value, Map<String, Link> links) {
@@ -186,7 +185,7 @@ public class JsonLdTreeReader {
             nodes.add(readValue(item, links));
         }
 
-        return GenericLinkedContainer.of(LinkedContainer.Type.OrderedList, nodes);
+        return new GenericLinkedContainer(LinkedContainer.Type.OrderedList, nodes);
     }
 
     protected LinkedContainer readReverse(JsonObject jsonObject) {
@@ -253,7 +252,7 @@ public class JsonLdTreeReader {
 
         if (id != null) {
             final MutableLink link = getOrCreate(id, links);
-            final GenericLinkedTree node = GenericLinkedTree.of(
+            final GenericLinkedTree node = new GenericLinkedTree(
                     link,
                     types,
                     properties,
@@ -264,7 +263,7 @@ public class JsonLdTreeReader {
             return node;
         }
 
-        return GenericLinkedTree.of(null, types, properties, nodes, links, new JsonLdMeta(meta));
+        return new GenericLinkedTree(null, types, properties, nodes, links, new JsonLdMeta(meta));
     }
 
     protected LinkedFragment readFragment(JsonObject value, Map<String, Link> links) {
@@ -303,7 +302,7 @@ public class JsonLdTreeReader {
 
         if (id != null) {
             final MutableLink link = getOrCreate(id, links);
-            final GenericLinkedFragment node = GenericLinkedFragment.of(
+            final GenericLinkedFragment node = new GenericLinkedFragment(
                     link,
                     types,
                     properties,
@@ -324,7 +323,7 @@ public class JsonLdTreeReader {
             }
         }
 
-        return GenericLinkedFragment.of(
+        return new GenericLinkedFragment(
                 id,
                 type,
                 data,
@@ -420,14 +419,14 @@ public class JsonLdTreeReader {
 
         if (XsdConstants.STRING.equals(datatype)) {
             // TODO direction
-            return ImmutableLangString.of(
+            return new ImmutableLangString(
                     valueString,
                     getLiteralLanguage(valueJsonObject),
                     null,
                     getMeta(valueJsonObject, JsonLdKeyword.VALUE, JsonLdKeyword.TYPE, JsonLdKeyword.LANGUAGE));
         }
 
-        return GenericLinkedLiteral.of(
+        return new GenericLinkedLiteral(
                 valueString,
                 datatype,
                 getMeta(valueJsonObject, JsonLdKeyword.VALUE, JsonLdKeyword.TYPE));

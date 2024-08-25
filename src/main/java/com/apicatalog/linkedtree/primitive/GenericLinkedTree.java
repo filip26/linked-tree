@@ -9,72 +9,30 @@ import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.link.Link;
 
-public class GenericLinkedTree implements LinkedTree {
-
-    protected Link id;
-    protected Collection<String> types;
-    protected String index;
-    
-    protected Map<String, LinkedContainer> data;
-    
-    protected Collection<LinkedNode> nodes;
-    
-    protected Map<String, Link> links;
-    
-    protected Object meta;
-
-    protected GenericLinkedTree(Collection<LinkedNode> nodes) {
-        this.nodes = nodes;
-    }
+public record GenericLinkedTree(
+        Link id,
+        Collection<String> type,
+        Map<String, LinkedContainer> entries,
+        Collection<LinkedNode> nodes,
+        Map<String, Link> linkMap,
+        Object pi) implements LinkedTree {
 
     public static GenericLinkedTree of(Collection<LinkedNode> nodes, Map<String, Link> links) {
-        return of(null, Collections.emptySet(), Collections.emptyMap(), nodes, links, null);
-    }
-    
-    public static GenericLinkedTree of(Link id, Collection<String> type, Map<String, LinkedContainer> data, Collection<LinkedNode> nodes, Map<String, Link> links, Object meta) {
-        final GenericLinkedTree tree = new GenericLinkedTree(nodes);
-        tree.id = id;
-        tree.types = type;
-        tree.data = data;
-        tree.nodes = nodes;
-        tree.links = links;
-        tree.meta = meta;
-        return tree;    
-    }
-
-    @Override
-    public Link id() {
-        return id;
-    }
-
-    @Override
-    public Collection<String> type() {
-        return types;
+        return new GenericLinkedTree(null, Collections.emptySet(), Collections.emptyMap(), nodes, links, null);
     }
 
     @Override
     public Collection<String> terms() {
-        return data.keySet();
+        return entries.keySet();
     }
 
     @Override
     public LinkedContainer property(String term) {
-        return data.get(term);
-    }
-    
-
-    @Override
-    public Collection<LinkedNode> nodes() {
-        return nodes;
+        return entries.get(term);
     }
 
     @Override
     public Collection<Link> links() {
-        return links.values();
-    }
-    
-    @Override
-    public Object pi() {
-        return meta;
+        return linkMap.values();
     }
 }
