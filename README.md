@@ -16,7 +16,7 @@ Influenced by JSON-LD expanded and flattened document forms. Linked tree terms a
   * translation from/into different representations (JSON-LD, RDF forms, CBOR-LD, etc.)
   * language-agnostic
 
-## Model
+## LTDM
 
 ![Data Model](/doc/ltdm-0.0.1.png)
 
