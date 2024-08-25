@@ -8,12 +8,6 @@ Linked tree terms and values are fully expanded but only identifiable node fragm
 > The project is an experiment, please share feedback.
 
 
-## Status
-
-[![Java 17 CI](https://github.com/filip26/linked-tree/actions/workflows/java17-push.yml/badge.svg)](https://github.com/filip26/linked-tree/actions/workflows/java17-push.yml)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-
-
 ## Goals
 
   * easily work with linked data programmatically  
@@ -21,3 +15,13 @@ Linked tree terms and values are fully expanded but only identifiable node fragm
   * finest processing granularity, i.e. a statement level
   * translation from/into different representations (JSON-LD, RDF forms, CBOR-LD, etc.)
   * language-agnostic
+
+## Model
+
+![Data Model](/doc/ltdm-0.0.1.png)
+
+
+## Status
+
+[![Java 17 CI](https://github.com/filip26/linked-tree/actions/workflows/java17-push.yml/badge.svg)](https://github.com/filip26/linked-tree/actions/workflows/java17-push.yml)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
