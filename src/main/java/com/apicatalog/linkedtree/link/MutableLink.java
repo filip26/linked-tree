@@ -27,7 +27,7 @@ public class MutableLink implements Link {
     }
 
     @Override
-    public Collection<LinkedFragment> fragments() {
+    public Collection<LinkedFragment> refs() {
         return fragments;
     }
 

@@ -3,9 +3,10 @@ package com.apicatalog.linkedtree.xsd;
 import java.time.Instant;
 
 import com.apicatalog.linkedtree.LinkedLiteral;
+import com.apicatalog.linkedtree.literal.DateTimeValue;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 
-public class XsdDateTime implements LinkedLiteral {
+public class XsdDateTime implements LinkedLiteral, DateTimeValue {
 
     public static final String TYPE = XsdConstants.DATE_TIME;
 
@@ -33,6 +34,7 @@ public class XsdDateTime implements LinkedLiteral {
         return new XsdDateTime(datetime, pi);
     }
 
+    @Override
     public Instant datetime() {
         if (datetime == null && value != null) {
             // TODO check
@@ -43,7 +45,7 @@ public class XsdDateTime implements LinkedLiteral {
     }
 
     @Override
-    public String value() {
+    public String lexicalValue() {
         if (value == null && datetime != null) {
             // TODO
         }

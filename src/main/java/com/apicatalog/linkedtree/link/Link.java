@@ -13,7 +13,7 @@ public interface Link {
      * 
      * @return a collection of fragments in a tree
      */
-    Collection<LinkedFragment> fragments();
+    Collection<LinkedFragment> refs();
 
     /**
      * A fragment composed of all fragments - adapted if an adapter is present

@@ -17,7 +17,7 @@ public non-sealed interface LinkedLiteral extends LinkedNode {
      *
      * @return lexical value, never <code>null</code>
      */
-    String value();
+    String lexicalValue();
 
     /**
      * An absolute IRI denoting the datatype IRI of the literal.

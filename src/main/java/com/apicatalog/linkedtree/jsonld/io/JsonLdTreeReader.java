@@ -30,10 +30,10 @@ import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 import com.apicatalog.linkedtree.lang.ImmutableLangString;
 import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.link.MutableLink;
+import com.apicatalog.linkedtree.literal.ImmutableLinkedLiteral;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 import com.apicatalog.linkedtree.primitive.GenericLinkedContainer;
 import com.apicatalog.linkedtree.primitive.GenericLinkedFragment;
-import com.apicatalog.linkedtree.primitive.GenericLinkedLiteral;
 import com.apicatalog.linkedtree.primitive.GenericLinkedTree;
 import com.apicatalog.linkedtree.xsd.XsdConstants;
 
@@ -79,7 +79,7 @@ public class JsonLdTreeReader {
         final LinkedTree tree = GenericLinkedTree.of(readNodes(jsonNodes, links), links);
 
         for (final Link link : links.values()) {
-            ((MutableLink) link).target(adapt(((MutableLink) link), mergeTypes(link.fragments()), merge(link.fragments()), null));
+            ((MutableLink) link).target(adapt(((MutableLink) link), mergeTypes(link.refs()), merge(link.refs()), null));
         }
 
         return tree;
@@ -248,7 +248,7 @@ public class JsonLdTreeReader {
         }
 
         for (final Link link : links.values()) {
-            ((MutableLink) link).target(adapt(((MutableLink) link), mergeTypes(link.fragments()), merge(link.fragments()), null));
+            ((MutableLink) link).target(adapt(((MutableLink) link), mergeTypes(link.refs()), merge(link.refs()), null));
         }
 
         if (id != null) {
@@ -427,7 +427,7 @@ public class JsonLdTreeReader {
                     getPi(valueJsonObject, JsonLdKeyword.VALUE, JsonLdKeyword.TYPE, JsonLdKeyword.LANGUAGE));
         }
 
-        return new GenericLinkedLiteral(
+        return new ImmutableLinkedLiteral(
                 valueString,
                 datatype,
                 getPi(valueJsonObject, JsonLdKeyword.VALUE, JsonLdKeyword.TYPE));

@@ -25,7 +25,7 @@ public class JsonLiteral implements LinkedLiteral {
     }
 
     @Override
-    public String value() {
+    public String lexicalValue() {
         if (value == null) {
             value = JsonCanonicalizer.canonicalize(json);
         }

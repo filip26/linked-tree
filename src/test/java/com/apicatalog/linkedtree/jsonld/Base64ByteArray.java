@@ -24,7 +24,7 @@ class Base64ByteArray implements ByteArrayValue {
     }
 
     @Override
-    public String value() {
+    public String lexicalValue() {
         if (value == null && byteArray != null) {
             value = Base64.getEncoder().encodeToString(byteArray);
         }

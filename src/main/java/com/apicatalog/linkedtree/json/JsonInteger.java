@@ -28,7 +28,7 @@ public class JsonInteger implements NumericValue, IntegerValue {
     }
 
     @Override
-    public String value() {
+    public String lexicalValue() {
         return json.bigIntegerValue().toString();
     }
 

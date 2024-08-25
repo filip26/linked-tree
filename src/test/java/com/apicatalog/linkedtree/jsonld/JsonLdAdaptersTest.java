@@ -66,12 +66,12 @@ class JsonLdAdaptersTest {
                 .cast(ByteArrayValue.class);
 
         assertNotNull(literal);
-        assertEquals("RW5jb2RlIHRvIEJhc2U2NCBmb3JtYXQ=", literal.value());
+        assertEquals("RW5jb2RlIHRvIEJhc2U2NCBmb3JtYXQ=", literal.lexicalValue());
         assertTrue(literal instanceof ByteArrayValue);
         assertArrayEquals("Encode to Base64 format".getBytes(), ((ByteArrayValue) literal).byteArrayValue());
 
         ((Base64ByteArray) literal).byteArrayValue("test X".getBytes());
-        assertEquals("dGVzdCBY", literal.value());
+        assertEquals("dGVzdCBY", literal.lexicalValue());
 
         JsonArray copy = WRITER.writeExpanded(tree);
 
@@ -106,7 +106,7 @@ class JsonLdAdaptersTest {
         })), vc.type());
 
         assertEquals(1, vc.name.size());
-        assertEquals("Alumni Credential", vc.name.single().value());
+        assertEquals("Alumni Credential", vc.name.single().lexicalValue());
         assertNull(vc.name.single().language());
 
         assertEquals(1, vc.name.strings().size());

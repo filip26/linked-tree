@@ -46,7 +46,7 @@ class JsonLdLinkTest {
         assertNotNull(tree.links());
         assertEquals(1, tree.links().size());
         assertNotNull(tree.links().iterator().next());
-        assertNotNull(tree.links().iterator().next().fragments());
+        assertNotNull(tree.links().iterator().next().refs());
         assertNotNull(tree.links().iterator().next().target());
         assertTrue(tree.links().iterator().next().target().isFragment());
 
@@ -63,7 +63,7 @@ class JsonLdLinkTest {
         assertNotNull(tree.links());
         assertEquals(3, tree.links().size());
         assertNotNull(tree.links().iterator().next());
-        assertNotNull(tree.links().iterator().next().fragments());
+        assertNotNull(tree.links().iterator().next().refs());
         assertNotNull(tree.links().iterator().next().target());
         assertTrue(tree.links().iterator().next().target().isFragment());
     }

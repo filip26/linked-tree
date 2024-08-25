@@ -38,7 +38,7 @@ public class JsonDecimal implements NumericValue, DoubleValue {
     }
     
     @Override
-    public String value() {
+    public String lexicalValue() {
         return xsdNumberFormat.format(json.bigDecimalValue());
     }
 

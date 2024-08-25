@@ -12,7 +12,7 @@ public record JsonScalar(
         ) implements LinkedLiteral {
 
     @Override
-    public String value() {
+    public String lexicalValue() {
         return jsonValue.toString();
     }
 

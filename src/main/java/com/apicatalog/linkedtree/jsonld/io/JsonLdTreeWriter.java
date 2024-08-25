@@ -122,18 +122,18 @@ public class JsonLdTreeWriter {
 
             // 2.4.1.
             if (XsdConstants.STRING.equals(literal.datatype())) {
-                convertedValue = Json.createValue(literal.value());
+                convertedValue = Json.createValue(literal.lexicalValue());
 
             } else if (literal instanceof JsonScalar jsonScalar) {
                 convertedValue = jsonScalar.jsonValue();
 
             } else if (XsdConstants.BOOLEAN.equals(literal.datatype())) {
 
-                if ("true".equalsIgnoreCase(literal.value())) {
+                if ("true".equalsIgnoreCase(literal.lexicalValue())) {
 
                     convertedValue = JsonValue.TRUE;
 
-                } else if ("false".equalsIgnoreCase(literal.value())) {
+                } else if ("false".equalsIgnoreCase(literal.lexicalValue())) {
 
                     convertedValue = JsonValue.FALSE;
 
@@ -148,7 +148,7 @@ public class JsonLdTreeWriter {
 
             } else if (XsdConstants.INTEGER.equals(literal.datatype()) || XsdConstants.INT.equals(literal.datatype()) || XsdConstants.LONG.equals(literal.datatype())) {
 
-                convertedValue = Json.createValue(Long.parseLong(literal.value()));
+                convertedValue = Json.createValue(Long.parseLong(literal.lexicalValue()));
 
             } else if (literal instanceof JsonDecimal jsonDecimal) {
 
@@ -156,7 +156,7 @@ public class JsonLdTreeWriter {
 
             } else if (XsdConstants.DOUBLE.equals(literal.datatype()) || XsdConstants.FLOAT.equals(literal.datatype())) {
 
-                convertedValue = Json.createValue(Double.parseDouble(literal.value()));
+                convertedValue = Json.createValue(Double.parseDouble(literal.lexicalValue()));
 
             } else if (literal instanceof NumericValue numericValue) {
 
@@ -168,7 +168,7 @@ public class JsonLdTreeWriter {
                 type = JsonLdKeyword.JSON;
 
             } else if (RdfConstants.JSON.equals(literal.datatype())) {
-                try (JsonParser parser = Json.createParser(new StringReader(literal.value()))) {
+                try (JsonParser parser = Json.createParser(new StringReader(literal.lexicalValue()))) {
 
                     parser.next();
 
@@ -227,7 +227,7 @@ public class JsonLdTreeWriter {
 
         result.add(JsonLdKeyword.VALUE, (convertedValue != null)
                 ? convertedValue
-                : Json.createValue(literal.value()));
+                : Json.createValue(literal.lexicalValue()));
 
         if (type != null) {
             result.add(JsonLdKeyword.TYPE, Json.createValue(type));
