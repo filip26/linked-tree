@@ -6,6 +6,7 @@ import java.util.Locale;
 
 import com.apicatalog.linkedtree.literal.DoubleValue;
 import com.apicatalog.linkedtree.literal.NumericValue;
+import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 import com.apicatalog.linkedtree.xsd.XsdConstants;
 
 public class JsonDecimal implements NumericValue, DoubleValue {
@@ -18,21 +19,21 @@ public class JsonDecimal implements NumericValue, DoubleValue {
     
     protected jakarta.json.JsonNumber json;
     protected String datatype;
-    protected Object meta;
+    protected ProcessingInstruction pi;
     
     protected JsonDecimal() {
         // protected
     }
     
-    public static JsonDecimal of(jakarta.json.JsonNumber jsonNumber, Object meta) {
-        return of(jsonNumber, XsdConstants.DOUBLE, meta);
+    public static JsonDecimal of(jakarta.json.JsonNumber jsonNumber, ProcessingInstruction pi) {
+        return of(jsonNumber, XsdConstants.DOUBLE, pi);
     }
     
-    public static JsonDecimal of(jakarta.json.JsonNumber jsonNumber, String datatype, Object meta) {
+    public static JsonDecimal of(jakarta.json.JsonNumber jsonNumber, String datatype, ProcessingInstruction pi) {
         final JsonDecimal number = new JsonDecimal();
         number.json = jsonNumber;
         number.datatype = datatype;
-        number.meta = meta;
+        number.pi = pi;
         return number;
     }
     
@@ -54,6 +55,11 @@ public class JsonDecimal implements NumericValue, DoubleValue {
     @Override
     public double doubleValue() {
         return json.doubleValue();
+    }
+
+    @Override
+    public ProcessingInstruction pi() {
+        return pi;
     }
 
 }

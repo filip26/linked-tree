@@ -3,28 +3,39 @@ package com.apicatalog.linkedtree.xsd;
 import java.time.Instant;
 
 import com.apicatalog.linkedtree.LinkedLiteral;
+import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 
 public class XsdDateTime implements LinkedLiteral {
 
     public static final String TYPE = XsdConstants.DATE_TIME;
-    
+
     protected Instant datetime;
     protected String value;
-    protected Object meta;
+    protected ProcessingInstruction pi;
 
-    protected XsdDateTime(String value, Object meta) {
+    protected XsdDateTime(String value, ProcessingInstruction pi) {
         this.value = value;
-        this.meta = meta;
+        this.pi = pi;
         this.datetime = null;
     }
 
-    public static XsdDateTime of(String value, Object meta) {
-        return new XsdDateTime(value, meta);
+    protected XsdDateTime(Instant datetime, ProcessingInstruction pi) {
+        this.value = null;
+        this.pi = pi;
+        this.datetime = datetime;
+    }
+
+    public static XsdDateTime of(String value, ProcessingInstruction pi) {
+        return new XsdDateTime(value, pi);
+    }
+
+    public static XsdDateTime of(Instant datetime, ProcessingInstruction pi) {
+        return new XsdDateTime(datetime, pi);
     }
 
     public Instant datetime() {
         if (datetime == null && value != null) {
-            //TODO check
+            // TODO check
             datetime = Instant.parse(value);
         }
 
@@ -34,7 +45,7 @@ public class XsdDateTime implements LinkedLiteral {
     @Override
     public String value() {
         if (value == null && datetime != null) {
-            //TODO
+            // TODO
         }
         return value;
     }
@@ -53,9 +64,9 @@ public class XsdDateTime implements LinkedLiteral {
         this.datetime = datetime;
         this.value = null;
     }
-    
+
     @Override
-    public Object pi() {
-        return meta;
+    public ProcessingInstruction pi() {
+        return pi;
     }
 }

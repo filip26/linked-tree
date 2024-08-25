@@ -59,8 +59,7 @@ public class JsonLdTreeWriter {
         }
 
         if (fragment.pi() != null
-                && fragment.pi() instanceof JsonLdMeta meta) {
-
+                && fragment.pi() instanceof JsonLdPi meta) {
             meta.write(builder);
         }
 
@@ -235,7 +234,7 @@ public class JsonLdTreeWriter {
         }
 
         if (literal.pi() != null
-                && literal.pi() instanceof JsonLdMeta meta) {
+                && literal.pi() instanceof JsonLdPi meta) {
             meta.write(result);
         }
 

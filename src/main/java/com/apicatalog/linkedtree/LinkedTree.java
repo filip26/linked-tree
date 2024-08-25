@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import com.apicatalog.linkedtree.link.Link;
+import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 
 public non-sealed interface LinkedTree extends LinkedFragment, LinkedNode {
 
@@ -71,4 +72,9 @@ public non-sealed interface LinkedTree extends LinkedFragment, LinkedNode {
      * @return a collection of links found in the tree
      */
     Collection<Link> links();
+    
+    @Override
+    default ProcessingInstruction pi() {
+        return null;
+    }
 }

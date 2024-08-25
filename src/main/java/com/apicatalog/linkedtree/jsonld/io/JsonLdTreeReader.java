@@ -30,6 +30,7 @@ import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 import com.apicatalog.linkedtree.lang.ImmutableLangString;
 import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.link.MutableLink;
+import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 import com.apicatalog.linkedtree.primitive.GenericLinkedContainer;
 import com.apicatalog.linkedtree.primitive.GenericLinkedFragment;
 import com.apicatalog.linkedtree.primitive.GenericLinkedLiteral;
@@ -138,7 +139,7 @@ public class JsonLdTreeReader {
             data.add(readValue(item, links));
         }
 
-        return new GenericLinkedContainer(LinkedContainer.Type.UnorderedSet, data);
+        return new GenericLinkedContainer(LinkedContainer.Type.UnorderedSet, data, null);
     }
 
     protected LinkedNode readValue(JsonValue value, Map<String, Link> links) {
@@ -185,7 +186,7 @@ public class JsonLdTreeReader {
             nodes.add(readValue(item, links));
         }
 
-        return new GenericLinkedContainer(LinkedContainer.Type.OrderedList, nodes);
+        return new GenericLinkedContainer(LinkedContainer.Type.OrderedList, nodes, null);
     }
 
     protected LinkedContainer readReverse(JsonObject jsonObject) {
@@ -258,12 +259,12 @@ public class JsonLdTreeReader {
                     properties,
                     nodes,
                     links,
-                    new JsonLdMeta(meta));
+                    new JsonLdPi(meta));
             link.addFragment(node);
             return node;
         }
 
-        return new GenericLinkedTree(null, types, properties, nodes, links, new JsonLdMeta(meta));
+        return new GenericLinkedTree(null, types, properties, nodes, links, new JsonLdPi(meta));
     }
 
     protected LinkedFragment readFragment(JsonObject value, Map<String, Link> links) {
@@ -306,18 +307,18 @@ public class JsonLdTreeReader {
                     link,
                     types,
                     properties,
-                    new JsonLdMeta(meta));
+                    new JsonLdPi(meta));
             link.addFragment(node);
             return node;
         }
 
-        return adapt(null, types, properties, new JsonLdMeta(meta));
+        return adapt(null, types, properties, new JsonLdPi(meta));
     }
 
-    protected LinkedFragment adapt(MutableLink id, Collection<String> type, Map<String, LinkedContainer> data, Object meta) {
+    protected LinkedFragment adapt(MutableLink id, Collection<String> type, Map<String, LinkedContainer> data, ProcessingInstruction pi) {
 
         if (fragmentAdapter != null && fragmentAdapter.accepts(id != null ? id.uri() : null, type)) {
-            final LinkedFragment fragment = fragmentAdapter.read(id, type, data, meta);
+            final LinkedFragment fragment = fragmentAdapter.read(id, type, data, pi);
             if (fragment != null) {
                 return fragment;
             }
@@ -327,7 +328,7 @@ public class JsonLdTreeReader {
                 id,
                 type,
                 data,
-                meta);
+                pi);
     }
 
     protected static MutableLink getOrCreate(String uri, Map<String, Link> links) {
@@ -364,17 +365,17 @@ public class JsonLdTreeReader {
                         : null;
 
         if (JsonLdKeyword.JSON.equals(datatype)) {
-            return JsonLiteral.of(value, getMeta(valueJsonObject, JsonLdKeyword.VALUE, JsonLdKeyword.TYPE));
+            return JsonLiteral.of(value, getPi(valueJsonObject, JsonLdKeyword.VALUE, JsonLdKeyword.TYPE));
 
         } else if (value != null &&
                 (ValueType.TRUE.equals(value.getValueType())
                         || ValueType.FALSE.equals(value.getValueType()))) {
 
-            return JsonScalar.of(value,
+            return new JsonScalar(value,
                     datatype != null
                             ? datatype
                             : XsdConstants.BOOLEAN,
-                    getMeta(valueJsonObject, JsonLdKeyword.TYPE, JsonLdKeyword.VALUE));
+                    getPi(valueJsonObject, JsonLdKeyword.TYPE, JsonLdKeyword.VALUE));
 
         } else if (value != null && ValueType.NUMBER.equals(value.getValueType())) {
 
@@ -389,7 +390,7 @@ public class JsonLdTreeReader {
                         datatype != null
                                 ? datatype
                                 : XsdConstants.DOUBLE,
-                        getMeta(valueJsonObject, JsonLdKeyword.TYPE, JsonLdKeyword.VALUE));
+                        getPi(valueJsonObject, JsonLdKeyword.TYPE, JsonLdKeyword.VALUE));
 
             } else {
                 return JsonInteger.of(
@@ -397,7 +398,7 @@ public class JsonLdTreeReader {
                         datatype != null
                                 ? datatype
                                 : XsdConstants.INTEGER,
-                        getMeta(valueJsonObject, JsonLdKeyword.TYPE, JsonLdKeyword.VALUE));
+                        getPi(valueJsonObject, JsonLdKeyword.TYPE, JsonLdKeyword.VALUE));
             }
 
         }
@@ -414,7 +415,7 @@ public class JsonLdTreeReader {
 
         final LinkedLiteralReader adapter = literalAdapters.get(datatype);
         if (adapter != null) {
-            return adapter.read(valueString, getMeta(valueJsonObject, JsonLdKeyword.VALUE, JsonLdKeyword.TYPE));
+            return adapter.read(valueString, getPi(valueJsonObject, JsonLdKeyword.VALUE, JsonLdKeyword.TYPE));
         }
 
         if (XsdConstants.STRING.equals(datatype)) {
@@ -423,25 +424,25 @@ public class JsonLdTreeReader {
                     valueString,
                     getLiteralLanguage(valueJsonObject),
                     null,
-                    getMeta(valueJsonObject, JsonLdKeyword.VALUE, JsonLdKeyword.TYPE, JsonLdKeyword.LANGUAGE));
+                    getPi(valueJsonObject, JsonLdKeyword.VALUE, JsonLdKeyword.TYPE, JsonLdKeyword.LANGUAGE));
         }
 
         return new GenericLinkedLiteral(
                 valueString,
                 datatype,
-                getMeta(valueJsonObject, JsonLdKeyword.VALUE, JsonLdKeyword.TYPE));
+                getPi(valueJsonObject, JsonLdKeyword.VALUE, JsonLdKeyword.TYPE));
     }
 
-    protected static JsonLdMeta getMeta(JsonObject valueJsonObject, String... filter) {
-        final Map<String, JsonValue> meta = new HashMap<>();
+    protected static JsonLdPi getPi(JsonObject valueJsonObject, String... filter) {
+        final Map<String, JsonValue> pi = new HashMap<>();
 
         for (final Map.Entry<String, JsonValue> jsonEntry : valueJsonObject.entrySet()) {
             if (JsonLdKeyword.anyMatch(jsonEntry.getKey(), filter)) {
                 continue;
             }
-            meta.put(jsonEntry.getKey(), jsonEntry.getValue());
+            pi.put(jsonEntry.getKey(), jsonEntry.getValue());
         }
-        return new JsonLdMeta(meta);
+        return new JsonLdPi(pi);
     }
 
     protected static String getLiteralDataType(JsonObject valueObject) {
@@ -510,17 +511,17 @@ public class JsonLdTreeReader {
             this.literalMap = new LinkedHashMap<>();
         }
 
-        public Builder add(String type, LinkedFragmentReader reader) {
+        public Builder with(String type, LinkedFragmentReader reader) {
             this.fragmentMap.put(type, reader);
             return this;
         }
 
-        public Builder add(LinkedLiteralAdapter adapter) {
+        public Builder with(LinkedLiteralAdapter adapter) {
             this.literalMap.put(adapter.datatype(), adapter);
             return this;
         }
 
-        public Builder add(String datatype, LinkedLiteralReader reader) {
+        public Builder with(String datatype, LinkedLiteralReader reader) {
             this.literalMap.put(datatype, reader);
             return this;
         }

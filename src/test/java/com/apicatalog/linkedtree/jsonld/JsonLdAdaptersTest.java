@@ -39,9 +39,9 @@ import jakarta.json.stream.JsonGenerator;
 class JsonLdAdaptersTest {
 
     static JsonLdTreeReader READER = JsonLdTreeReader.create()
-            .add(VerifiableCredential.TYPE, VerifiableCredential::of)
-            .add(new Base64ByteArrayAdapter())
-            .add(XsdDateTime.TYPE, XsdDateTime::of)
+            .with(VerifiableCredential.TYPE, VerifiableCredential::of)
+            .with(Base64ByteArray.TYPE, Base64ByteArray::of)
+            .with(XsdDateTime.TYPE, XsdDateTime::of)
             .build();
 
     static JsonLdTreeWriter WRITER = new JsonLdTreeWriter();

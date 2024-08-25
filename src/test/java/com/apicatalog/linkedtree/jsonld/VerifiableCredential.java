@@ -9,6 +9,7 @@ import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.lang.LangStringSelector;
 import com.apicatalog.linkedtree.lang.LanguageMap;
 import com.apicatalog.linkedtree.link.Link;
+import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 import com.apicatalog.linkedtree.xsd.XsdDateTime;
 
 public class VerifiableCredential implements LinkedFragment {
@@ -27,7 +28,7 @@ public class VerifiableCredential implements LinkedFragment {
     protected Collection<String> type;
     protected Map<String, LinkedContainer> properties;
 
-    protected Object pi;
+    protected ProcessingInstruction pi;
 
     protected VerifiableCredential(Link id, Collection<String> type, Map<String, LinkedContainer> properties) {
         this.id = id;
@@ -35,11 +36,11 @@ public class VerifiableCredential implements LinkedFragment {
         this.properties = properties;
     }
 
-    public static VerifiableCredential of(Link id, Collection<String> type, Map<String, LinkedContainer> properties, Object meta) {
-        return setup(new VerifiableCredential(id, type, properties), properties, meta);
+    public static VerifiableCredential of(Link id, Collection<String> type, Map<String, LinkedContainer> properties, ProcessingInstruction pi) {
+        return setup(new VerifiableCredential(id, type, properties), properties, pi);
     }
 
-    protected static VerifiableCredential setup(VerifiableCredential credential, Map<String, LinkedContainer> properties, Object meta) {
+    protected static VerifiableCredential setup(VerifiableCredential credential, Map<String, LinkedContainer> properties, ProcessingInstruction pi) {
 
         credential.name = getLangMap(properties, "https://schema.org/name");
         credential.description = getLangMap(properties, "https://schema.org/description");
@@ -58,6 +59,8 @@ public class VerifiableCredential implements LinkedFragment {
                         .datetime()
                 : null;
 
+        credential.pi = pi;
+        
         return credential;
     }
 
@@ -83,7 +86,7 @@ public class VerifiableCredential implements LinkedFragment {
     }
 
     @Override
-    public Object pi() {
+    public ProcessingInstruction pi() {
         return pi;
     }
 

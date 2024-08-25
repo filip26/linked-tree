@@ -3,6 +3,8 @@ package com.apicatalog.linkedtree;
 import java.util.Collection;
 import java.util.Collections;
 
+import com.apicatalog.linkedtree.pi.ProcessingInstruction;
+
 public non-sealed interface LinkedContainer extends LinkedNode {
 
     public static LinkedContainer EMPTY = new LinkedContainer() {
@@ -51,5 +53,9 @@ public non-sealed interface LinkedContainer extends LinkedNode {
     default <T> T singleLiteral(Class<T> clazz) {
         return (T)single();
     }
-
+    
+    @Override
+    default ProcessingInstruction pi() {
+        return null;
+    }
 }

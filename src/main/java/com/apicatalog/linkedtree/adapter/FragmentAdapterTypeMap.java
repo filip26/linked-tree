@@ -3,54 +3,52 @@ package com.apicatalog.linkedtree.adapter;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 
 import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.link.Link;
+import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 
 public record FragmentAdapterTypeMap(
-        Map<String, LinkedFragmentReader> typeMap
-        ) implements LinkedFragmentAdapter {
+        Map<String, LinkedFragmentReader> typeMap) implements LinkedFragmentAdapter {
 
-    public static class Builder {
-        
-        protected Map<String, LinkedFragmentReader> typeMap;
-        
-        public Builder() {
-            this.typeMap = new LinkedHashMap<>();
-        }
-        
-        public Builder add(String type, LinkedFragmentReader reader) {
-            this.typeMap.put(type, reader);
-            return this;
-        }
-        
-        public FragmentAdapterTypeMap build() {
-            return new FragmentAdapterTypeMap(typeMap);
-        }
-        
-    }
-    
     public static final Builder create() {
         return new Builder();
     }
-    
+
     @Override
     public boolean accepts(String id, Collection<String> types) {
         return types.stream().anyMatch(typeMap::containsKey);
     }
 
     @Override
-    public LinkedFragment read(Link id, Collection<String> types, Map<String, LinkedContainer> properties, Object meta) {
+    public LinkedFragment read(final Link id, final Collection<String> types, final Map<String, LinkedContainer> properties, ProcessingInstruction pi) {
+        return typeMap.keySet()
+                .stream()
+                .filter(types::contains)
+                .findFirst()
+                .map(typeMap::get)
+                .map(reader -> reader.read(id, types, properties, pi))
+                .orElse(null);
+    }
 
-        Optional<LinkedFragmentReader> reader = types.stream().filter(typeMap::containsKey).map(typeMap::get).findFirst();
+    static class Builder {
 
-        if (reader.isPresent()) {
-            return reader.get().read(id, types, properties, meta);
+        protected Map<String, LinkedFragmentReader> typeMap;
+
+        public Builder() {
+            this.typeMap = new LinkedHashMap<>();
         }
-        
-        return null;
+
+        public Builder add(String type, LinkedFragmentReader reader) {
+            this.typeMap.put(type, reader);
+            return this;
+        }
+
+        public FragmentAdapterTypeMap build() {
+            return new FragmentAdapterTypeMap(typeMap);
+        }
+
     }
 
 }

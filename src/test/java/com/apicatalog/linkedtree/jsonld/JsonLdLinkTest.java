@@ -31,7 +31,9 @@ import jakarta.json.stream.JsonGenerator;
 class JsonLdLinkTest {
 
     static JsonLdTreeReader READER = JsonLdTreeReader
-            .with(new Base64ByteArrayAdapter());
+            .create()
+            .with(Base64ByteArray.TYPE, Base64ByteArray::of)
+            .build();
 
     @Test
     void singleRootLink() throws IOException, URISyntaxException {

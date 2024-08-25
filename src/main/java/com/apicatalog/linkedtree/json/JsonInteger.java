@@ -1,6 +1,7 @@
 package com.apicatalog.linkedtree.json;
 
 import com.apicatalog.linkedtree.literal.NumericValue;
+import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 import com.apicatalog.linkedtree.xsd.XsdConstants;
 import com.apicatalog.linkedtree.literal.IntegerValue;
 
@@ -8,24 +9,24 @@ public class JsonInteger implements NumericValue, IntegerValue {
 
     protected jakarta.json.JsonNumber json;
     protected String datatype;
-    protected Object meta;
-    
+    protected ProcessingInstruction pi;
+
     protected JsonInteger() {
         // protected
     }
-    
-    public static JsonInteger of(jakarta.json.JsonNumber jsonNumber, Object meta) {
-        return of(jsonNumber, XsdConstants.INTEGER, meta);
+
+    public static JsonInteger of(jakarta.json.JsonNumber jsonNumber, ProcessingInstruction pi) {
+        return of(jsonNumber, XsdConstants.INTEGER, pi);
     }
-    
-    public static JsonInteger of(jakarta.json.JsonNumber jsonNumber, String datatype, Object meta) {
+
+    public static JsonInteger of(jakarta.json.JsonNumber jsonNumber, String datatype, ProcessingInstruction pi) {
         final JsonInteger number = new JsonInteger();
         number.json = jsonNumber;
         number.datatype = datatype;
-        number.meta = meta;
+        number.pi = pi;
         return number;
     }
-    
+
     @Override
     public String value() {
         return json.bigIntegerValue().toString();
@@ -45,10 +46,10 @@ public class JsonInteger implements NumericValue, IntegerValue {
     public String datatype() {
         return datatype;
     }
-    
+
     @Override
-    public Object pi() {
-        return meta;
+    public ProcessingInstruction pi() {
+        return pi;
     }
 
 }

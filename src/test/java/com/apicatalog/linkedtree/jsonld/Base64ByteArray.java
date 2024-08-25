@@ -3,16 +3,26 @@ package com.apicatalog.linkedtree.jsonld;
 import java.util.Base64;
 
 import com.apicatalog.linkedtree.literal.ByteArrayValue;
+import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 
 class Base64ByteArray implements ByteArrayValue {
 
     static String TYPE = "https://test/base64array";
-    
+
     String value;
     byte[] byteArray;
 
-    Object meta;
-    
+    ProcessingInstruction pi;
+
+    Base64ByteArray(String value, ProcessingInstruction pi) {
+        this.value = value;
+        this.pi = pi;
+    }
+
+    public static Base64ByteArray of(String value, ProcessingInstruction pi) {
+        return new Base64ByteArray(value, pi);
+    }
+
     @Override
     public String value() {
         if (value == null && byteArray != null) {
@@ -31,23 +41,22 @@ class Base64ByteArray implements ByteArrayValue {
         if (byteArray == null && value != null) {
             byteArray = Base64.getDecoder().decode(value);
         }
-        
+
         return byteArray;
     }
-    
+
     public void value(String value) {
         this.value = value;
         this.byteArray = null;
     }
-    
-    
+
     public void byteArrayValue(byte[] byteArray) {
         this.byteArray = byteArray;
         this.value = null;
     }
 
     @Override
-    public Object pi() {
-        return meta;
+    public ProcessingInstruction pi() {
+        return pi;
     }
 }
