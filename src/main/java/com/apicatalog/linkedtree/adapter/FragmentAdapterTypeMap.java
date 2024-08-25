@@ -9,13 +9,9 @@ import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.link.Link;
 
-public class FragmentAdapterTypeMap implements LinkedFragmentAdapter {
-
-    protected Map<String, LinkedFragmentReader> typeMap;
-    
-    public FragmentAdapterTypeMap(Map<String, LinkedFragmentReader> typeMap) {
-        this.typeMap = typeMap;
-    }
+public record FragmentAdapterTypeMap(
+        Map<String, LinkedFragmentReader> typeMap
+        ) implements LinkedFragmentAdapter {
 
     public static class Builder {
         

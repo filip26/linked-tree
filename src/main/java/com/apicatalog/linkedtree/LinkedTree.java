@@ -71,6 +71,4 @@ public non-sealed interface LinkedTree extends LinkedFragment, LinkedNode {
      * @return a collection of links found in the tree
      */
     Collection<Link> links();
-
-    // TODO predicates. i.e. terms???
 }

@@ -12,10 +12,4 @@ public interface LinkedFragmentReader {
 
     LinkedFragment read(Link id, Collection<String> types, Map<String, LinkedContainer> properties, Object meta);
 
-//    public interface Context {
-//
-////        Collection<LinkedData> read(String key, I value);
-//
-//    }
-
 }
