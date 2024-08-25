@@ -1,4 +1,4 @@
-package com.apicatalog.linkedtree.io;
+package com.apicatalog.linkedtree.adapter;
 
 import com.apicatalog.linkedtree.LinkedLiteral;
 

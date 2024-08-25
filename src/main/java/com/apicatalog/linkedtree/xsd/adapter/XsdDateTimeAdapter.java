@@ -1,7 +1,7 @@
 package com.apicatalog.linkedtree.xsd.adapter;
 
 import com.apicatalog.linkedtree.LinkedLiteral;
-import com.apicatalog.linkedtree.io.LinkedLiteralAdapter;
+import com.apicatalog.linkedtree.adapter.LinkedLiteralAdapter;
 import com.apicatalog.linkedtree.xsd.XsdConstants;
 import com.apicatalog.linkedtree.xsd.XsdDateTime;
 

@@ -12,13 +12,16 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
+import com.apicatalog.linkedtree.adapter.FragmentAdapterTypeMap;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeWriter;
 import com.apicatalog.linkedtree.literal.ByteArrayValue;
@@ -38,10 +41,12 @@ class JsonLdAdaptersTest {
 
     static JsonLdTreeReader READER = JsonLdTreeReader
             .with(
-                    new VerifiableCredentialAdapter(),
+                    FragmentAdapterTypeMap.create()
+                            .add(VerifiableCredential.TYPE,
+                                    VerifiableCredential::of)
+                            .build(),
                     new Base64ByteArrayAdapter(),
-                    new XsdDateTimeAdapter()
-                    );
+                    new XsdDateTimeAdapter());
 
     static JsonLdTreeWriter WRITER = new JsonLdTreeWriter();
 
@@ -93,26 +98,33 @@ class JsonLdAdaptersTest {
                 .asFragment()
                 .id()
                 .target()
-                .cast(VerifiableCredential.class)
-                ;
-        
-        
+                .cast(VerifiableCredential.class);
+
         assertNotNull(vc);
-        assertNotNull(vc.name);
+
+        assertEquals("urn:uuid:58172aac-d8ba-11ed-83dd-0b3aef56cc33", vc.id.uri());
+
+        assertEquals(new HashSet<>(Arrays.asList(new String[] {
+                "https://www.w3.org/2018/credentials#VerifiableCredential",
+                "https://www.w3.org/ns/credentials/examples#AlumniCredential"
+        })), vc.type());
+
         assertEquals(1, vc.name.size());
-        assertNotNull(vc.name.single());
         assertEquals("Alumni Credential", vc.name.single().value());
         assertNull(vc.name.single().language());
-        assertNotNull(vc.name.strings());
+
         assertEquals(1, vc.name.strings().size());
-        assertNotNull(vc.name.langCodes());
         assertEquals(1, vc.name.langCodes().size());
+
         assertNotNull(vc.description);
-        
-        assertNotNull(vc.validFrom);
+
         assertEquals(Instant.parse("2023-01-01T00:00:00Z"), vc.validFrom);
-        
+
         assertNull(vc.validUntil);
+
+        assertEquals(1, vc.subject().size());
+
+        assertEquals("https://vc.example/issuers/5678", vc.issuer().id().uri());
 
     }
 

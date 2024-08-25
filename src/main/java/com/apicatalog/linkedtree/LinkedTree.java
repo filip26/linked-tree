@@ -18,6 +18,21 @@ public non-sealed interface LinkedTree extends LinkedFragment, LinkedNode {
         public Collection<Link> links() {
             return Collections.emptyList();
         }
+
+        @Override
+        public Collection<String> type() {
+            return Collections.emptySet();
+        }
+
+        @Override
+        public Collection<String> terms() {
+            return Collections.emptySet();
+        }
+
+        @Override
+        public LinkedContainer property(String term) {
+            return LinkedContainer.EMPTY;
+        }
     };
 
     @Override

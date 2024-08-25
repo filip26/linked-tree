@@ -1,7 +1,7 @@
 package com.apicatalog.linkedtree.jsonld;
 
 import com.apicatalog.linkedtree.LinkedLiteral;
-import com.apicatalog.linkedtree.io.LinkedLiteralAdapter;
+import com.apicatalog.linkedtree.adapter.LinkedLiteralAdapter;
 
 public class Base64ByteArrayAdapter implements LinkedLiteralAdapter {
 

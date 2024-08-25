@@ -1,7 +1,6 @@
 package com.apicatalog.linkedtree;
 
 import java.util.Collection;
-import java.util.Collections;
 
 import com.apicatalog.linkedtree.link.Link;
 
@@ -15,17 +14,11 @@ public non-sealed interface LinkedFragment extends LinkedNode {
         return null;
     }
 
-    default Collection<String> type() {
-        return Collections.emptySet();
-    }
+    Collection<String> type();
 
-    default Collection<String> terms() {
-        return Collections.emptySet();
-    }
+    Collection<String> terms();
 
-    default LinkedContainer property(String term) {
-        return LinkedContainer.EMPTY;
-    }
+    LinkedContainer property(String term);
 
     @Override
     default boolean isFragment() {
