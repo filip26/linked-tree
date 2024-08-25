@@ -4,7 +4,15 @@ Another abstract data model to process linked data, intended to be used for smal
 
 Linked tree terms and values are fully expanded but only identifiable node fragments are merged and flattened. Nodes with no identifiers are kept embedded.
 
-The project is an experiment, please share feedback.
+> [!IMPORTANT]
+> The project is an experiment, please share feedback.
+
+
+## Status
+
+[![Java 17 CI](https://github.com/filip26/linked-tree/actions/workflows/java17-push.yml/badge.svg)](https://github.com/filip26/linked-tree/actions/workflows/java17-push.yml)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
 
 ## Goals
 
