@@ -14,7 +14,7 @@
     <name>Linked Tree</name>
 
     <description>
-        An abstract data model to process Linked Data in an expanded tree form
+        An abstract data model to process Linked Data
     </description>
 
     <licenses>
@@ -69,12 +69,12 @@
     </properties>
 
     <dependencies>
-<dependency>
-    <groupId>jakarta.json</groupId>
-    <artifactId>jakarta.json-api</artifactId>
+        <dependency>
+            <groupId>jakarta.json</groupId>
+            <artifactId>jakarta.json-api</artifactId>
             <version>${jakarta.json.version}</version>
             <scope>provided</scope>
-</dependency>
+        </dependency>
         <dependency>
             <groupId>org.glassfish</groupId>
             <artifactId>jakarta.json</artifactId>
