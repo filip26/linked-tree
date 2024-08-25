@@ -6,6 +6,8 @@ import com.apicatalog.linkedtree.LinkedLiteral;
 
 public class XsdDateTime implements LinkedLiteral {
 
+    public static final String TYPE = XsdConstants.DATE_TIME;
+    
     protected Instant datetime;
     protected String value;
     protected Object meta;
@@ -39,7 +41,7 @@ public class XsdDateTime implements LinkedLiteral {
 
     @Override
     public String datatype() {
-        return XsdConstants.DATE_TIME;
+        return TYPE;
     }
 
     public void value(String value) {
@@ -50,5 +52,10 @@ public class XsdDateTime implements LinkedLiteral {
     public void datetime(Instant datetime) {
         this.datetime = datetime;
         this.value = null;
+    }
+    
+    @Override
+    public Object pi() {
+        return meta;
     }
 }

@@ -13,7 +13,7 @@ public class FragmentAdapterTypeMap implements LinkedFragmentAdapter {
 
     protected Map<String, LinkedFragmentReader> typeMap;
     
-    protected FragmentAdapterTypeMap(Map<String, LinkedFragmentReader> typeMap) {
+    public FragmentAdapterTypeMap(Map<String, LinkedFragmentReader> typeMap) {
         this.typeMap = typeMap;
     }
 

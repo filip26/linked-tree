@@ -21,11 +21,10 @@ import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import com.apicatalog.linkedtree.adapter.FragmentAdapterTypeMap;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeWriter;
 import com.apicatalog.linkedtree.literal.ByteArrayValue;
-import com.apicatalog.linkedtree.xsd.adapter.XsdDateTimeAdapter;
+import com.apicatalog.linkedtree.xsd.XsdDateTime;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -39,14 +38,11 @@ import jakarta.json.stream.JsonGenerator;
 @TestMethodOrder(OrderAnnotation.class)
 class JsonLdAdaptersTest {
 
-    static JsonLdTreeReader READER = JsonLdTreeReader
-            .with(
-                    FragmentAdapterTypeMap.create()
-                            .add(VerifiableCredential.TYPE,
-                                    VerifiableCredential::of)
-                            .build(),
-                    new Base64ByteArrayAdapter(),
-                    new XsdDateTimeAdapter());
+    static JsonLdTreeReader READER = JsonLdTreeReader.create()
+            .add(VerifiableCredential.TYPE, VerifiableCredential::of)
+            .add(new Base64ByteArrayAdapter())
+            .add(XsdDateTime.TYPE, XsdDateTime::of)
+            .build();
 
     static JsonLdTreeWriter WRITER = new JsonLdTreeWriter();
 
@@ -92,7 +88,7 @@ class JsonLdAdaptersTest {
         var tree = READER.readExpanded(input);
 
         assertNotNull(tree);
-
+        
         VerifiableCredential vc = tree
                 .singleNode()
                 .asFragment()

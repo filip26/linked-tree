@@ -1,11 +1,7 @@
 package com.apicatalog.linkedtree.adapter;
 
-import com.apicatalog.linkedtree.LinkedLiteral;
-
-public interface LinkedLiteralAdapter {
+public interface LinkedLiteralAdapter extends LinkedLiteralReader {
 
     String datatype();
-
-    LinkedLiteral read(String value, Object meta);
-
+    
 }
