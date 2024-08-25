@@ -16,11 +16,20 @@ public interface Link {
     Collection<LinkedFragment> refs();
 
     /**
-     * A fragment composed of all fragments - adapted if an adapter is present
+     * A fragment composed of all {@link Link#refs()}, adapted if an appropriate
+     * adapter is found.
      * 
      * @return a fragment
      */
     LinkedFragment target();
 
-    // TODO isblank, etc
+    /**
+     * Checks if the link targets a blank node
+     * 
+     * @return <code>true</code> if the link targets a blank node
+     */
+    default boolean isBlank() {
+        final String uri = uri();
+        return uri != null && uri.startsWith("_:");
+    }
 }
