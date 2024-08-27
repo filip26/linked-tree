@@ -192,7 +192,7 @@ public class JsonLdTreeReader {
             }
             if (jsonObject.size() == 1 && jsonObject.containsKey(JsonLdKeyword.ID)) {
                 final MutableLink link = getOrCreate(jsonObject.getString(JsonLdKeyword.ID), links);
-                final Reference ref = new Reference(link);
+                final Reference ref = Reference.of(link);
                 link.addFragment(ref);
                 return ref;
             }
