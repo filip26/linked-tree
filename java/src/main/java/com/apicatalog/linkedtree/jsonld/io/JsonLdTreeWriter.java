@@ -13,6 +13,7 @@ import com.apicatalog.linkedtree.json.JsonDecimal;
 import com.apicatalog.linkedtree.json.JsonInteger;
 import com.apicatalog.linkedtree.json.JsonLiteral;
 import com.apicatalog.linkedtree.json.JsonScalar;
+import com.apicatalog.linkedtree.json.pi.JsonMapWrite;
 import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 import com.apicatalog.linkedtree.lang.LangString;
 import com.apicatalog.linkedtree.literal.NumericValue;
@@ -62,8 +63,8 @@ public class JsonLdTreeWriter {
         }
 
         ops.stream()
-                .filter(JsonLdPi.class::isInstance)
-                .map(JsonLdPi.class::cast)
+                .filter(JsonMapWrite.class::isInstance)
+                .map(JsonMapWrite.class::cast)
                 .forEach(pi -> pi.write(builder));
 
         for (final String term : fragment.terms()) {
@@ -237,8 +238,8 @@ public class JsonLdTreeWriter {
         }
 
         ops.stream()
-                .filter(JsonLdPi.class::isInstance)
-                .map(JsonLdPi.class::cast)
+                .filter(JsonMapWrite.class::isInstance)
+                .map(JsonMapWrite.class::cast)
                 .forEach(pi -> pi.write(result));
 
         return result.build();
