@@ -12,7 +12,7 @@ import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 public record GenericLinkedContainer(
         Type containerType,
         Collection<LinkedNode> nodes,
-        Map<LinkedNode, Collection<ProcessingInstruction>> ops) implements LinkedContainer {
+        Map<Integer, Collection<ProcessingInstruction>> ops) implements LinkedContainer {
 
     public GenericLinkedContainer {
         Objects.requireNonNull(containerType);
@@ -20,9 +20,9 @@ public record GenericLinkedContainer(
     }
 
     @Override
-    public Collection<ProcessingInstruction> pi(LinkedNode node) {
-        return ops != null 
-                ? ops.getOrDefault(node, Collections.emptyList())
+    public Collection<ProcessingInstruction> pi(int processingOrder) {
+        return ops != null
+                ? ops.getOrDefault(processingOrder, Collections.emptyList())
                 : Collections.emptyList();
     }
 }

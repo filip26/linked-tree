@@ -88,7 +88,7 @@ class JsonLdAdaptersTest {
         var tree = READER.readExpanded(input);
 
         assertNotNull(tree);
-        
+
         VerifiableCredential vc = tree
                 .singleFragment()
                 .id()

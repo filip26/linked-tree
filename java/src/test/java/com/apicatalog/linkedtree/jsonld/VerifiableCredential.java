@@ -27,7 +27,6 @@ public class VerifiableCredential implements LinkedFragment {
     protected Collection<String> type;
     protected Map<String, LinkedContainer> properties;
 
-
     protected VerifiableCredential(Link id, Collection<String> type, Map<String, LinkedContainer> properties) {
         this.id = id;
         this.type = type;

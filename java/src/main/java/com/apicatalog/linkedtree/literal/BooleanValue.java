@@ -4,5 +4,4 @@ import com.apicatalog.linkedtree.LinkedLiteral;
 
 public interface BooleanValue extends LinkedLiteral {
 
-    
 }

@@ -77,8 +77,8 @@ public class JsonLdTreeReader {
 
         final Map<String, Link> links = new HashMap<>();
 
-        Map<LinkedNode, Collection<ProcessingInstruction>> opsMap = new HashMap<>();
-        
+        final Map<Integer, Collection<ProcessingInstruction>> opsMap = new HashMap<>();
+
         final LinkedTree tree = GenericLinkedTree.of(readNodes(jsonNodes, links, opsMap), links, opsMap);
 
         for (final Link link : links.values()) {
@@ -115,7 +115,7 @@ public class JsonLdTreeReader {
         return map;
     }
 
-    public Collection<LinkedNode> readNodes(final JsonArray jsonNodes, Map<String, Link> links, final Map<LinkedNode, Collection<ProcessingInstruction>> nodeOps) {
+    public Collection<LinkedNode> readNodes(final JsonArray jsonNodes, Map<String, Link> links, final Map<Integer, Collection<ProcessingInstruction>> nodeOps) {
 
         if (jsonNodes.isEmpty()) {
             return Collections.emptyList();
@@ -124,7 +124,7 @@ public class JsonLdTreeReader {
         final Collection<LinkedNode> nodes = new ArrayList<>(jsonNodes.size());
 
         Collection<ProcessingInstruction> ops = new ArrayList<>(2);
-        
+
         for (final JsonValue jsonValue : jsonNodes) {
 
             if (jsonValue == null || !ValueType.OBJECT.equals(jsonValue.getValueType())) {
@@ -132,13 +132,13 @@ public class JsonLdTreeReader {
             }
             final LinkedNode node = readNode(jsonValue.asJsonObject(), links, ops);
 
-            nodes.add(node);
-
             if (!ops.isEmpty()) {
-                //FIXME merge
-                nodeOps.put(node, ops);
+                // FIXME merge
+                nodeOps.put(nodes.size(), ops);
                 ops = new ArrayList<>(2);
             }
+
+            nodes.add(node);
         }
 
         return nodes;
@@ -148,20 +148,20 @@ public class JsonLdTreeReader {
 
         final Collection<LinkedNode> nodes = new ArrayList<>(values.size());
 
-        final Map<LinkedNode, Collection<ProcessingInstruction>> nodeOps = new HashMap<>();
+        final Map<Integer, Collection<ProcessingInstruction>> nodeOps = new HashMap<>();
 
         Collection<ProcessingInstruction> ops = new ArrayList<>(2);
 
         for (final JsonValue item : values) {
             final LinkedNode node = readValue(item, links, ops);
 
-            nodes.add(node);
-
             if (!ops.isEmpty()) {
-                //FIXME merge
-                nodeOps.put(node, ops);
+                // FIXME merge
+                nodeOps.put(nodes.size(), ops);
                 ops = new ArrayList<>(2);
             }
+
+            nodes.add(node);
         }
 
         return new GenericLinkedContainer(LinkedContainer.Type.UnorderedSet, nodes, nodeOps);
@@ -207,20 +207,20 @@ public class JsonLdTreeReader {
 
         final Collection<LinkedNode> nodes = new ArrayList<>(list.size());
 
-        final Map<LinkedNode, Collection<ProcessingInstruction>> nodeOps = new HashMap<>();
+        final Map<Integer, Collection<ProcessingInstruction>> nodeOps = new HashMap<>();
 
         Collection<ProcessingInstruction> ops = new ArrayList<>(2);
 
         for (final JsonValue item : list) {
             final LinkedNode node = readValue(item, links, ops);
 
-            nodes.add(node);
-
             if (!ops.isEmpty()) {
-                //FIXME merge
-                nodeOps.put(node, ops);
+                // FIXME merge
+                nodeOps.put(nodes.size(), ops);
                 ops = new ArrayList<>(2);
             }
+
+            nodes.add(node);
         }
 
         return new GenericLinkedContainer(LinkedContainer.Type.OrderedList, nodes, nodeOps);
@@ -246,8 +246,8 @@ public class JsonLdTreeReader {
 
         final Map<String, Link> links = new HashMap<>();
 
-        final Map<LinkedNode, Collection<ProcessingInstruction>> nodeOps = new HashMap<>();
-        
+        final Map<Integer, Collection<ProcessingInstruction>> nodeOps = new HashMap<>();
+
         final Collection<LinkedNode> nodes = readNodes(graph, links, nodeOps);
 
         String id = null;
@@ -463,17 +463,17 @@ public class JsonLdTreeReader {
 
         if (XsdConstants.STRING.equals(datatype)) {
             // TODO direction
+            ops.add(getPi(valueJsonObject, JsonLdKeyword.VALUE, JsonLdKeyword.TYPE, JsonLdKeyword.LANGUAGE));
             return new ImmutableLangString(
                     valueString,
                     getLiteralLanguage(valueJsonObject),
-                    null,
-                    getPi(valueJsonObject, JsonLdKeyword.VALUE, JsonLdKeyword.TYPE, JsonLdKeyword.LANGUAGE));
+                    null);
         }
 
+        ops.add(getPi(valueJsonObject, JsonLdKeyword.VALUE, JsonLdKeyword.TYPE));
         return new ImmutableLinkedLiteral(
                 valueString,
-                datatype,
-                getPi(valueJsonObject, JsonLdKeyword.VALUE, JsonLdKeyword.TYPE));
+                datatype);
     }
 
     protected static JsonMapWrite getPi(JsonObject valueJsonObject, String... filter) {

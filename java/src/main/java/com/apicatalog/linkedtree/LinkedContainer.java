@@ -26,16 +26,16 @@ public non-sealed interface LinkedContainer extends LinkedNode {
     /**
      * A custom processing instructions related to the given {@link LinkedNode}.
      * 
-     * @param node a linked to what PIs are requested
+     * @param processingOrder an order in which the node has been processed,
+     *                        starting with 0
      * 
      * @return a list of custom processing instructions, never <code>null</code>
      */
-    default Collection<ProcessingInstruction> pi(LinkedNode node) {
+    default Collection<ProcessingInstruction> pi(int processingOrder) {
+        if (processingOrder < 0) {
+            throw new IllegalArgumentException();
+        }
         return Collections.emptyList();
-    }
-
-    default void attach(LinkedNode node, ProcessingInstruction pi) {
-        throw new UnsupportedOperationException();
     }
 
     @Override

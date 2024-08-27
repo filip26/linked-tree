@@ -5,13 +5,13 @@ import java.util.Collection;
 public interface LangStringSelector {
 
     Collection<LangString> strings();
-    
+
     Collection<String> langCodes();
-    
+
     LangString get(String langCode);
 
     int size();
-    
+
     default LangString single() {
         final Collection<LangString> strings = strings();
         if (strings == null || strings.size() != 1) {
@@ -19,5 +19,5 @@ public interface LangStringSelector {
         }
         return strings.iterator().next();
     }
-    
+
 }

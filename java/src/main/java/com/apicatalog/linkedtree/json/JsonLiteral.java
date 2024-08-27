@@ -20,8 +20,8 @@ public class JsonLiteral implements LinkedLiteral {
         literal.value = null;
         return literal;
     }
-    
-    //TODO public static JsonLiteral of(String value)
+
+    // TODO public static JsonLiteral of(String value)
 
     @Override
     public String lexicalValue() {

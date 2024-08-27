@@ -2,7 +2,6 @@ package com.apicatalog.linkedtree.jsonld.io;
 
 import java.io.StringReader;
 import java.util.Collection;
-import java.util.Collections;
 
 import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedFragment;
@@ -35,8 +34,10 @@ public class JsonLdTreeWriter {
 
         final JsonArrayBuilder builder = Json.createArrayBuilder();
 
+        int processingOrder = 0;
+
         for (final LinkedNode fragment : tree.nodes()) {
-            builder.add(writeNode(fragment, Collections.emptyList()));
+            builder.add(writeNode(fragment, tree.pi(processingOrder++)));
         }
 
         return builder.build();
@@ -78,8 +79,10 @@ public class JsonLdTreeWriter {
 
         final JsonArrayBuilder array = Json.createArrayBuilder();
 
+        int processingOrder = 0;
+
         for (final LinkedNode node : container.nodes()) {
-            array.add(writeNode(node, container.pi(node)));
+            array.add(writeNode(node, container.pi(processingOrder++)));
         }
 
         if (LinkedContainer.Type.OrderedList.equals(container.containerType())) {
