@@ -9,12 +9,12 @@ import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 
-public record GenericLinkedContainer(
+public record GenericContainer(
         Type containerType,
         Collection<LinkedNode> nodes,
         Map<Integer, Collection<ProcessingInstruction>> ops) implements LinkedContainer {
 
-    public GenericLinkedContainer {
+    public GenericContainer {
         Objects.requireNonNull(containerType);
         Objects.requireNonNull(nodes);
     }

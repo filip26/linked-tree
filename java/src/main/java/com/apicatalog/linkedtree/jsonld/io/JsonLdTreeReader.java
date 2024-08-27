@@ -26,16 +26,17 @@ import com.apicatalog.linkedtree.json.JsonDecimal;
 import com.apicatalog.linkedtree.json.JsonInteger;
 import com.apicatalog.linkedtree.json.JsonLiteral;
 import com.apicatalog.linkedtree.json.JsonScalar;
-import com.apicatalog.linkedtree.json.pi.JsonMapWrite;
+import com.apicatalog.linkedtree.json.pi.JsonObjectWrite;
 import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 import com.apicatalog.linkedtree.lang.ImmutableLangString;
 import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.link.MutableLink;
 import com.apicatalog.linkedtree.literal.ImmutableLinkedLiteral;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
-import com.apicatalog.linkedtree.primitive.GenericLinkedContainer;
-import com.apicatalog.linkedtree.primitive.GenericLinkedFragment;
-import com.apicatalog.linkedtree.primitive.GenericLinkedTree;
+import com.apicatalog.linkedtree.primitive.GenericContainer;
+import com.apicatalog.linkedtree.primitive.GenericFragment;
+import com.apicatalog.linkedtree.primitive.GenericTree;
+import com.apicatalog.linkedtree.primitive.Reference;
 import com.apicatalog.linkedtree.xsd.XsdConstants;
 
 import jakarta.json.JsonArray;
@@ -79,7 +80,7 @@ public class JsonLdTreeReader {
 
         final Map<Integer, Collection<ProcessingInstruction>> opsMap = new HashMap<>();
 
-        final LinkedTree tree = GenericLinkedTree.of(readNodes(jsonNodes, links, opsMap), links, opsMap);
+        final LinkedTree tree = GenericTree.of(readNodes(jsonNodes, links, opsMap), links, opsMap);
 
         for (final Link link : links.values()) {
             ((MutableLink) link).target(adapt(((MutableLink) link), mergeTypes(link.refs()), merge(link.refs())));
@@ -106,7 +107,7 @@ public class JsonLdTreeReader {
     }
 
     protected static Map<String, LinkedContainer> toMap(LinkedFragment fragment, final Map<String, LinkedContainer> map) {
-        if (fragment instanceof GenericLinkedFragment generic) {
+        if (fragment instanceof GenericFragment generic) {
             map.putAll(generic.entries());
         }
         for (final String term : fragment.terms()) {
@@ -164,7 +165,7 @@ public class JsonLdTreeReader {
             nodes.add(node);
         }
 
-        return new GenericLinkedContainer(LinkedContainer.Type.UnorderedSet, nodes, nodeOps);
+        return new GenericContainer(LinkedContainer.Type.UnorderedSet, nodes, nodeOps);
     }
 
     protected LinkedNode readValue(JsonValue value, Map<String, Link> links, Collection<ProcessingInstruction> ops) {
@@ -182,22 +183,24 @@ public class JsonLdTreeReader {
 
     protected LinkedNode readNode(JsonObject jsonObject, Map<String, Link> links, Collection<ProcessingInstruction> ops) {
 
-        if (isContainer(jsonObject, JsonLdKeyword.LIST)) {
-            return readList(jsonObject, links);
+        if (jsonObject != null) {
+            if (jsonObject.containsKey(JsonLdKeyword.LIST)) {
+                return readList(jsonObject, links);
+            }
+            if (jsonObject.containsKey(JsonLdKeyword.GRAPH)) {
+                return readGraph(jsonObject, ops);
+            }
+            if (jsonObject.size() == 1 && jsonObject.containsKey(JsonLdKeyword.ID)) {
+                final MutableLink link = getOrCreate(jsonObject.getString(JsonLdKeyword.ID), links);
+                final Reference ref = new Reference(link);
+                link.addFragment(ref);
+                return ref;
+            }
+//      if (isContainer(jsonObject, Keywords.REVERSE)) {
+//      return readReverse(jsonObject);
+//  }        
         }
-//        if (isContainer(jsonObject, Keywords.REVERSE)) {
-//            return readReverse(jsonObject);
-//        }        
-        if (isContainer(jsonObject, JsonLdKeyword.GRAPH)) {
-            return readGraph(jsonObject, ops);
-        }
-
         return readFragment(jsonObject, links, ops);
-    }
-
-    protected static boolean isContainer(JsonObject jsonObject, String name) {
-        return jsonObject != null
-                && jsonObject.containsKey(name);
     }
 
     // list is a collection attribute
@@ -223,7 +226,7 @@ public class JsonLdTreeReader {
             nodes.add(node);
         }
 
-        return new GenericLinkedContainer(LinkedContainer.Type.OrderedList, nodes, nodeOps);
+        return new GenericContainer(LinkedContainer.Type.OrderedList, nodes, nodeOps);
     }
 
     protected LinkedContainer readReverse(JsonObject jsonObject) {
@@ -254,7 +257,7 @@ public class JsonLdTreeReader {
         Collection<String> types = Collections.emptySet();
 
         final Map<String, LinkedContainer> properties = new HashMap<>(jsonObject.size() - 1);
-        Map<String, JsonValue> meta = new HashMap<>();
+        final Map<String, JsonValue> unprocessed = new HashMap<>();
 
         for (final Entry<String, JsonValue> entry : jsonObject.entrySet()) {
 
@@ -264,12 +267,7 @@ public class JsonLdTreeReader {
 
             if (JsonLdKeyword.ID.equals(entry.getKey())) {
                 if (ValueType.STRING.equals(entry.getValue().getValueType())) {
-
                     id = ((JsonString) entry.getValue()).getString();
-
-//                    if (!idValue.startsWith("_:")) {
-//                        id = idValue;
-//                    }
                 }
 
             } else if (JsonLdKeyword.TYPE.equals(entry.getKey())) {
@@ -279,7 +277,7 @@ public class JsonLdTreeReader {
                         .toList();
 
             } else if (entry.getKey().startsWith("@")) {
-                meta.put(entry.getKey(), entry.getValue());
+                unprocessed.put(entry.getKey(), entry.getValue());
 
             } else {
                 properties.put(entry.getKey(), readValueArray(entry.getValue().asJsonArray(), links));
@@ -292,28 +290,28 @@ public class JsonLdTreeReader {
 
         if (id != null) {
             final MutableLink link = getOrCreate(id, links);
-            final GenericLinkedTree node = new GenericLinkedTree(
+            final GenericTree node = new GenericTree(
                     link,
                     types,
                     properties,
                     nodes,
                     links,
                     nodeOps);
-            ops.add(new JsonMapWrite(meta));
+            ops.add(new JsonObjectWrite(unprocessed));
             link.addFragment(node);
             return node;
         }
 
-        ops.add(new JsonMapWrite(meta));
-        return new GenericLinkedTree(null, types, properties, nodes, links, nodeOps);
+        ops.add(new JsonObjectWrite(unprocessed));
+        return new GenericTree(null, types, properties, nodes, links, nodeOps);
     }
 
     protected LinkedFragment readFragment(JsonObject value, Map<String, Link> links, Collection<ProcessingInstruction> ops) {
 
         String id = null;
         Collection<String> types = Collections.emptySet();
-        Map<String, JsonValue> meta = new HashMap<>();
 
+        final Map<String, JsonValue> unprocessed = new HashMap<>();
         final Map<String, LinkedContainer> properties = new HashMap<>(value.size());
 
         for (final Entry<String, JsonValue> entry : value.entrySet()) {
@@ -335,7 +333,7 @@ public class JsonLdTreeReader {
                         .toList();
 
             } else if (entry.getKey().startsWith("@")) {
-                meta.put(entry.getKey(), entry.getValue());
+                unprocessed.put(entry.getKey(), entry.getValue());
 
             } else {
                 properties.put(entry.getKey(), readValueArray(entry.getValue().asJsonArray(), links));
@@ -344,16 +342,16 @@ public class JsonLdTreeReader {
 
         if (id != null) {
             final MutableLink link = getOrCreate(id, links);
-            final GenericLinkedFragment node = new GenericLinkedFragment(
+            final GenericFragment node = new GenericFragment(
                     link,
                     types,
                     properties);
-            ops.add(new JsonMapWrite(meta));
+            ops.add(new JsonObjectWrite(unprocessed));
             link.addFragment(node);
             return node;
         }
 
-        ops.add(new JsonMapWrite(meta));
+        ops.add(new JsonObjectWrite(unprocessed));
         return adapt(null, types, properties);
     }
 
@@ -366,7 +364,7 @@ public class JsonLdTreeReader {
             }
         }
 
-        return new GenericLinkedFragment(
+        return new GenericFragment(
                 id,
                 type,
                 data);
@@ -476,7 +474,7 @@ public class JsonLdTreeReader {
                 datatype);
     }
 
-    protected static JsonMapWrite getPi(JsonObject valueJsonObject, String... filter) {
+    protected static JsonObjectWrite getPi(JsonObject valueJsonObject, String... filter) {
         final Map<String, JsonValue> pi = new HashMap<>();
 
         for (final Map.Entry<String, JsonValue> jsonEntry : valueJsonObject.entrySet()) {
@@ -485,7 +483,7 @@ public class JsonLdTreeReader {
             }
             pi.put(jsonEntry.getKey(), jsonEntry.getValue());
         }
-        return new JsonMapWrite(pi);
+        return new JsonObjectWrite(pi);
     }
 
     protected static String getLiteralDataType(JsonObject valueObject) {

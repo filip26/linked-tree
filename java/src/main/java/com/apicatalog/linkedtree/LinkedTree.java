@@ -26,7 +26,12 @@ public non-sealed interface LinkedTree extends LinkedFragment, LinkedContainer, 
 
         @Override
         public LinkedContainer property(String term) {
-            return LinkedContainer.EMPTY;
+            return null;
+        }
+
+        @Override
+        public Link id() {
+            return null;
         }
     };
 

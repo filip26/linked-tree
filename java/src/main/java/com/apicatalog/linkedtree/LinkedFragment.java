@@ -10,9 +10,7 @@ public non-sealed interface LinkedFragment extends LinkedNode {
      * An optional unique fragment identifier. The same identifier can be shared
      * among many fragments allowing composition.
      */
-    default Link id() {
-        return null;
-    }
+    Link id();
 
     Collection<String> type();
 

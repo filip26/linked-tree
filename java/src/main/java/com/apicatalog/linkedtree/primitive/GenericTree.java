@@ -10,7 +10,7 @@ import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 
-public record GenericLinkedTree(
+public record GenericTree(
         Link id,
         Collection<String> type,
         Map<String, LinkedContainer> entries,
@@ -18,8 +18,8 @@ public record GenericLinkedTree(
         Map<String, Link> linkMap,
         Map<Integer, Collection<ProcessingInstruction>> opsMap) implements LinkedTree {
 
-    public static GenericLinkedTree of(Collection<LinkedNode> nodes, Map<String, Link> links, Map<Integer, Collection<ProcessingInstruction>> opsMap) {
-        return new GenericLinkedTree(null, Collections.emptySet(), Collections.emptyMap(), nodes, links, opsMap);
+    public static GenericTree of(Collection<LinkedNode> nodes, Map<String, Link> links, Map<Integer, Collection<ProcessingInstruction>> opsMap) {
+        return new GenericTree(null, Collections.emptySet(), Collections.emptyMap(), nodes, links, opsMap);
     }
 
     @Override
