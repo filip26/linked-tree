@@ -4,16 +4,10 @@ import java.util.Collection;
 import java.util.Collections;
 
 import com.apicatalog.linkedtree.link.Link;
-import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 
-public non-sealed interface LinkedTree extends LinkedFragment, LinkedNode {
+public non-sealed interface LinkedTree extends LinkedFragment, LinkedContainer, LinkedNode {
 
     static LinkedTree EMPTY = new LinkedTree() {
-
-        @Override
-        public Collection<LinkedNode> nodes() {
-            return Collections.emptyList();
-        }
 
         @Override
         public Collection<Link> links() {
@@ -47,34 +41,11 @@ public non-sealed interface LinkedTree extends LinkedFragment, LinkedNode {
     }
 
     /**
-     * root fragments
-     * 
-     * @return a collection of root nodes
-     */
-    Collection<LinkedNode> nodes();
-
-    /**
-     * expect a single root note
-     * 
-     * @return a root node
-     */
-    default LinkedNode singleNode() {
-        Collection<LinkedNode> nodes = nodes();
-        if (nodes.size() != 1) {
-            throw new IllegalStateException();
-        }
-        return nodes.iterator().next();
-    }
-
-    /**
      * Identifiable fragments index
      * 
      * @return a collection of links found in the tree
      */
     Collection<Link> links();
-    
-    @Override
-    default ProcessingInstruction pi() {
-        return null;
-    }
+
+    // TODO Collection<LinkedTree> subtree()
 }

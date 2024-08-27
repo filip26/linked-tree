@@ -4,7 +4,6 @@ import java.time.Instant;
 
 import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.literal.DateTimeValue;
-import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 
 public class XsdDateTime implements LinkedLiteral, DateTimeValue {
 
@@ -12,26 +11,23 @@ public class XsdDateTime implements LinkedLiteral, DateTimeValue {
 
     protected Instant datetime;
     protected String value;
-    protected ProcessingInstruction pi;
 
-    protected XsdDateTime(String value, ProcessingInstruction pi) {
+    protected XsdDateTime(String value) {
         this.value = value;
-        this.pi = pi;
         this.datetime = null;
     }
 
-    protected XsdDateTime(Instant datetime, ProcessingInstruction pi) {
+    protected XsdDateTime(Instant datetime) {
         this.value = null;
-        this.pi = pi;
         this.datetime = datetime;
     }
 
-    public static XsdDateTime of(String value, ProcessingInstruction pi) {
-        return new XsdDateTime(value, pi);
+    public static XsdDateTime of(String value) {
+        return new XsdDateTime(value);
     }
 
-    public static XsdDateTime of(Instant datetime, ProcessingInstruction pi) {
-        return new XsdDateTime(datetime, pi);
+    public static XsdDateTime of(Instant datetime) {
+        return new XsdDateTime(datetime);
     }
 
     @Override
@@ -65,10 +61,5 @@ public class XsdDateTime implements LinkedLiteral, DateTimeValue {
     public void datetime(Instant datetime) {
         this.datetime = datetime;
         this.value = null;
-    }
-
-    @Override
-    public ProcessingInstruction pi() {
-        return pi;
     }
 }

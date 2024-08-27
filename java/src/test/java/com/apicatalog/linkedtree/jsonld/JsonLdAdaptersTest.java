@@ -57,7 +57,7 @@ class JsonLdAdaptersTest {
         assertNotNull(tree);
 
         ByteArrayValue literal = tree
-                .singleNode()
+                .single()
                 .asFragment()
                 .property("http://example.org/test#property4")
                 .single()
@@ -88,10 +88,9 @@ class JsonLdAdaptersTest {
         var tree = READER.readExpanded(input);
 
         assertNotNull(tree);
-        
+
         VerifiableCredential vc = tree
-                .singleNode()
-                .asFragment()
+                .singleFragment()
                 .id()
                 .target()
                 .cast(VerifiableCredential.class);

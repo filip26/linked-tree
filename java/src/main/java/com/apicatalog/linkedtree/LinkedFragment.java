@@ -29,9 +29,9 @@ public non-sealed interface LinkedFragment extends LinkedNode {
     default LinkedFragment asFragment() {
         return this;
     }
-    
+
     @SuppressWarnings("unchecked")
     default <T> T cast(Class<T> clazz) {
-        return (T)this;
+        return (T) this;
     }
 }

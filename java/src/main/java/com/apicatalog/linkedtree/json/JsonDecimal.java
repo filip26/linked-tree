@@ -6,7 +6,6 @@ import java.util.Locale;
 
 import com.apicatalog.linkedtree.literal.DoubleValue;
 import com.apicatalog.linkedtree.literal.NumericValue;
-import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 import com.apicatalog.linkedtree.xsd.XsdConstants;
 
 public class JsonDecimal implements NumericValue, DoubleValue {
@@ -16,27 +15,25 @@ public class JsonDecimal implements NumericValue, DoubleValue {
     static {
         xsdNumberFormat.setMinimumFractionDigits(1);
     }
-    
+
     protected jakarta.json.JsonNumber json;
     protected String datatype;
-    protected ProcessingInstruction pi;
-    
+
     protected JsonDecimal() {
         // protected
     }
-    
-    public static JsonDecimal of(jakarta.json.JsonNumber jsonNumber, ProcessingInstruction pi) {
-        return of(jsonNumber, XsdConstants.DOUBLE, pi);
+
+    public static JsonDecimal of(jakarta.json.JsonNumber jsonNumber) {
+        return of(jsonNumber, XsdConstants.DOUBLE);
     }
-    
-    public static JsonDecimal of(jakarta.json.JsonNumber jsonNumber, String datatype, ProcessingInstruction pi) {
+
+    public static JsonDecimal of(jakarta.json.JsonNumber jsonNumber, String datatype) {
         final JsonDecimal number = new JsonDecimal();
         number.json = jsonNumber;
         number.datatype = datatype;
-        number.pi = pi;
         return number;
     }
-    
+
     @Override
     public String lexicalValue() {
         return xsdNumberFormat.format(json.bigDecimalValue());
@@ -56,10 +53,4 @@ public class JsonDecimal implements NumericValue, DoubleValue {
     public double doubleValue() {
         return json.doubleValue();
     }
-
-    @Override
-    public ProcessingInstruction pi() {
-        return pi;
-    }
-
 }

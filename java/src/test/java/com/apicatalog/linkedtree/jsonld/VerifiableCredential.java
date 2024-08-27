@@ -9,7 +9,6 @@ import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.lang.LangStringSelector;
 import com.apicatalog.linkedtree.lang.LanguageMap;
 import com.apicatalog.linkedtree.link.Link;
-import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 import com.apicatalog.linkedtree.xsd.XsdDateTime;
 
 public class VerifiableCredential implements LinkedFragment {
@@ -28,26 +27,24 @@ public class VerifiableCredential implements LinkedFragment {
     protected Collection<String> type;
     protected Map<String, LinkedContainer> properties;
 
-    protected ProcessingInstruction pi;
-
     protected VerifiableCredential(Link id, Collection<String> type, Map<String, LinkedContainer> properties) {
         this.id = id;
         this.type = type;
         this.properties = properties;
     }
 
-    public static VerifiableCredential of(Link id, Collection<String> type, Map<String, LinkedContainer> properties, ProcessingInstruction pi) {
-        return setup(new VerifiableCredential(id, type, properties), properties, pi);
+    public static VerifiableCredential of(Link id, Collection<String> type, Map<String, LinkedContainer> properties) {
+        return setup(new VerifiableCredential(id, type, properties), properties);
     }
 
-    protected static VerifiableCredential setup(VerifiableCredential credential, Map<String, LinkedContainer> properties, ProcessingInstruction pi) {
+    protected static VerifiableCredential setup(VerifiableCredential credential, Map<String, LinkedContainer> properties) {
 
         credential.name = getLangMap(properties, "https://schema.org/name");
         credential.description = getLangMap(properties, "https://schema.org/description");
 
         credential.validFrom = properties.containsKey("https://www.w3.org/2018/credentials#validFrom")
                 ? properties.get("https://www.w3.org/2018/credentials#validFrom")
-                        .singleLiteral(XsdDateTime.class)
+                        .single(XsdDateTime.class)
                         .datetime()
                 : null;
 
@@ -59,8 +56,6 @@ public class VerifiableCredential implements LinkedFragment {
                         .datetime()
                 : null;
 
-        credential.pi = pi;
-        
         return credential;
     }
 
@@ -83,11 +78,6 @@ public class VerifiableCredential implements LinkedFragment {
             return LanguageMap.of(container);
         }
         return null;
-    }
-
-    @Override
-    public ProcessingInstruction pi() {
-        return pi;
     }
 
     @Override

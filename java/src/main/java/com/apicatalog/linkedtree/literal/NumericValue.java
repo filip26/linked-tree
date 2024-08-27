@@ -5,5 +5,5 @@ import com.apicatalog.linkedtree.LinkedLiteral;
 public interface NumericValue extends LinkedLiteral {
 
     Number numberValue();
-    
+
 }

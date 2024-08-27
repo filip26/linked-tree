@@ -1,6 +1,7 @@
 package com.apicatalog.linkedtree.jsonld.io;
 
 import java.io.StringReader;
+import java.util.Collection;
 
 import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedFragment;
@@ -11,9 +12,11 @@ import com.apicatalog.linkedtree.json.JsonDecimal;
 import com.apicatalog.linkedtree.json.JsonInteger;
 import com.apicatalog.linkedtree.json.JsonLiteral;
 import com.apicatalog.linkedtree.json.JsonScalar;
+import com.apicatalog.linkedtree.json.pi.JsonMapWrite;
 import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 import com.apicatalog.linkedtree.lang.LangString;
 import com.apicatalog.linkedtree.literal.NumericValue;
+import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 import com.apicatalog.linkedtree.rdf.RdfConstants;
 import com.apicatalog.linkedtree.xsd.XsdConstants;
 
@@ -31,24 +34,26 @@ public class JsonLdTreeWriter {
 
         final JsonArrayBuilder builder = Json.createArrayBuilder();
 
+        int processingOrder = 0;
+
         for (final LinkedNode fragment : tree.nodes()) {
-            builder.add(writeNode(fragment));
+            builder.add(writeNode(fragment, tree.pi(processingOrder++)));
         }
 
         return builder.build();
     }
 
-    JsonObject writeTree(LinkedTree tree) {
+    JsonObject writeTree(LinkedTree tree, Collection<ProcessingInstruction> ops) {
 
         final JsonObjectBuilder builder = Json.createObjectBuilder()
                 .add(JsonLdKeyword.GRAPH, writeExpanded(tree));
 
-        writeFragment(tree, builder);
+        writeFragment(tree, ops, builder);
 
         return builder.build();
     }
 
-    JsonObjectBuilder writeFragment(final LinkedFragment fragment, JsonObjectBuilder builder) {
+    JsonObjectBuilder writeFragment(final LinkedFragment fragment, final Collection<ProcessingInstruction> ops, JsonObjectBuilder builder) {
 
         if (fragment.id() != null) {
             builder.add("@id", fragment.id().uri().toString());
@@ -58,10 +63,10 @@ public class JsonLdTreeWriter {
             builder.add("@type", Json.createArrayBuilder(fragment.type()));
         }
 
-        if (fragment.pi() != null
-                && fragment.pi() instanceof JsonLdPi meta) {
-            meta.write(builder);
-        }
+        ops.stream()
+                .filter(JsonMapWrite.class::isInstance)
+                .map(JsonMapWrite.class::cast)
+                .forEach(pi -> pi.write(builder));
 
         for (final String term : fragment.terms()) {
             builder.add(term, writeContainer(fragment.property(term)));
@@ -74,8 +79,10 @@ public class JsonLdTreeWriter {
 
         final JsonArrayBuilder array = Json.createArrayBuilder();
 
+        int processingOrder = 0;
+
         for (final LinkedNode node : container.nodes()) {
-            array.add(writeNode(node));
+            array.add(writeNode(node, container.pi(processingOrder++)));
         }
 
         if (LinkedContainer.Type.OrderedList.equals(container.containerType())) {
@@ -88,29 +95,29 @@ public class JsonLdTreeWriter {
 
     }
 
-    JsonValue writeNode(LinkedNode data) {
+    JsonValue writeNode(LinkedNode data, Collection<ProcessingInstruction> ops) {
 
         if (data == null) {
             return JsonValue.NULL;
         }
 
         if (data.isTree()) {
-            return writeTree(data.asTree());
+            return writeTree(data.asTree(), ops);
         }
         if (data.isContainer()) {
             return writeContainer(data.asContainer());
         }
         if (data.isFragment()) {
-            return writeFragment(data.asFragment(), Json.createObjectBuilder()).build();
+            return writeFragment(data.asFragment(), ops, Json.createObjectBuilder()).build();
         }
         if (data.isLiteral()) {
-            return writeLiteral(data.asLiteral());
+            return writeLiteral(data.asLiteral(), ops);
         }
 
         throw new IllegalStateException();
     }
 
-    JsonValue writeLiteral(LinkedLiteral literal) {
+    JsonValue writeLiteral(LinkedLiteral literal, Collection<ProcessingInstruction> ops) {
 
         final JsonObjectBuilder result = Json.createObjectBuilder();
 
@@ -233,10 +240,10 @@ public class JsonLdTreeWriter {
             result.add(JsonLdKeyword.TYPE, Json.createValue(type));
         }
 
-        if (literal.pi() != null
-                && literal.pi() instanceof JsonLdPi meta) {
-            meta.write(result);
-        }
+        ops.stream()
+                .filter(JsonMapWrite.class::isInstance)
+                .map(JsonMapWrite.class::cast)
+                .forEach(pi -> pi.write(result));
 
         return result.build();
     }

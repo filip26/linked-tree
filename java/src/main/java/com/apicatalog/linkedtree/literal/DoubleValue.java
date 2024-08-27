@@ -5,5 +5,5 @@ import com.apicatalog.linkedtree.LinkedLiteral;
 public interface DoubleValue extends LinkedLiteral {
 
     double doubleValue();
-    
+
 }

@@ -48,9 +48,8 @@ public final class JsonUtils {
 
     public static final boolean isScalar(final JsonValue value) {
         return value != null
-                    && !ValueType.ARRAY.equals(value.getValueType())
-                    && !ValueType.OBJECT.equals(value.getValueType())
-                    ;
+                && !ValueType.ARRAY.equals(value.getValueType())
+                && !ValueType.OBJECT.equals(value.getValueType());
     }
 
     public static final boolean isNotScalar(final JsonValue value) {
@@ -162,10 +161,9 @@ public final class JsonUtils {
     }
 
     public static JsonArray toJsonArray(JsonValue value) {
-       return JsonUtils.isArray(value)
-                    ? value.asJsonArray()
-                    : Json.createArrayBuilder().add(value).build()
-                    ;
+        return JsonUtils.isArray(value)
+                ? value.asJsonArray()
+                : Json.createArrayBuilder().add(value).build();
     }
 
     public static boolean isBlankString(JsonValue value) {
@@ -174,9 +172,8 @@ public final class JsonUtils {
 
     public static JsonValue toJsonValue(String value) {
         return value != null && isNotBlank(value)
-                    ? Json.createValue(value)
-                    : JsonValue.NULL
-                    ;
+                ? Json.createValue(value)
+                : JsonValue.NULL;
     }
 
     public static boolean isNonEmptyArray(JsonValue value) {
@@ -209,7 +206,7 @@ public final class JsonUtils {
 
         return value;
     }
-    
+
     public static final boolean isBlank(final String string) {
         return string == null || string.isBlank();
     }

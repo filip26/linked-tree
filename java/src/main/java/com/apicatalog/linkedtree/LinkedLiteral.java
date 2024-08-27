@@ -28,6 +28,6 @@ public non-sealed interface LinkedLiteral extends LinkedNode {
 
     @SuppressWarnings("unchecked")
     default <T> T cast(Class<T> clazz) {
-        return (T)this;
+        return (T) this;
     }
 }

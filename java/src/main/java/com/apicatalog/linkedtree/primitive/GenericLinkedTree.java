@@ -16,10 +16,10 @@ public record GenericLinkedTree(
         Map<String, LinkedContainer> entries,
         Collection<LinkedNode> nodes,
         Map<String, Link> linkMap,
-        ProcessingInstruction pi) implements LinkedTree {
+        Map<Integer, Collection<ProcessingInstruction>> opsMap) implements LinkedTree {
 
-    public static GenericLinkedTree of(Collection<LinkedNode> nodes, Map<String, Link> links) {
-        return new GenericLinkedTree(null, Collections.emptySet(), Collections.emptyMap(), nodes, links, null);
+    public static GenericLinkedTree of(Collection<LinkedNode> nodes, Map<String, Link> links, Map<Integer, Collection<ProcessingInstruction>> opsMap) {
+        return new GenericLinkedTree(null, Collections.emptySet(), Collections.emptyMap(), nodes, links, opsMap);
     }
 
     @Override
@@ -35,5 +35,12 @@ public record GenericLinkedTree(
     @Override
     public Collection<Link> links() {
         return linkMap.values();
+    }
+
+    @Override
+    public Collection<ProcessingInstruction> pi(int processingOrder) {
+        return opsMap != null
+                ? opsMap.getOrDefault(processingOrder, Collections.emptyList())
+                : Collections.emptyList();
     }
 }
