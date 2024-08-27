@@ -1,0 +1,9 @@
+{
+  "@vocab": "http://example.org/",
+  "@prefix": {
+    "type": "type/vocab"
+  },
+  "@id": "test",
+  "type:#bool": true,
+  "type:int": 123
+}

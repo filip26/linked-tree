@@ -12,7 +12,7 @@ import com.apicatalog.linkedtree.json.JsonDecimal;
 import com.apicatalog.linkedtree.json.JsonInteger;
 import com.apicatalog.linkedtree.json.JsonLiteral;
 import com.apicatalog.linkedtree.json.JsonScalar;
-import com.apicatalog.linkedtree.json.pi.JsonMapWrite;
+import com.apicatalog.linkedtree.json.pi.JsonObjectWrite;
 import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 import com.apicatalog.linkedtree.lang.LangString;
 import com.apicatalog.linkedtree.literal.NumericValue;
@@ -29,7 +29,7 @@ import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser;
 
 public class JsonLdTreeWriter {
-
+    
     public JsonArray writeExpanded(LinkedTree tree) {
 
         final JsonArrayBuilder builder = Json.createArrayBuilder();
@@ -64,8 +64,8 @@ public class JsonLdTreeWriter {
         }
 
         ops.stream()
-                .filter(JsonMapWrite.class::isInstance)
-                .map(JsonMapWrite.class::cast)
+                .filter(JsonObjectWrite.class::isInstance)
+                .map(JsonObjectWrite.class::cast)
                 .forEach(pi -> pi.write(builder));
 
         for (final String term : fragment.terms()) {
@@ -241,8 +241,8 @@ public class JsonLdTreeWriter {
         }
 
         ops.stream()
-                .filter(JsonMapWrite.class::isInstance)
-                .map(JsonMapWrite.class::cast)
+                .filter(JsonObjectWrite.class::isInstance)
+                .map(JsonObjectWrite.class::cast)
                 .forEach(pi -> pi.write(result));
 
         return result.build();

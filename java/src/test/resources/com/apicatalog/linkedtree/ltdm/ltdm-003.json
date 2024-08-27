@@ -1,0 +1,6 @@
+{
+  "@vocab": "http://example.org/",
+  "@id": "test",
+  "vocab#bool": true,
+  "vocab#int": 123
+}

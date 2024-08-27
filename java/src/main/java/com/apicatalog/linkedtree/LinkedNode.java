@@ -33,4 +33,10 @@ public sealed interface LinkedNode permits LinkedContainer, LinkedTree, LinkedFr
     default LinkedContainer asContainer() {
         throw new ClassCastException();
     }
+    
+    @Override
+    boolean equals(Object obj);
+    
+    @Override
+    int hashCode();
 }
