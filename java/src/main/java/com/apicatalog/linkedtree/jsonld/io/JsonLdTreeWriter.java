@@ -29,7 +29,7 @@ import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser;
 
 public class JsonLdTreeWriter {
-
+    
     public JsonArray writeExpanded(LinkedTree tree) {
 
         final JsonArrayBuilder builder = Json.createArrayBuilder();
