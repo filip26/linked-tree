@@ -7,7 +7,6 @@ import java.util.Map;
 import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.link.Link;
-import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 
 public record FragmentAdapterTypeMap(
         Map<String, LinkedFragmentReader> typeMap) implements LinkedFragmentAdapter {
@@ -22,13 +21,13 @@ public record FragmentAdapterTypeMap(
     }
 
     @Override
-    public LinkedFragment read(final Link id, final Collection<String> types, final Map<String, LinkedContainer> properties, ProcessingInstruction pi) {
+    public LinkedFragment read(final Link id, final Collection<String> types, final Map<String, LinkedContainer> properties) {
         return typeMap.keySet()
                 .stream()
                 .filter(types::contains)
                 .findFirst()
                 .map(typeMap::get)
-                .map(reader -> reader.read(id, types, properties, pi))
+                .map(reader -> reader.read(id, types, properties))
                 .orElse(null);
     }
 

@@ -3,7 +3,6 @@ package com.apicatalog.linkedtree.jsonld;
 import java.util.Base64;
 
 import com.apicatalog.linkedtree.literal.ByteArrayValue;
-import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 
 class Base64ByteArray implements ByteArrayValue {
 
@@ -12,15 +11,12 @@ class Base64ByteArray implements ByteArrayValue {
     String value;
     byte[] byteArray;
 
-    ProcessingInstruction pi;
-
-    Base64ByteArray(String value, ProcessingInstruction pi) {
+    Base64ByteArray(String value) {
         this.value = value;
-        this.pi = pi;
     }
 
-    public static Base64ByteArray of(String value, ProcessingInstruction pi) {
-        return new Base64ByteArray(value, pi);
+    public static Base64ByteArray of(String value) {
+        return new Base64ByteArray(value);
     }
 
     @Override
@@ -53,10 +49,5 @@ class Base64ByteArray implements ByteArrayValue {
     public void byteArrayValue(byte[] byteArray) {
         this.byteArray = byteArray;
         this.value = null;
-    }
-
-    @Override
-    public ProcessingInstruction pi() {
-        return pi;
     }
 }

@@ -23,6 +23,21 @@ public non-sealed interface LinkedContainer extends LinkedNode {
         return Collections.emptyList();
     }
 
+    /**
+     * A custom processing instructions related to the given {@link LinkedNode}.
+     * 
+     * @param node a linked to what PIs are requested
+     * 
+     * @return a list of custom processing instructions, never <code>null</code>
+     */
+    default Collection<ProcessingInstruction> pi(LinkedNode node) {
+        return Collections.emptyList();
+    }
+
+    default void attach(LinkedNode node, ProcessingInstruction pi) {
+        throw new UnsupportedOperationException();
+    }
+
     @Override
     default boolean isContainer() {
         return true;
@@ -33,29 +48,28 @@ public non-sealed interface LinkedContainer extends LinkedNode {
         return this;
     }
 
+    default int size() {
+        return nodes().size();
+    }
+
     default LinkedNode single() {
-        Collection<LinkedNode> nodes = nodes();
+        final Collection<LinkedNode> nodes = nodes();
         if (nodes.size() != 1) {
             throw new IllegalStateException();
         }
         return nodes.iterator().next();
     }
 
-    default int size() {
-        return nodes().size();
+    @SuppressWarnings("unchecked")
+    default <T> T single(Class<T> clazz) {
+        return (T) single();
     }
-    
+
     default LinkedLiteral singleLiteral() {
         return single().asLiteral();
     }
 
-    @SuppressWarnings("unchecked")
-    default <T> T singleLiteral(Class<T> clazz) {
-        return (T)single();
-    }
-    
-    @Override
-    default ProcessingInstruction pi() {
-        return null;
+    default LinkedFragment singleFragment() {
+        return single().asFragment();
     }
 }

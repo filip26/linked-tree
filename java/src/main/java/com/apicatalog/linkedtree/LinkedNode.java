@@ -1,7 +1,5 @@
 package com.apicatalog.linkedtree;
 
-import com.apicatalog.linkedtree.pi.ProcessingInstruction;
-
 public sealed interface LinkedNode permits LinkedContainer, LinkedTree, LinkedFragment, LinkedLiteral {
 
     default boolean isTree() {
@@ -35,11 +33,4 @@ public sealed interface LinkedNode permits LinkedContainer, LinkedTree, LinkedFr
     default LinkedContainer asContainer() {
         throw new ClassCastException();
     }
-
-    /**
-     * A custom processing instructions (temporary solution, will be removed).
-     * 
-     * @return custom data
-     */
-    ProcessingInstruction pi();
 }

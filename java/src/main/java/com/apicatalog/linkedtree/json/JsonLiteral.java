@@ -1,7 +1,6 @@
 package com.apicatalog.linkedtree.json;
 
 import com.apicatalog.linkedtree.LinkedLiteral;
-import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 import com.apicatalog.linkedtree.rdf.RdfConstants;
 
 import jakarta.json.JsonValue;
@@ -10,19 +9,19 @@ public class JsonLiteral implements LinkedLiteral {
 
     protected JsonValue json;
     protected String value;
-    protected ProcessingInstruction pi;
 
     protected JsonLiteral() {
         // protected
     }
 
-    public static JsonLiteral of(JsonValue value, ProcessingInstruction pi) {
+    public static JsonLiteral of(JsonValue value) {
         final JsonLiteral literal = new JsonLiteral();
         literal.json = value;
         literal.value = null;
-        literal.pi = pi;
         return literal;
     }
+    
+    //TODO public static JsonLiteral of(String value)
 
     @Override
     public String lexicalValue() {
@@ -39,10 +38,5 @@ public class JsonLiteral implements LinkedLiteral {
     @Override
     public String datatype() {
         return RdfConstants.JSON;
-    }
-
-    @Override
-    public ProcessingInstruction pi() {
-        return pi;
     }
 }
