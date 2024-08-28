@@ -1,6 +1,6 @@
 package com.apicatalog.linkedtree;
 
-public sealed interface LinkedNode permits LinkedContainer, LinkedTree, LinkedFragment, LinkedLiteral {
+public sealed interface LinkedNode extends Linkeable permits LinkedContainer, LinkedTree, LinkedFragment, LinkedLiteral {
 
     default boolean isTree() {
         return false;
@@ -33,10 +33,10 @@ public sealed interface LinkedNode permits LinkedContainer, LinkedTree, LinkedFr
     default LinkedContainer asContainer() {
         throw new ClassCastException();
     }
-    
+
     @Override
     boolean equals(Object obj);
-    
+
     @Override
     int hashCode();
 }
