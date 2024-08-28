@@ -2,11 +2,11 @@ package com.apicatalog.linkedtree;
 
 /**
  * Allows to hide {@link LinkedNode} and inherited interfaces. Only
- * {@link Linkeable#ld()} method is exposed.
+ * {@link Linkable#linkedNode()} method is exposed.
  */
-public interface Linkeable {
+public interface Linkable {
 
-    default LinkedNode ld() {
+    default LinkedNode linkedNode() {
         return (LinkedNode) this;
     }
 

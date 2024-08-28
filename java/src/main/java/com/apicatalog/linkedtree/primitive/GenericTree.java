@@ -16,10 +16,11 @@ public record GenericTree(
         Map<String, LinkedContainer> entries,
         Collection<LinkedNode> nodes,
         Map<String, Link> linkMap,
+        Collection<LinkedTree> subtrees,
         Map<Integer, Collection<ProcessingInstruction>> opsMap) implements LinkedTree {
 
-    public static GenericTree of(Collection<LinkedNode> nodes, Map<String, Link> links, Map<Integer, Collection<ProcessingInstruction>> opsMap) {
-        return new GenericTree(null, Collections.emptySet(), Collections.emptyMap(), nodes, links, opsMap);
+    public static GenericTree of(Collection<LinkedNode> nodes, Map<String, Link> links, Collection<LinkedTree> subtrees, Map<Integer, Collection<ProcessingInstruction>> opsMap) {
+        return new GenericTree(null, Collections.emptySet(), Collections.emptyMap(), nodes, links, subtrees, opsMap);
     }
 
     @Override
