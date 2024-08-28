@@ -80,7 +80,9 @@ public class JsonLdTreeReader {
 
         final Map<Integer, Collection<ProcessingInstruction>> opsMap = new HashMap<>();
 
-        final LinkedTree tree = GenericTree.of(readNodes(jsonNodes, links, opsMap), links, opsMap);
+        final Collection<LinkedTree> subtrees = new ArrayList<>(2);
+
+        final LinkedTree tree = GenericTree.of(readNodes(jsonNodes, links, subtrees, opsMap), links, subtrees, opsMap);
 
         for (final Link link : links.values()) {
             ((MutableLink) link).target(adapt(((MutableLink) link), mergeTypes(link.refs()), merge(link.refs())));
@@ -116,7 +118,7 @@ public class JsonLdTreeReader {
         return map;
     }
 
-    public Collection<LinkedNode> readNodes(final JsonArray jsonNodes, Map<String, Link> links, final Map<Integer, Collection<ProcessingInstruction>> nodeOps) {
+    public Collection<LinkedNode> readNodes(final JsonArray jsonNodes, Map<String, Link> links, final Collection<LinkedTree> subtrees, final Map<Integer, Collection<ProcessingInstruction>> nodeOps) {
 
         if (jsonNodes.isEmpty()) {
             return Collections.emptyList();
@@ -131,7 +133,7 @@ public class JsonLdTreeReader {
             if (jsonValue == null || !ValueType.OBJECT.equals(jsonValue.getValueType())) {
                 throw new IllegalArgumentException();
             }
-            final LinkedNode node = readNode(jsonValue.asJsonObject(), links, ops);
+            final LinkedNode node = readNode(jsonValue.asJsonObject(), links, subtrees, ops);
 
             if (!ops.isEmpty()) {
                 // FIXME merge
@@ -145,7 +147,7 @@ public class JsonLdTreeReader {
         return nodes;
     }
 
-    protected LinkedContainer readValueArray(JsonArray values, Map<String, Link> links) {
+    protected LinkedContainer readValueArray(JsonArray values, Map<String, Link> links, Collection<LinkedTree> subtrees) {
 
         final Collection<LinkedNode> nodes = new ArrayList<>(values.size());
 
@@ -154,7 +156,7 @@ public class JsonLdTreeReader {
         Collection<ProcessingInstruction> ops = new ArrayList<>(2);
 
         for (final JsonValue item : values) {
-            final LinkedNode node = readValue(item, links, ops);
+            final LinkedNode node = readValue(item, links, subtrees, ops);
 
             if (!ops.isEmpty()) {
                 // FIXME merge
@@ -168,7 +170,7 @@ public class JsonLdTreeReader {
         return new GenericContainer(LinkedContainer.Type.UnorderedSet, nodes, nodeOps);
     }
 
-    protected LinkedNode readValue(JsonValue value, Map<String, Link> links, Collection<ProcessingInstruction> ops) {
+    protected LinkedNode readValue(JsonValue value, Map<String, Link> links, Collection<LinkedTree> subtrees, Collection<ProcessingInstruction> ops) {
 
 //      if (JsonUtils.isNotObject(value)) {
 //      throw new DocumentError(ErrorType.Invalid, "Document");
@@ -178,17 +180,17 @@ public class JsonLdTreeReader {
 
         return object.containsKey(JsonLdKeyword.VALUE)
                 ? readLiteral(object, ops)
-                : readNode(object, links, ops);
+                : readNode(object, links, subtrees, ops);
     }
 
-    protected LinkedNode readNode(JsonObject jsonObject, Map<String, Link> links, Collection<ProcessingInstruction> ops) {
+    protected LinkedNode readNode(JsonObject jsonObject, Map<String, Link> links, Collection<LinkedTree> subtrees, Collection<ProcessingInstruction> ops) {
 
         if (jsonObject != null) {
             if (jsonObject.containsKey(JsonLdKeyword.LIST)) {
-                return readList(jsonObject, links);
+                return readList(jsonObject, links, subtrees);
             }
             if (jsonObject.containsKey(JsonLdKeyword.GRAPH)) {
-                return readGraph(jsonObject, ops);
+                return readGraph(jsonObject, subtrees, ops);
             }
             if (jsonObject.size() == 1 && jsonObject.containsKey(JsonLdKeyword.ID)) {
                 final MutableLink link = getOrCreate(jsonObject.getString(JsonLdKeyword.ID), links);
@@ -200,11 +202,11 @@ public class JsonLdTreeReader {
 //      return readReverse(jsonObject);
 //  }        
         }
-        return readFragment(jsonObject, links, ops);
+        return readFragment(jsonObject, links, subtrees, ops);
     }
 
     // list is a collection attribute
-    protected LinkedContainer readList(JsonObject jsonObject, Map<String, Link> links) {
+    protected LinkedContainer readList(JsonObject jsonObject, Map<String, Link> links, Collection<LinkedTree> subtrees) {
 
         final JsonArray list = jsonObject.getJsonArray(JsonLdKeyword.LIST);
 
@@ -215,7 +217,7 @@ public class JsonLdTreeReader {
         Collection<ProcessingInstruction> ops = new ArrayList<>(2);
 
         for (final JsonValue item : list) {
-            final LinkedNode node = readValue(item, links, ops);
+            final LinkedNode node = readValue(item, links, subtrees, ops);
 
             if (!ops.isEmpty()) {
                 // FIXME merge
@@ -243,7 +245,7 @@ public class JsonLdTreeReader {
         return null;
     }
 
-    protected LinkedTree readGraph(JsonObject jsonObject, Collection<ProcessingInstruction> ops) {
+    protected LinkedTree readGraph(JsonObject jsonObject, Collection<LinkedTree> subtrees, Collection<ProcessingInstruction> ops) {
 
         final JsonArray graph = jsonObject.getJsonArray(JsonLdKeyword.GRAPH);
 
@@ -251,7 +253,9 @@ public class JsonLdTreeReader {
 
         final Map<Integer, Collection<ProcessingInstruction>> nodeOps = new HashMap<>();
 
-        final Collection<LinkedNode> nodes = readNodes(graph, links, nodeOps);
+        final Collection<LinkedTree> subsubtrees = new ArrayList<>();
+
+        final Collection<LinkedNode> nodes = readNodes(graph, links, subsubtrees, nodeOps);
 
         String id = null;
         Collection<String> types = Collections.emptySet();
@@ -280,7 +284,7 @@ public class JsonLdTreeReader {
                 unprocessed.put(entry.getKey(), entry.getValue());
 
             } else {
-                properties.put(entry.getKey(), readValueArray(entry.getValue().asJsonArray(), links));
+                properties.put(entry.getKey(), readValueArray(entry.getValue().asJsonArray(), links, subsubtrees));
             }
         }
 
@@ -288,25 +292,32 @@ public class JsonLdTreeReader {
             ((MutableLink) link).target(adapt(((MutableLink) link), mergeTypes(link.refs()), merge(link.refs())));
         }
 
+        final GenericTree tree;
+
         if (id != null) {
             final MutableLink link = getOrCreate(id, links);
-            final GenericTree node = new GenericTree(
+            tree = new GenericTree(
                     link,
                     types,
                     properties,
                     nodes,
                     links,
+                    subsubtrees,
                     nodeOps);
-            ops.add(new JsonObjectWrite(unprocessed));
-            link.addFragment(node);
-            return node;
+            link.addFragment(tree);
+
+        } else {
+            tree = new GenericTree(null, types, properties, nodes, links, subsubtrees, nodeOps);
         }
 
         ops.add(new JsonObjectWrite(unprocessed));
-        return new GenericTree(null, types, properties, nodes, links, nodeOps);
+        subtrees.add(tree);
+        subtrees.addAll(subsubtrees);
+
+        return tree;
     }
 
-    protected LinkedFragment readFragment(JsonObject value, Map<String, Link> links, Collection<ProcessingInstruction> ops) {
+    protected LinkedFragment readFragment(JsonObject value, Map<String, Link> links, Collection<LinkedTree> subtrees, Collection<ProcessingInstruction> ops) {
 
         String id = null;
         Collection<String> types = Collections.emptySet();
@@ -336,7 +347,7 @@ public class JsonLdTreeReader {
                 unprocessed.put(entry.getKey(), entry.getValue());
 
             } else {
-                properties.put(entry.getKey(), readValueArray(entry.getValue().asJsonArray(), links));
+                properties.put(entry.getKey(), readValueArray(entry.getValue().asJsonArray(), links, subtrees));
             }
         }
 

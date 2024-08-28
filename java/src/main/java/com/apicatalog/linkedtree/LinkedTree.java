@@ -33,6 +33,12 @@ public non-sealed interface LinkedTree extends LinkedFragment, LinkedContainer, 
         public Link id() {
             return null;
         }
+
+        @Override
+        public Collection<LinkedTree> subtrees() {
+            // TODO Auto-generated method stub
+            return null;
+        }
     };
 
     @Override
@@ -48,9 +54,14 @@ public non-sealed interface LinkedTree extends LinkedFragment, LinkedContainer, 
     /**
      * Identifiable fragments index
      * 
-     * @return a collection of links found in the tree
+     * @return a list of all links found in the tree, never <code>null</code>
      */
     Collection<Link> links();
 
-    // TODO Collection<LinkedTree> subtree()
+    /**
+     * A set of all subtrees found
+     * 
+     * @return a set of all subtrees, never <code>null</code>
+     */
+    Collection<LinkedTree> subtrees();
 }
