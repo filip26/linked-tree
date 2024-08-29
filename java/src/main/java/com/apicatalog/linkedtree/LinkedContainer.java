@@ -69,12 +69,12 @@ public interface LinkedContainer extends LinkedNode {
             return null;
         }
         
-        if (single.linkedNode().isFragment() && single.linkedNode().asFragment().link() != null) {
-            return single.linkedNode().asFragment().link().target().cast(clazz);
+        if (single.ld().isFragment() && single.ld().asFragment().id() != null) {
+            return single.ld().asFragment().id().target().cast(clazz);
         }
 
-        if (single.linkedNode().isTree() && single.linkedNode().asTree().link() != null) {
-            return single.linkedNode().asTree().link().target().cast(clazz);
+        if (single.ld().isTree() && single.ld().asTree().id() != null) {
+            return single.ld().asTree().id().target().cast(clazz);
         }
 
         return (T)single ;

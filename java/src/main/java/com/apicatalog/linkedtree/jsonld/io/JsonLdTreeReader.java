@@ -435,7 +435,7 @@ public class JsonLdTreeReader {
         if (reader != null) {
             final Linkable fragment = reader.read(id, type, data);
             if (fragment != null) {
-                return fragment.linkedNode().asFragment();
+                return fragment.ld().asFragment();
             }
         }
 

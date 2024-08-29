@@ -51,7 +51,7 @@ public class LinkableObject implements LinkedFragment {
     }
 
     @Override
-    public Link link() {
+    public Link id() {
         return link;
     }
 

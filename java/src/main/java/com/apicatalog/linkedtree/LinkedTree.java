@@ -30,7 +30,7 @@ public interface LinkedTree extends LinkedFragment, LinkedContainer, LinkedNode 
         }
 
         @Override
-        public Link link() {
+        public Link id() {
             return null;
         }
 

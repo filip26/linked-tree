@@ -10,7 +10,7 @@ public interface LinkedFragment extends LinkedNode {
      * An optional unique fragment link if an identifier is present. The same
      * {@link Link} can be shared among many fragments allowing composition.
      */
-    Link link();
+    Link id();
 
     Collection<String> type();
 

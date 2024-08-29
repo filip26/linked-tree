@@ -91,7 +91,7 @@ class JsonLdAdaptersTest {
 
         VerifiableCredential vc = tree
                 .singleFragment()
-                .link()
+                .id()
                 .target()
                 .cast(VerifiableCredential.class);
 
@@ -119,7 +119,7 @@ class JsonLdAdaptersTest {
 
         assertEquals(1, vc.subject().size());
 
-        assertEquals("https://vc.example/issuers/5678", vc.issuer().link().uri());
+        assertEquals("https://vc.example/issuers/5678", vc.issuer().id().uri());
 
     }
 

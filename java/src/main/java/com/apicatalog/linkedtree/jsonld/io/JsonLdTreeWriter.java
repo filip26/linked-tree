@@ -55,8 +55,8 @@ public class JsonLdTreeWriter {
 
     JsonObjectBuilder writeFragment(final LinkedFragment fragment, final Collection<ProcessingInstruction> ops, JsonObjectBuilder builder) {
 
-        if (fragment.link() != null) {
-            builder.add("@id", fragment.link().uri().toString());
+        if (fragment.id() != null) {
+            builder.add("@id", fragment.id().uri().toString());
         }
 
         if (fragment.type() != null && !fragment.type().isEmpty()) {
