@@ -1,6 +1,8 @@
 package com.apicatalog.linkedtree.xsd;
 
 import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
 
 import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.literal.DateTimeValue;
@@ -33,8 +35,17 @@ public class XsdDateTime implements LinkedLiteral, DateTimeValue {
     @Override
     public Instant datetime() {
         if (datetime == null && value != null) {
-            // TODO check
-            datetime = Instant.parse(value);
+
+//            datetime = Instant.parse(value);
+            try {
+                OffsetDateTime createdOffset = OffsetDateTime.parse(value);
+
+                datetime = createdOffset.toInstant();
+
+            } catch (DateTimeParseException e) {
+                throw new IllegalArgumentException(e);
+            }
+
         }
 
         return datetime;

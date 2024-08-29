@@ -2,6 +2,7 @@ package com.apicatalog.linkedtree.primitive;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import com.apicatalog.linkedtree.LinkedContainer;
@@ -21,6 +22,10 @@ public record GenericTree(
 
     public static GenericTree of(Collection<LinkedNode> nodes, Map<String, Link> links, Collection<LinkedTree> subtrees, Map<Integer, Collection<ProcessingInstruction>> opsMap) {
         return new GenericTree(null, Collections.emptySet(), Collections.emptyMap(), nodes, links, subtrees, opsMap);
+    }
+
+    public static GenericTree of(LinkedNode node, Map<String, Link> links, Collection<LinkedTree> subtrees, Map<Integer, Collection<ProcessingInstruction>> opsMap) {
+        return new GenericTree(null, Collections.emptySet(), Collections.emptyMap(), List.of(node), links, subtrees, opsMap);
     }
 
     @Override
