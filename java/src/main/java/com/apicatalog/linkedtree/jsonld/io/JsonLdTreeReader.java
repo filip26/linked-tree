@@ -393,8 +393,8 @@ public class JsonLdTreeReader {
 
     protected LinkedFragment adapt(MutableLink id, Collection<String> type, Map<String, LinkedContainer> data) {
 //        final StringValueSelector selector = (term) -> jsonObject.getString(term);
-        
-        var fragmentAdapter = fragmentAdapterResolver.adapter(
+
+        var fragmentAdapter = fragmentAdapterResolver.resolve(
                 id != null ? id.uri() : null, 
                 type, 
                 (t) -> null

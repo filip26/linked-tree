@@ -5,7 +5,7 @@ import java.util.Collections;
 
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 
-public non-sealed interface LinkedContainer extends LinkedNode {
+public interface LinkedContainer extends LinkedNode {
 
     public static LinkedContainer EMPTY = new LinkedContainer() {
     };
@@ -62,7 +62,22 @@ public non-sealed interface LinkedContainer extends LinkedNode {
 
     @SuppressWarnings("unchecked")
     default <T> T single(Class<T> clazz) {
-        return (T) single();
+        
+        final LinkedNode single = single(); 
+        
+        if (single == null) {
+            return null;
+        }
+        
+        if (single.isFragment() && single.asFragment().link() != null) {
+            return single.asFragment().link().target().cast(clazz);
+        }
+
+        if (single.isTree() && single.asTree().link() != null) {
+            return single.asTree().link().target().cast(clazz);
+        }
+
+        return (T)single ;
     }
 
     default LinkedLiteral singleLiteral() {

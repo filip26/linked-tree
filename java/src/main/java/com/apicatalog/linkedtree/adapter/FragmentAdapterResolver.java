@@ -6,7 +6,7 @@ import com.apicatalog.linkedtree.selector.StringValueSelector;
 
 public interface FragmentAdapterResolver {
 
-    LinkedFragmentAdapter adapter(
+    LinkedFragmentAdapter resolve(
             //FragmentAdapterSelector selector
             String id, Collection<String> types, StringValueSelector stringSelector 
             );

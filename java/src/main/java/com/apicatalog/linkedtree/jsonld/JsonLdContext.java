@@ -12,7 +12,7 @@ import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
 public final class JsonLdContext {
-    
+
     /**
      * 
      * @param object
@@ -30,21 +30,24 @@ public final class JsonLdContext {
             Collections.emptyList();
         }
 
-        final Collection<JsonValue> items = JsonUtils.toCollection(contexts);  
-        
+        final Collection<JsonValue> items = JsonUtils.toCollection(contexts);
+
         if (items.isEmpty()) {
             Collections.emptyList();
         }
-        
+
         final List<String> strings = new ArrayList<>(items.size());
-        
+
         for (final JsonValue context : items) {
-            if (JsonUtils.isNotString(context)
-                    //TODO && UriUtils.isURI(((JsonString) context).getString())
-                    ) {
-//              throw new DocumentError(ErrorType.Invalid, Keywords.CONTEXT);
+            if (JsonUtils.isNotString(context)) {
+                throw new IllegalArgumentException("Invalid context value type. Expected JsonString but got [" + context + "].");
             }
-            
+            // TODO
+//            if (UriUtils.isURI(((JsonString) context).getString())
+//                    ) {
+//              throw new IllegalArgumentException("Invalid context value. Expected URI but got [" + context + "].");
+//            }
+
             final String contextUri = ((JsonString) context).getString();
 
             strings.add(contextUri);

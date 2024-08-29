@@ -14,7 +14,7 @@ public record TypeMapAdapterResolver(
     }
 
     @Override
-    public LinkedFragmentAdapter adapter(String id, Collection<String> types, StringValueSelector stringSelector) {
+    public LinkedFragmentAdapter resolve(String id, Collection<String> types, StringValueSelector stringSelector) {
         return typeMap.keySet()
                 .stream()
                 .filter(types::contains)

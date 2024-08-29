@@ -7,10 +7,10 @@ import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.link.Link;
 
-public record Reference(Link id) implements LinkedFragment {
+public record Reference(Link link) implements LinkedFragment {
 
-    public static final Reference of(Link id) {
-        return new Reference(id);
+    public static final Reference of(Link link) {
+        return new Reference(link);
     }
 
     @Override

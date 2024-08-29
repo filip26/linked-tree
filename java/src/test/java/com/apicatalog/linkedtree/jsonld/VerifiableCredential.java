@@ -81,7 +81,7 @@ public class VerifiableCredential implements LinkedFragment {
     }
 
     @Override
-    public Link id() {
+    public Link link() {
         return id;
     }
 

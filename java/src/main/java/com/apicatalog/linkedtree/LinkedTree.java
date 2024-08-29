@@ -5,7 +5,7 @@ import java.util.Collections;
 
 import com.apicatalog.linkedtree.link.Link;
 
-public non-sealed interface LinkedTree extends LinkedFragment, LinkedContainer, LinkedNode {
+public interface LinkedTree extends LinkedFragment, LinkedContainer, LinkedNode {
 
     static LinkedTree EMPTY = new LinkedTree() {
 
@@ -30,7 +30,7 @@ public non-sealed interface LinkedTree extends LinkedFragment, LinkedContainer, 
         }
 
         @Override
-        public Link id() {
+        public Link link() {
             return null;
         }
 

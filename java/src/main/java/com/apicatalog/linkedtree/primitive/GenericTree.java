@@ -12,7 +12,7 @@ import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 
 public record GenericTree(
-        Link id,
+        Link link,
         Collection<String> type,
         Map<String, LinkedContainer> entries,
         Collection<LinkedNode> nodes,
