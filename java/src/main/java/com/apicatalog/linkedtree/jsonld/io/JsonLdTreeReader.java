@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.apicatalog.linkedtree.Linkable;
 import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedLiteral;
@@ -432,9 +433,9 @@ public class JsonLdTreeReader {
     protected LinkedFragment materialize(LinkedFragmentReader reader, MutableLink id, Collection<String> type, Map<String, LinkedContainer> data) {
 
         if (reader != null) {
-            final LinkedFragment fragment = reader.read(id, type, data);
+            final Linkable fragment = reader.read(id, type, data);
             if (fragment != null) {
-                return fragment;
+                return fragment.linkedNode().asFragment();
             }
         }
 
