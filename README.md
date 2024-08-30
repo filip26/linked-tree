@@ -7,7 +7,7 @@ Influenced by JSON-LD expanded and flattened document forms. Linked tree terms a
 The project is an experiment, please share feedback.
 
 > [!NOTE]
-> A stargiver get a free beer. Collect it when you are in Prague! ;)
+> A stargiver gets a free beer. Collect it when you are in Prague! ;)
 
 ## Goals
 
