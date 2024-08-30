@@ -32,4 +32,8 @@ public interface LinkedFragment extends LinkedNode {
     default <T> T cast(Class<T> clazz) {
         return (T) this;
     }
+    
+    default Linkable cast() {
+        return this;
+    }
 }

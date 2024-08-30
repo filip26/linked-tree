@@ -15,19 +15,11 @@ import com.apicatalog.linkedtree.link.Link;
  * {@link Linkable}. Intended to be used as
  * {@link LinkedFragmentReader#read(Link, Collection, Map)} result.
  */
-public class LinkableObject implements LinkedFragment {
-
-    protected Link link;
-    protected Collection<String> type;
-    protected Map<String, LinkedContainer> entries;
-    protected Linkable linkable;
-
-    public LinkableObject(Link id, Collection<String> type, Map<String, LinkedContainer> entries) {
-        this.link = id;
-        this.type = type;
-        this.entries = entries;
-        this.linkable = null;
-    }
+public record LinkableObject(
+        Link link,
+        Collection<String> type,
+        Map<String, LinkedContainer> entries,
+        Linkable linkable) implements LinkedFragment {
 
     @Override
     public Collection<String> terms() {
@@ -39,15 +31,15 @@ public class LinkableObject implements LinkedFragment {
         return entries.get(term);
     }
 
-    public LinkableObject linkable(Linkable linkable) {
-        this.linkable = linkable;
-        return this;
-    }
-
     @SuppressWarnings("unchecked")
     @Override
     public <T> T cast(Class<T> clazz) {
         return (T) linkable;
+    }
+
+    @Override
+    public Linkable cast() {
+        return linkable;
     }
 
     @Override
