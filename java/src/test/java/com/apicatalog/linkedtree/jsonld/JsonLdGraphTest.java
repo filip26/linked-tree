@@ -1,6 +1,7 @@
 package com.apicatalog.linkedtree.jsonld;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
+import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 
 import jakarta.json.Json;
@@ -41,6 +43,23 @@ class JsonLdGraphTest {
 
         assertEquals(1, tree.subtrees().size());
         assertEquals(0, tree.subtrees().iterator().next().subtrees().size());
+
+        assertTrue(tree.nodes()
+                .stream()
+                .map(LinkedNode::root)
+                .allMatch(tree::equals));
+
+        var proof = tree.singleFragment()
+                .property("https://w3id.org/security#proof")
+//                .asContainer()
+//                .single()
+                .asTree();
+
+        assertTrue(proof
+                .nodes()
+                .stream()
+                .map(LinkedNode::root)
+                .allMatch(proof::equals));
     }
 
     static final JsonArray resource(String name) throws IOException, URISyntaxException {

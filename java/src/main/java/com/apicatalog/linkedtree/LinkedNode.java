@@ -2,6 +2,11 @@ package com.apicatalog.linkedtree;
 
 public interface LinkedNode extends Linkable {
 
+    /**
+     * A {@link LinkedTree} instance to which the {@link LinkedNode} belongs to.
+     * 
+     * @return an instance or <code>null</code> if the node is a root
+     */
     default LinkedTree root() {
         return null;
     }

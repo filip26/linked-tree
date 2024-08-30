@@ -648,10 +648,10 @@ public class JsonLdTreeReader {
             return this;
         }
 
-        public Builder with(String type, LinkedFragmentAdapter adapter) {
-            this.fragmentMap.put(type, () -> adapter.reader());
-            return this;
-        }
+//        public Builder with(String type, LinkedFragmentAdapter adapter) {
+//            this.fragmentMap.put(type, () -> adapter.reader());
+//            return this;
+//        }
 
         public Builder with(LinkedLiteralAdapter adapter) {
             this.literalMap.put(adapter.datatype(), adapter);
