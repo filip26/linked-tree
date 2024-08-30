@@ -64,4 +64,9 @@ public interface LinkedTree extends LinkedFragment, LinkedContainer, LinkedNode 
      * @return a set of all subtrees, never <code>null</code>
      */
     Collection<LinkedTree> subtrees();
+    
+    @Override
+    default Type containerType() {
+        return Type.Tree;
+    }
 }

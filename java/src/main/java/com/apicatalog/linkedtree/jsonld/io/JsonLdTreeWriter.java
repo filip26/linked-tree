@@ -2,6 +2,7 @@ package com.apicatalog.linkedtree.jsonld.io;
 
 import java.io.StringReader;
 import java.util.Collection;
+import java.util.Collections;
 
 import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedFragment;
@@ -29,7 +30,7 @@ import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser;
 
 public class JsonLdTreeWriter {
-    
+
     public JsonArray writeExpanded(LinkedTree tree) {
 
         final JsonArrayBuilder builder = Json.createArrayBuilder();
@@ -77,7 +78,7 @@ public class JsonLdTreeWriter {
 
     JsonValue writeContainer(final LinkedContainer container) {
 
-        final JsonArrayBuilder array = Json.createArrayBuilder();
+        JsonArrayBuilder array = Json.createArrayBuilder();
 
         int processingOrder = 0;
 
@@ -86,11 +87,15 @@ public class JsonLdTreeWriter {
         }
 
         if (LinkedContainer.Type.OrderedList.equals(container.containerType())) {
-            return Json.createObjectBuilder()
-                    .add(JsonLdKeyword.LIST, array)
-                    .build();
-
+            array = Json.createArrayBuilder()
+                    .add(Json.createObjectBuilder()
+                            .add(JsonLdKeyword.LIST, array));
         }
+        if (container.isTree()) {
+            array = Json.createArrayBuilder()
+                    .add(writeTree(container.asTree(), Collections.emptyList()));
+        }
+
         return array.build();
 
     }

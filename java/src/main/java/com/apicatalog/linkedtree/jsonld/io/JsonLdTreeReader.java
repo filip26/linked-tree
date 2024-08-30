@@ -203,6 +203,12 @@ public class JsonLdTreeReader {
 
             nodes.add(node);
         }
+        
+        if (nodes.size() == 1 && nodes.iterator().next().isContainer()) {
+            return nodes.iterator().next().asContainer();
+            //FIXME node ops
+            // (nodes.iterator().next()).mergetOps(ops) or ops consumer?
+        }
 
         return new GenericContainer(LinkedContainer.Type.UnorderedSet, nodes, treeSupplier, nodeOps);
     }

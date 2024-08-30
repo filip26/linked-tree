@@ -12,7 +12,8 @@ public interface LinkedContainer extends LinkedNode {
 
     public enum Type {
         OrderedList,
-        UnorderedSet
+        UnorderedSet,
+        Tree
     };
 
     default Type containerType() {
