@@ -16,7 +16,7 @@ import com.apicatalog.linkedtree.link.Link;
  * {@link LinkedFragmentReader#read(Link, Collection, Map)} result.
  */
 public record LinkableObject(
-        Link link,
+        Link id,
         Collection<String> type,
         Map<String, LinkedContainer> entries,
         Linkable linkable) implements LinkedFragment {
@@ -44,7 +44,7 @@ public record LinkableObject(
 
     @Override
     public Link id() {
-        return link;
+        return id;
     }
 
     @Override

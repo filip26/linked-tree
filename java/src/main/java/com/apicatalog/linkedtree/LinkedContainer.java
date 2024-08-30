@@ -63,18 +63,18 @@ public interface LinkedContainer extends LinkedNode {
     @SuppressWarnings("unchecked")
     default <T> T single(Class<T> clazz) {
         
-        final Linkable single = single(); 
+        final LinkedNode single = single(); 
         
         if (single == null) {
             return null;
         }
         
-        if (single.ld().isFragment() && single.ld().asFragment().id() != null) {
+        if (single.isFragment() && single.asFragment().id() != null) {
             return single.ld().asFragment().id().target().cast(clazz);
         }
 
-        if (single.ld().isTree() && single.ld().asTree().id() != null) {
-            return single.ld().asTree().id().target().cast(clazz);
+        if (single.isTree() && single.asTree().id() != null) {
+            return single.asTree().id().target().cast(clazz);
         }
 
         return (T)single ;
