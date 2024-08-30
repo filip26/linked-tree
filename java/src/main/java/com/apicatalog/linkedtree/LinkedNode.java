@@ -5,12 +5,15 @@ public interface LinkedNode extends Linkable {
     /**
      * A {@link LinkedTree} instance to which the {@link LinkedNode} belongs to.
      * 
+     * Please note a tree instance can have a root if is a child node of another
+     * tree instance.
+     * 
      * @return an instance or <code>null</code> if the node is a root
      */
     default LinkedTree root() {
         return null;
     }
-    
+
     default boolean isTree() {
         return false;
     }

@@ -3,12 +3,12 @@ package com.apicatalog.linkedtree.primitive;
 import java.util.Collection;
 import java.util.Map;
 
+import com.apicatalog.linkedtree.Link;
 import com.apicatalog.linkedtree.Linkable;
 import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.adapter.LinkedFragmentReader;
-import com.apicatalog.linkedtree.link.Link;
 
 /**
  * Allows to wrap a custom instance that does not inherit {@link LinkedNode} but

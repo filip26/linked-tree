@@ -13,6 +13,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import com.apicatalog.linkedtree.Link;
 import com.apicatalog.linkedtree.Linkable;
 import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedFragment;
@@ -32,15 +33,14 @@ import com.apicatalog.linkedtree.json.JsonScalar;
 import com.apicatalog.linkedtree.json.pi.JsonObjectWrite;
 import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 import com.apicatalog.linkedtree.lang.ImmutableLangString;
-import com.apicatalog.linkedtree.link.Link;
-import com.apicatalog.linkedtree.link.MutableLink;
 import com.apicatalog.linkedtree.literal.ImmutableLinkedLiteral;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 import com.apicatalog.linkedtree.primitive.GenericContainer;
 import com.apicatalog.linkedtree.primitive.GenericFragment;
 import com.apicatalog.linkedtree.primitive.GenericTree;
 import com.apicatalog.linkedtree.primitive.LinkableInjector;
-import com.apicatalog.linkedtree.primitive.Reference;
+import com.apicatalog.linkedtree.primitive.MutableLink;
+import com.apicatalog.linkedtree.primitive.ImmutableReference;
 import com.apicatalog.linkedtree.xsd.XsdConstants;
 
 import jakarta.json.JsonArray;
@@ -237,7 +237,7 @@ public class JsonLdTreeReader {
             }
             if (jsonObject.size() == 1 && jsonObject.containsKey(JsonLdKeyword.ID)) {
                 final MutableLink link = getOrCreate(jsonObject.getString(JsonLdKeyword.ID), links);
-                final Reference ref = Reference.of(link);
+                final ImmutableReference ref = ImmutableReference.of(link);
                 link.addFragment(ref);
                 return ref;
             }

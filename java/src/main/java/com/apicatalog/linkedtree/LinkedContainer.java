@@ -2,10 +2,11 @@ package com.apicatalog.linkedtree;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 
-public interface LinkedContainer extends LinkedNode {
+public interface LinkedContainer extends LinkedNode, Iterable<LinkedNode> {
 
     public static LinkedContainer EMPTY = new LinkedContainer() {
     };
@@ -88,4 +89,9 @@ public interface LinkedContainer extends LinkedNode {
     default LinkedFragment singleFragment() {
         return single().asFragment();
     }
+    
+    default Iterator<LinkedNode> iterator() {
+        return nodes().iterator();
+    }
+
 }

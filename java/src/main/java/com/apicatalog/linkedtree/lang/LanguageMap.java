@@ -19,7 +19,7 @@ public class LanguageMap implements LangStringSelector {
 
         final Map<String, LangString> map = new HashMap<>(container.size());
 
-        for (LinkedNode node : container.nodes()) {
+        for (LinkedNode node : container) {
             if (!node.isLiteral()) {
                 throw new IllegalArgumentException();
             }

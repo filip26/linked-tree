@@ -5,7 +5,7 @@ import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedNode;
 
 public record NodeIndex(
-        LinkedNode parent,
+        LinkedNode node,
         Type type,
         int index,
         String term) {
@@ -20,7 +20,6 @@ public record NodeIndex(
     }
 
     public static NodeIndex fragment(LinkedFragment fragment, String term) {
-        return new NodeIndex(fragment, Type.ContainerIndex, -1, term);
+        return new NodeIndex(fragment, Type.FragmentIndex, -1, term);
     }
-
 }

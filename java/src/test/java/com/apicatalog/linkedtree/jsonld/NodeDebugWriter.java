@@ -3,11 +3,11 @@ package com.apicatalog.linkedtree.jsonld;
 import java.io.PrintWriter;
 import java.util.Collection;
 
+import com.apicatalog.linkedtree.Link;
 import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.LinkedNode;
-import com.apicatalog.linkedtree.link.Link;
 
 public class NodeDebugWriter {
 
@@ -95,7 +95,7 @@ public class NodeDebugWriter {
 //            print(container.single());
 //            return;
 //        }
-        container.nodes().forEach(node -> {
+        container.forEach(node -> {
             print("- ");
             level++;
             print(node);
@@ -119,7 +119,7 @@ public class NodeDebugWriter {
     }
 
     void printLiteral(LinkedLiteral literal) {
-        print("type: ").println(literal.datatype());
+        print("datatype: ").println(literal.datatype());
         print("value: ").println(literal.lexicalValue());
     }
 

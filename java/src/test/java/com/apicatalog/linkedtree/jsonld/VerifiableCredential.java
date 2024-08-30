@@ -5,12 +5,12 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import com.apicatalog.linkedtree.Link;
 import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.lang.LangStringSelector;
 import com.apicatalog.linkedtree.lang.LanguageMap;
-import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.xsd.XsdDateTime;
 
 public class VerifiableCredential implements LinkedFragment {

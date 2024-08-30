@@ -37,7 +37,7 @@ public class JsonLdTreeWriter {
 
         int processingOrder = 0;
 
-        for (final LinkedNode fragment : tree.nodes()) {
+        for (final LinkedNode fragment : tree) {
             builder.add(writeNode(fragment, tree.pi(processingOrder++)));
         }
 
@@ -82,7 +82,7 @@ public class JsonLdTreeWriter {
 
         int processingOrder = 0;
 
-        for (final LinkedNode node : container.nodes()) {
+        for (final LinkedNode node : container) {
             array.add(writeNode(node, container.pi(processingOrder++)));
         }
 
