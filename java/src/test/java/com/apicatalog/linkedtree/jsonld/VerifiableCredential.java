@@ -3,9 +3,11 @@ package com.apicatalog.linkedtree.jsonld;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedFragment;
+import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.lang.LangStringSelector;
 import com.apicatalog.linkedtree.lang.LanguageMap;
 import com.apicatalog.linkedtree.link.Link;
@@ -26,6 +28,7 @@ public class VerifiableCredential implements LinkedFragment {
     protected Link id;
     protected Collection<String> type;
     protected Map<String, LinkedContainer> properties;
+    protected Supplier<LinkedTree> treeSupplier; 
 
     protected VerifiableCredential(Link id, Collection<String> type, Map<String, LinkedContainer> properties) {
         this.id = id;
@@ -33,11 +36,11 @@ public class VerifiableCredential implements LinkedFragment {
         this.properties = properties;
     }
 
-    public static VerifiableCredential of(Link id, Collection<String> type, Map<String, LinkedContainer> properties) {
-        return setup(new VerifiableCredential(id, type, properties), properties);
+    public static VerifiableCredential of(Link id, Collection<String> type, Map<String, LinkedContainer> properties, Supplier<LinkedTree> treeSupplier) {
+        return setup(new VerifiableCredential(id, type, properties), properties, treeSupplier);
     }
 
-    protected static VerifiableCredential setup(VerifiableCredential credential, Map<String, LinkedContainer> properties) {
+    protected static VerifiableCredential setup(VerifiableCredential credential, Map<String, LinkedContainer> properties, Supplier<LinkedTree> treeSupplier) {
 
         credential.name = getLangMap(properties, "https://schema.org/name");
         credential.description = getLangMap(properties, "https://schema.org/description");

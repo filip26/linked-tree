@@ -2,6 +2,10 @@ package com.apicatalog.linkedtree;
 
 public interface LinkedNode extends Linkable {
 
+    default LinkedTree root() {
+        return null;
+    }
+    
     default boolean isTree() {
         return false;
     }
