@@ -1,9 +1,8 @@
-package com.apicatalog.linkedtree.jsonld;
+package com.apicatalog.linkedtree.writer;
 
 import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Objects;
 
 import com.apicatalog.linkedtree.Link;
 import com.apicatalog.linkedtree.LinkedContainer;
@@ -73,11 +72,11 @@ public class NodeDebugWriter {
 
     public void print(LinkedNode node, Collection<ProcessingInstruction> ops) {
 
-        print("class: ")
-                .println(node.getClass().getSimpleName());
 //        level++;
 
         if (node.isTree()) {
+            print("class: ")
+                    .println(node.asTree().cast().getClass().getSimpleName());
             print("container: ")
                     .println(node.asContainer().containerType().toString());
 
@@ -85,15 +84,22 @@ public class NodeDebugWriter {
             printContainer(node.asContainer(), ops);
 
         } else if (node.isContainer()) {
+            print("class: ")
+                    .println(node.getClass().getSimpleName());
             print("container: ")
                     .println(node.asContainer().containerType().toString());
 
             printContainer(node.asContainer(), ops);
 
         } else if (node.isFragment()) {
+            print("class: ")
+                    .println(node.asFragment().cast().getClass().getSimpleName());
+
             printFragment(node.asFragment(), ops);
 
         } else if (node.isLiteral()) {
+            print("class: ")
+                    .println(node.getClass().getSimpleName());
             printLiteral(node.asLiteral(), ops);
         }
     }
@@ -137,7 +143,7 @@ public class NodeDebugWriter {
     }
 
     void printLiteral(LinkedLiteral literal, Collection<ProcessingInstruction> ops) {
-        
+
         print("datatype: ").println(literal.datatype());
         print("value: ").println(literal.lexicalValue());
         if (literal instanceof LangString langString) {
@@ -145,10 +151,9 @@ public class NodeDebugWriter {
                 print("language: ").println(langString.language());
             }
             if (langString.direction() != null) {
-                print("direction: ").println(langString.direction().toString());                
+                print("direction: ").println(langString.direction().toString());
             }
         }
-        
 
     }
 

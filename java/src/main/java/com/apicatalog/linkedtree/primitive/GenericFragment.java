@@ -13,8 +13,7 @@ public record GenericFragment(
         Link id,
         Collection<String> type,
         Map<String, LinkedContainer> entries,
-        Supplier<LinkedTree> rootSupplier
-        ) implements LinkedFragment {
+        Supplier<LinkedTree> rootSupplier) implements LinkedFragment {
 
     @Override
     public Collection<String> terms() {

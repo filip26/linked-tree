@@ -23,6 +23,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeWriter;
+import com.apicatalog.linkedtree.writer.NodeDebugWriter;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;

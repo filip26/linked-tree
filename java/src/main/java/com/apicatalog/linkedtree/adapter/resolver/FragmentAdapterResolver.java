@@ -1,7 +1,8 @@
-package com.apicatalog.linkedtree.adapter;
+package com.apicatalog.linkedtree.adapter.resolver;
 
 import java.util.Collection;
 
+import com.apicatalog.linkedtree.adapter.LinkedFragmentAdapter;
 import com.apicatalog.linkedtree.selector.StringValueSelector;
 
 public interface FragmentAdapterResolver {

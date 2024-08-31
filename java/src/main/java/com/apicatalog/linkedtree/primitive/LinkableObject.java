@@ -2,12 +2,14 @@ package com.apicatalog.linkedtree.primitive;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import com.apicatalog.linkedtree.Link;
 import com.apicatalog.linkedtree.Linkable;
 import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedNode;
+import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.adapter.LinkedFragmentReader;
 
 /**
@@ -19,6 +21,7 @@ public record LinkableObject(
         Link id,
         Collection<String> type,
         Map<String, LinkedContainer> entries,
+        Supplier<LinkedTree> rootSupplier,
         Linkable linkable) implements LinkedFragment {
 
     @Override
@@ -50,5 +53,10 @@ public record LinkableObject(
     @Override
     public Collection<String> type() {
         return type;
+    }
+    
+    @Override
+    public LinkedTree root() {
+        return rootSupplier.get();
     }
 }
