@@ -26,10 +26,12 @@ public interface LinkedContainer extends LinkedNode, Iterable<LinkedNode> {
     }
 
     /**
-     * A custom processing instructions related to the given {@link LinkedNode}.
+     * A custom processing instructions related to the given {@link LinkedNode}. A
+     * temporary workaround, needs a revision.
      * 
      * @param processingOrder an order in which the node has been processed,
-     *                        starting with 0
+     *                        starting with 1, 0 is reserved for PIs related to the
+     *                        container itself
      * 
      * @return a list of custom processing instructions, never <code>null</code>
      */
@@ -64,13 +66,13 @@ public interface LinkedContainer extends LinkedNode, Iterable<LinkedNode> {
 
     @SuppressWarnings("unchecked")
     default <T> T single(Class<T> clazz) {
-        
-        final LinkedNode single = single(); 
-        
+
+        final LinkedNode single = single();
+
         if (single == null) {
             return null;
         }
-        
+
         if (single.isFragment() && single.asFragment().id() != null) {
             return single.ld().asFragment().id().target().cast(clazz);
         }
@@ -79,7 +81,7 @@ public interface LinkedContainer extends LinkedNode, Iterable<LinkedNode> {
             return single.asTree().id().target().cast(clazz);
         }
 
-        return (T)single ;
+        return (T) single;
     }
 
     default LinkedLiteral singleLiteral() {
@@ -89,7 +91,7 @@ public interface LinkedContainer extends LinkedNode, Iterable<LinkedNode> {
     default LinkedFragment singleFragment() {
         return single().asFragment();
     }
-    
+
     default Iterator<LinkedNode> iterator() {
         return nodes().iterator();
     }

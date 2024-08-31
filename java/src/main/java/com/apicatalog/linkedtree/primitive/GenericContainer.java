@@ -15,7 +15,7 @@ public record GenericContainer(
         Type containerType,
         Collection<LinkedNode> nodes,
         Supplier<LinkedTree> rootSupplier,
-        Map<Integer, Collection<ProcessingInstruction>> ops) implements LinkedContainer {
+        Supplier<Map<Integer, Collection<ProcessingInstruction>>> ops) implements LinkedContainer {
 
     public GenericContainer {
         Objects.requireNonNull(containerType);
@@ -24,12 +24,11 @@ public record GenericContainer(
 
     @Override
     public Collection<ProcessingInstruction> pi(int processingOrder) {
-        return ops != null
-                ? ops.getOrDefault(processingOrder, Collections.emptyList())
+        return ops != null && ops.get() != null
+                ? ops.get().getOrDefault(processingOrder, Collections.emptyList())
                 : Collections.emptyList();
     }
- 
-    
+
     @Override
     public LinkedTree root() {
         return rootSupplier.get();

@@ -2,7 +2,6 @@ package com.apicatalog.linkedtree.jsonld.io;
 
 import java.io.StringReader;
 import java.util.Collection;
-import java.util.Collections;
 
 import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedFragment;
@@ -35,7 +34,7 @@ public class JsonLdTreeWriter {
 
         final JsonArrayBuilder builder = Json.createArrayBuilder();
 
-        int processingOrder = 0;
+        int processingOrder = 1;
 
         for (final LinkedNode fragment : tree) {
             builder.add(writeNode(fragment, tree.pi(processingOrder++)));
@@ -44,12 +43,12 @@ public class JsonLdTreeWriter {
         return builder.build();
     }
 
-    JsonObject writeTree(LinkedTree tree, Collection<ProcessingInstruction> ops) {
+    JsonObject writeTree(LinkedTree tree) {
 
         final JsonObjectBuilder builder = Json.createObjectBuilder()
                 .add(JsonLdKeyword.GRAPH, writeExpanded(tree));
 
-        writeFragment(tree, ops, builder);
+        writeFragment(tree, tree.pi(0), builder);
 
         return builder.build();
     }
@@ -80,7 +79,7 @@ public class JsonLdTreeWriter {
 
         JsonArrayBuilder array = Json.createArrayBuilder();
 
-        int processingOrder = 0;
+        int processingOrder = 1;
 
         for (final LinkedNode node : container) {
             array.add(writeNode(node, container.pi(processingOrder++)));
@@ -93,7 +92,7 @@ public class JsonLdTreeWriter {
         }
         if (container.isTree()) {
             array = Json.createArrayBuilder()
-                    .add(writeTree(container.asTree(), Collections.emptyList()));
+                    .add(writeTree(container.asTree()));
         }
 
         return array.build();
@@ -107,7 +106,7 @@ public class JsonLdTreeWriter {
         }
 
         if (data.isTree()) {
-            return writeTree(data.asTree(), ops);
+            return writeTree(data.asTree());
         }
         if (data.isContainer()) {
             return writeContainer(data.asContainer());

@@ -2,12 +2,14 @@ package com.apicatalog.linkedtree.jsonld;
 
 import java.io.PrintWriter;
 import java.util.Collection;
+import java.util.Collections;
 
 import com.apicatalog.linkedtree.Link;
 import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.LinkedNode;
+import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 
 public class NodeDebugWriter {
 
@@ -64,6 +66,10 @@ public class NodeDebugWriter {
     }
 
     public void print(LinkedNode node) {
+        print(node, Collections.emptyList());
+    }
+
+    public void print(LinkedNode node, Collection<ProcessingInstruction> ops) {
 
         print("class: ")
                 .println(node.getClass().getSimpleName());
@@ -73,52 +79,62 @@ public class NodeDebugWriter {
             print("container: ")
                     .println(node.asContainer().containerType().toString());
 
-            printFragment(node.asFragment());
-            printContainer(node.asContainer());
+            printFragment(node.asFragment(), node.asContainer().pi(0));
+            printContainer(node.asContainer(), ops);
 
         } else if (node.isContainer()) {
             print("container: ")
                     .println(node.asContainer().containerType().toString());
 
-            printContainer(node.asContainer());
+            printContainer(node.asContainer(), ops);
 
         } else if (node.isFragment()) {
-            printFragment(node.asFragment());
+            printFragment(node.asFragment(), ops);
 
         } else if (node.isLiteral()) {
-            printLiteral(node.asLiteral());
+            printLiteral(node.asLiteral(), ops);
         }
     }
 
-    void printContainer(LinkedContainer container) {
+    void printContainer(LinkedContainer container, Collection<ProcessingInstruction> ops) {
 //        if (container.size() == 1) {
 //            print(container.single());
 //            return;
 //        }
-        container.forEach(node -> {
+        int order = 1;
+
+        for (LinkedNode node : container) {
             print("- ");
             level++;
-            print(node);
+            print(node, container.pi(order++));
             level--;
-        });
+        }
     }
 
-    void printFragment(LinkedFragment fragment) {
+    void printFragment(LinkedFragment fragment, Collection<ProcessingInstruction> ops) {
 
-        print("id: ")
-                .println(fragment.id());
-        print("type: ")
-                .println(fragment.type());
-
+        if (fragment.id() != null) {
+            print("id: ")
+                    .println(fragment.id());
+        }
+        if (fragment.type() != null && !fragment.type().isEmpty()) {
+            print("type: ")
+                    .println(fragment.type());
+        }
+        if (ops != null && !ops.isEmpty()) {
+            print("pi: ")
+                    .println(ops.toString());
+        }
         for (String term : fragment.terms()) {
             println(term + ": ");
             level++;
             print(fragment.property(term));
             level--;
         }
+
     }
 
-    void printLiteral(LinkedLiteral literal) {
+    void printLiteral(LinkedLiteral literal, Collection<ProcessingInstruction> ops) {
         print("datatype: ").println(literal.datatype());
         print("value: ").println(literal.lexicalValue());
     }
