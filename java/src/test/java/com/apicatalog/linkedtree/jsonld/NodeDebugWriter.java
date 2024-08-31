@@ -3,12 +3,14 @@ package com.apicatalog.linkedtree.jsonld;
 import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 
 import com.apicatalog.linkedtree.Link;
 import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.LinkedNode;
+import com.apicatalog.linkedtree.lang.LangString;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 
 public class NodeDebugWriter {
@@ -135,8 +137,19 @@ public class NodeDebugWriter {
     }
 
     void printLiteral(LinkedLiteral literal, Collection<ProcessingInstruction> ops) {
+        
         print("datatype: ").println(literal.datatype());
         print("value: ").println(literal.lexicalValue());
+        if (literal instanceof LangString langString) {
+            if (langString.language() != null) {
+                print("language: ").println(langString.language());
+            }
+            if (langString.direction() != null) {
+                print("direction: ").println(langString.direction().toString());                
+            }
+        }
+        
+
     }
 
 }

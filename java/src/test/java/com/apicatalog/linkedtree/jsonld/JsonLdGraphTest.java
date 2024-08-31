@@ -1,6 +1,7 @@
 package com.apicatalog.linkedtree.jsonld;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -44,6 +45,8 @@ class JsonLdGraphTest {
         assertEquals(1, tree.subtrees().size());
         assertEquals(0, tree.subtrees().iterator().next().subtrees().size());
 
+        assertNull(tree.root());
+        
         assertTrue(tree.nodes()
                 .stream()
                 .map(LinkedNode::root)

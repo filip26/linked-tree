@@ -69,13 +69,38 @@ public class JsonLdTreeWriter {
                 .forEach(pi -> pi.write(builder));
 
         for (final String term : fragment.terms()) {
-            builder.add(term, writeContainer(fragment.property(term)));
+            builder.add(term, writeValues(fragment.property(term)));
         }
 
         return builder;
     }
 
     JsonValue writeContainer(final LinkedContainer container) {
+
+        JsonArrayBuilder array = Json.createArrayBuilder();
+
+        int processingOrder = 1;
+
+        for (final LinkedNode node : container) {
+            array.add(writeNode(node, container.pi(processingOrder++)));
+        }
+
+        if (LinkedContainer.Type.OrderedList.equals(container.containerType())) {
+//            array = Json.createArrayBuilder()
+//                    .add(
+            return Json.createObjectBuilder()
+                    .add(JsonLdKeyword.LIST, array).build();
+            // );
+        }
+        if (container.isTree()) {
+            return writeTree(container.asTree());
+        }
+
+        return array.build();
+
+    }
+
+    JsonValue writeValues(final LinkedContainer container) {
 
         JsonArrayBuilder array = Json.createArrayBuilder();
 

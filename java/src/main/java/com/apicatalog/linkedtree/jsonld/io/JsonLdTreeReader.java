@@ -193,17 +193,15 @@ public class JsonLdTreeReader {
 
         Collection<ProcessingInstruction> ops = new ArrayList<>(2);
 
-        int processingOrder = 1;
-        
         for (final JsonValue item : values) {
             final LinkedNode node = readValue(item, links, subtrees, treeSupplier, ops);
 
             if (!ops.isEmpty()) {
                 // FIXME merge
-                nodeOps.put(processingOrder, ops);
+                nodeOps.put(nodes.size() + 1, ops);
                 ops = new ArrayList<>(2);
             }
-            processingOrder++;
+
             nodes.add(node);
         }
 
@@ -267,7 +265,7 @@ public class JsonLdTreeReader {
 
             if (!ops.isEmpty()) {
                 // FIXME merge
-                nodeOps.put(nodes.size(), ops);
+                nodeOps.put(nodes.size() + 1, ops);
                 ops = new ArrayList<>(2);
             }
 
@@ -499,11 +497,11 @@ public class JsonLdTreeReader {
 //
 //    protected static String getLiteralValue(JsonObject item) {
 
-        final JsonValue value = valueJsonObject.get("@value");
+        final JsonValue value = valueJsonObject.get(JsonLdKeyword.VALUE);
 
-        String datatype = valueJsonObject.containsKey("@type")
-                && ValueType.STRING.equals(valueJsonObject.get("@type").getValueType())
-                        ? valueJsonObject.getString("@type")
+        String datatype = valueJsonObject.containsKey(JsonLdKeyword.TYPE)
+                && ValueType.STRING.equals(valueJsonObject.get(JsonLdKeyword.TYPE).getValueType())
+                        ? valueJsonObject.getString(JsonLdKeyword.TYPE)
                         : null;
 
         if (JsonLdKeyword.JSON.equals(datatype)) {
