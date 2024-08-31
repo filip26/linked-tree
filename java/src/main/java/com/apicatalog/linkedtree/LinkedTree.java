@@ -3,9 +3,7 @@ package com.apicatalog.linkedtree;
 import java.util.Collection;
 import java.util.Collections;
 
-import com.apicatalog.linkedtree.link.Link;
-
-public non-sealed interface LinkedTree extends LinkedFragment, LinkedContainer, LinkedNode {
+public interface LinkedTree extends LinkedFragment, LinkedContainer, LinkedNode {
 
     static LinkedTree EMPTY = new LinkedTree() {
 
@@ -64,4 +62,9 @@ public non-sealed interface LinkedTree extends LinkedFragment, LinkedContainer, 
      * @return a set of all subtrees, never <code>null</code>
      */
     Collection<LinkedTree> subtrees();
+    
+    @Override
+    default Type containerType() {
+        return Type.Tree;
+    }
 }

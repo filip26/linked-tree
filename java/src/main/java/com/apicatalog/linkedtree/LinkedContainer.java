@@ -2,17 +2,19 @@ package com.apicatalog.linkedtree;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 
-public non-sealed interface LinkedContainer extends LinkedNode {
+public interface LinkedContainer extends LinkedNode, Iterable<LinkedNode> {
 
     public static LinkedContainer EMPTY = new LinkedContainer() {
     };
 
     public enum Type {
         OrderedList,
-        UnorderedSet
+        UnorderedSet,
+        Tree
     };
 
     default Type containerType() {
@@ -24,10 +26,12 @@ public non-sealed interface LinkedContainer extends LinkedNode {
     }
 
     /**
-     * A custom processing instructions related to the given {@link LinkedNode}.
+     * A custom processing instructions related to the given {@link LinkedNode}. A
+     * temporary workaround, needs a revision.
      * 
      * @param processingOrder an order in which the node has been processed,
-     *                        starting with 0
+     *                        starting with 1, 0 is reserved for PIs related to the
+     *                        container itself
      * 
      * @return a list of custom processing instructions, never <code>null</code>
      */
@@ -62,7 +66,22 @@ public non-sealed interface LinkedContainer extends LinkedNode {
 
     @SuppressWarnings("unchecked")
     default <T> T single(Class<T> clazz) {
-        return (T) single();
+
+        final LinkedNode single = single();
+
+        if (single == null) {
+            return null;
+        }
+
+        if (single.isFragment() && single.asFragment().id() != null) {
+            return single.ld().asFragment().id().target().cast(clazz);
+        }
+
+        if (single.isTree() && single.asTree().id() != null) {
+            return single.asTree().id().target().cast(clazz);
+        }
+
+        return (T) single;
     }
 
     default LinkedLiteral singleLiteral() {
@@ -72,4 +91,9 @@ public non-sealed interface LinkedContainer extends LinkedNode {
     default LinkedFragment singleFragment() {
         return single().asFragment();
     }
+
+    default Iterator<LinkedNode> iterator() {
+        return nodes().iterator();
+    }
+
 }

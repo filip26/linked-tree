@@ -2,13 +2,11 @@ package com.apicatalog.linkedtree;
 
 import java.util.Collection;
 
-import com.apicatalog.linkedtree.link.Link;
-
-public non-sealed interface LinkedFragment extends LinkedNode {
+public interface LinkedFragment extends LinkedNode {
 
     /**
-     * An optional unique fragment identifier. The same identifier can be shared
-     * among many fragments allowing composition.
+     * An optional unique fragment link if an identifier is present. The same
+     * {@link Link} can be shared among many fragments enabling composition.
      */
     Link id();
 
@@ -31,5 +29,9 @@ public non-sealed interface LinkedFragment extends LinkedNode {
     @SuppressWarnings("unchecked")
     default <T> T cast(Class<T> clazz) {
         return (T) this;
+    }
+
+    default Linkable cast() {
+        return this;
     }
 }

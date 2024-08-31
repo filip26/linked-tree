@@ -1,12 +1,14 @@
 package com.apicatalog.linkedtree.adapter;
 
 import java.util.Collection;
+import java.util.Collections;
 
-public interface LinkedFragmentAdapter extends LinkedFragmentReader {
+@FunctionalInterface
+public interface LinkedFragmentAdapter {
 
-    /*
-     * future version should provide LinkedNodeReaderResolver or something like that
-     */
-    boolean accepts(String id, Collection<String> types);
+    LinkedFragmentReader reader();
 
+    default Collection<LinkedLiteralAdapter> literalAdapters() {
+        return Collections.emptyList();
+    }
 }

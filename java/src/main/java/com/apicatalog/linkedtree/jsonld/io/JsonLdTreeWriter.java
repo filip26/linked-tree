@@ -29,26 +29,26 @@ import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser;
 
 public class JsonLdTreeWriter {
-    
+
     public JsonArray writeExpanded(LinkedTree tree) {
 
         final JsonArrayBuilder builder = Json.createArrayBuilder();
 
-        int processingOrder = 0;
+        int processingOrder = 1;
 
-        for (final LinkedNode fragment : tree.nodes()) {
+        for (final LinkedNode fragment : tree) {
             builder.add(writeNode(fragment, tree.pi(processingOrder++)));
         }
 
         return builder.build();
     }
 
-    JsonObject writeTree(LinkedTree tree, Collection<ProcessingInstruction> ops) {
+    JsonObject writeTree(LinkedTree tree) {
 
         final JsonObjectBuilder builder = Json.createObjectBuilder()
                 .add(JsonLdKeyword.GRAPH, writeExpanded(tree));
 
-        writeFragment(tree, ops, builder);
+        writeFragment(tree, tree.pi(0), builder);
 
         return builder.build();
     }
@@ -69,7 +69,7 @@ public class JsonLdTreeWriter {
                 .forEach(pi -> pi.write(builder));
 
         for (final String term : fragment.terms()) {
-            builder.add(term, writeContainer(fragment.property(term)));
+            builder.add(term, writeValues(fragment.property(term)));
         }
 
         return builder;
@@ -77,20 +77,49 @@ public class JsonLdTreeWriter {
 
     JsonValue writeContainer(final LinkedContainer container) {
 
-        final JsonArrayBuilder array = Json.createArrayBuilder();
+        JsonArrayBuilder array = Json.createArrayBuilder();
 
-        int processingOrder = 0;
+        int processingOrder = 1;
 
-        for (final LinkedNode node : container.nodes()) {
+        for (final LinkedNode node : container) {
             array.add(writeNode(node, container.pi(processingOrder++)));
         }
 
         if (LinkedContainer.Type.OrderedList.equals(container.containerType())) {
+//            array = Json.createArrayBuilder()
+//                    .add(
             return Json.createObjectBuilder()
-                    .add(JsonLdKeyword.LIST, array)
-                    .build();
-
+                    .add(JsonLdKeyword.LIST, array).build();
+            // );
         }
+        if (container.isTree()) {
+            return writeTree(container.asTree());
+        }
+
+        return array.build();
+
+    }
+
+    JsonValue writeValues(final LinkedContainer container) {
+
+        JsonArrayBuilder array = Json.createArrayBuilder();
+
+        int processingOrder = 1;
+
+        for (final LinkedNode node : container) {
+            array.add(writeNode(node, container.pi(processingOrder++)));
+        }
+
+        if (LinkedContainer.Type.OrderedList.equals(container.containerType())) {
+            array = Json.createArrayBuilder()
+                    .add(Json.createObjectBuilder()
+                            .add(JsonLdKeyword.LIST, array));
+        }
+        if (container.isTree()) {
+            array = Json.createArrayBuilder()
+                    .add(writeTree(container.asTree()));
+        }
+
         return array.build();
 
     }
@@ -102,7 +131,7 @@ public class JsonLdTreeWriter {
         }
 
         if (data.isTree()) {
-            return writeTree(data.asTree(), ops);
+            return writeTree(data.asTree());
         }
         if (data.isContainer()) {
             return writeContainer(data.asContainer());

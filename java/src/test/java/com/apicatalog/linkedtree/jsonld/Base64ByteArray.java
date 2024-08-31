@@ -1,7 +1,9 @@
 package com.apicatalog.linkedtree.jsonld;
 
 import java.util.Base64;
+import java.util.function.Supplier;
 
+import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.literal.ByteArrayValue;
 
 class Base64ByteArray implements ByteArrayValue {
@@ -15,7 +17,7 @@ class Base64ByteArray implements ByteArrayValue {
         this.value = value;
     }
 
-    public static Base64ByteArray of(String value) {
+    public static Base64ByteArray of(String value, Supplier<LinkedTree> treeSupplier) {
         return new Base64ByteArray(value);
     }
 

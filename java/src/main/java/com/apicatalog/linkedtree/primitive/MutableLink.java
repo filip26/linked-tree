@@ -1,8 +1,9 @@
-package com.apicatalog.linkedtree.link;
+package com.apicatalog.linkedtree.primitive;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.apicatalog.linkedtree.Link;
 import com.apicatalog.linkedtree.LinkedFragment;
 
 public class MutableLink implements Link {

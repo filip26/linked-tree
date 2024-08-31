@@ -20,6 +20,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeWriter;
 
@@ -58,7 +59,7 @@ class JsonLdReadWriteTest {
 
         assertNotNull(output);
 
-        assertTrue(compareJson(name, output, input));
+        assertTrue(compareJson(name, tree, output, input));
     }
 
     static final Stream<Object[]> expandedResources() throws IOException, URISyntaxException {
@@ -80,14 +81,19 @@ class JsonLdReadWriteTest {
                 });
     }
 
-    static final boolean compareJson(final String testCase, final JsonStructure result, final JsonStructure expected) {
+    static final boolean compareJson(final String testCase, final LinkedNode data, final JsonStructure result, final JsonStructure expected) {
 
         if (JsonLdComparison.equals(expected, result)) {
             return true;
         }
 
         write(testCase, result, expected, null);
-
+        
+        final StringWriter stringWriter = new StringWriter();
+        (new NodeDebugWriter(new PrintWriter(stringWriter))).print(data);
+        System.out.print(stringWriter.toString());
+        
+        
         fail("Expected " + expected + ", but was" + result);
         return false;
     }
