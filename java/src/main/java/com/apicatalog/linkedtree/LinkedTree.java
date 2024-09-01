@@ -34,8 +34,7 @@ public interface LinkedTree extends LinkedFragment, LinkedContainer, LinkedNode 
 
         @Override
         public Collection<LinkedTree> subtrees() {
-            // TODO Auto-generated method stub
-            return null;
+            return Collections.emptyList();
         }
     };
 

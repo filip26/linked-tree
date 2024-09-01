@@ -438,7 +438,9 @@ public class JsonLdTreeReader {
                 id != null ? id.uri() : null,
                 type,
                 (t) -> null);
-
+System.out.println("A 1 > " + id);
+System.out.println("    > " + type);
+System.out.println("    > " + fragmentAdapter);
         return materialize(
                 fragmentAdapter != null
                         ? fragmentAdapter.reader()
@@ -462,8 +464,12 @@ public class JsonLdTreeReader {
 
     protected LinkedFragment materialize(LinkedFragmentReader reader, MutableLink id, Collection<String> type, Map<String, LinkedContainer> data, Supplier<LinkedTree> treeSupplier) throws LinkedReaderError {
 
+        System.out.println("A 2 > " + reader);
+
         if (reader != null) {
             final Linkable fragment = reader.read(id, type, data, treeSupplier);
+            System.out.println("  2 > " + fragment);
+            System.out.println("    > " + fragment.ld().asFragment());
             if (fragment != null) {
                 return fragment.ld().asFragment();
             }

@@ -28,10 +28,16 @@ public interface LinkedFragment extends LinkedNode {
 
     @SuppressWarnings("unchecked")
     default <T> T cast(Class<T> clazz) {
+        if (id() != null && id().target() != null) {
+            return (T)id().target();
+        }
         return (T) this;
     }
 
     default Linkable cast() {
+        if (id() != null && id().target() != null) {
+            return id().target();
+        }
         return this;
     }
 }
