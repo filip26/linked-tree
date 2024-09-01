@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
+import com.apicatalog.linkedtree.reader.LinkedReaderError;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -36,7 +37,7 @@ class JsonLdLinkTest {
             .build();
 
     @Test
-    void singleRootLink() throws IOException, URISyntaxException {
+    void singleRootLink() throws IOException, URISyntaxException, LinkedReaderError {
 
         JsonArray input = resource("custom/base64-1.jsonld");
 
@@ -53,7 +54,7 @@ class JsonLdLinkTest {
     }
 
     @Test
-    void signedVcLinks() throws IOException, URISyntaxException {
+    void signedVcLinks() throws IOException, URISyntaxException, LinkedReaderError {
 
         JsonArray input = resource("custom/signed-vc-1.jsonld");
 

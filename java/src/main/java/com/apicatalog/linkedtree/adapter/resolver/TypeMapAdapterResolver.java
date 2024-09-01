@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.apicatalog.linkedtree.adapter.LinkedFragmentAdapter;
-import com.apicatalog.linkedtree.adapter.LinkedFragmentReader;
+import com.apicatalog.linkedtree.reader.LinkedFragmentReader;
 import com.apicatalog.linkedtree.selector.StringValueSelector;
 
 public record TypeMapAdapterResolver(

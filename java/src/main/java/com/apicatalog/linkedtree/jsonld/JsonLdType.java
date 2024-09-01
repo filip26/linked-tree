@@ -42,15 +42,19 @@ public final class JsonLdType {
                 if (JsonUtils.isNotString(jsonType)) {
                     throw new IllegalArgumentException("An invalid @type. Expected a string value but got [" + jsonType + "].");
                 }
-                
+
                 final String type = ((JsonString) jsonType).getString();
 
-                //TODO UriUtils.isURI(type)
-                
+                // TODO UriUtils.isURI(type)
+
                 types.add(type);
             }
             return types;
+
+        } else if (JsonUtils.isNull(jsonTypes)) {
+            return Collections.emptySet();
         }
+
         throw new IllegalArgumentException("An invalid @type. Expected an array of strings but got [" + jsonTypes + "].");
     }
 

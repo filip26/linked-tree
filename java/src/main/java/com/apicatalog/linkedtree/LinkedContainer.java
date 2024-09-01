@@ -58,6 +58,9 @@ public interface LinkedContainer extends LinkedNode, Iterable<LinkedNode> {
 
     default LinkedNode single() {
         final Collection<LinkedNode> nodes = nodes();
+        if (nodes.isEmpty()) {
+            return null;
+        }
         if (nodes.size() != 1) {
             throw new IllegalStateException();
         }
@@ -73,7 +76,10 @@ public interface LinkedContainer extends LinkedNode, Iterable<LinkedNode> {
             return null;
         }
 
-        if (single.isFragment() && single.asFragment().id() != null) {
+        if (single.isFragment() 
+                && single.asFragment().id() != null
+                && single.asFragment().id().target() != null
+                ) {
             return single.ld().asFragment().id().target().cast(clazz);
         }
 

@@ -10,7 +10,7 @@ import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.LinkedTree;
-import com.apicatalog.linkedtree.adapter.LinkedFragmentReader;
+import com.apicatalog.linkedtree.reader.LinkedFragmentReader;
 
 /**
  * Allows to wrap a custom instance that does not inherit {@link LinkedNode} but

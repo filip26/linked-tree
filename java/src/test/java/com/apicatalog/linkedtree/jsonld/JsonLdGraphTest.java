@@ -18,6 +18,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 
 import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
+import com.apicatalog.linkedtree.reader.LinkedReaderError;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -36,7 +37,7 @@ class JsonLdGraphTest {
             .build();
 
     @Test
-    void level1Graph() throws IOException, URISyntaxException {
+    void level1Graph() throws IOException, URISyntaxException, LinkedReaderError {
 
         JsonArray input = resource("custom/signed-vc-1.jsonld");
 

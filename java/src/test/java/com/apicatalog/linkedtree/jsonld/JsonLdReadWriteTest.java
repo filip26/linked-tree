@@ -23,6 +23,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeWriter;
+import com.apicatalog.linkedtree.reader.LinkedReaderError;
 import com.apicatalog.linkedtree.writer.NodeDebugWriter;
 
 import jakarta.json.Json;
@@ -47,7 +48,7 @@ class JsonLdReadWriteTest {
     @DisplayName("Read/Write")
     @ParameterizedTest(name = "{0}")
     @MethodSource({ "expandedResources", "literalResources" })
-    void readWrite(String name, JsonArray input) {
+    void readWrite(String name, JsonArray input) throws LinkedReaderError {
 
         // skip JsonNull
         assumeFalse(name.startsWith("0122"));
