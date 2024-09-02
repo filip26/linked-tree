@@ -17,6 +17,13 @@ The project is an experiment, please share feedback.
   * translation from/into different representations (JSON-LD, RDF forms, CBOR-LD, etc.)
   * language-agnostic
 
+## Context
+We like to think in graphs, and we like to map things to graphs, but then we prefer to work with trees ...
+
+Graphs are great to catch ideas, plans, and knowledge. There are many successful examples. A tree is a basic data structure. It's easy to work it programmatically, and there are many successful examples.
+
+When it comes to software engineering, graphs are hard to work with, graphs are too generic and add unnecessary complexity to a domain limited use-cases.
+
 ## LTDM
 
 ![Data Model](/doc/ltdm-0.0.1.png)
@@ -26,3 +33,4 @@ The project is an experiment, please share feedback.
 
 [![Java 17 CI](https://github.com/filip26/linked-tree/actions/workflows/java17-push.yml/badge.svg)](https://github.com/filip26/linked-tree/actions/workflows/java17-push.yml)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
