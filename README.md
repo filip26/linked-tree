@@ -18,7 +18,7 @@ The project is an experiment, please share feedback.
   * language-agnostic
 
 ## Motivation
-We like to think in graphs, and we like to map things to graphs, but then we prefer to work with trees ...
+We like to think in graphs, and we like to map things to graphs, but then we prefer to work with trees.
 
 Graphs are great to catch ideas, plans, and knowledge. There are many successful examples. A tree is a basic data structure. It's easy to work it programmatically, and there are many successful examples.
 
