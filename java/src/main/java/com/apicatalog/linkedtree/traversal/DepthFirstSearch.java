@@ -63,29 +63,4 @@ public class DepthFirstSearch {
             consumer.accept(container.asFragment().property(term));
         }
     }
-
-    public static LinkedContainer findFirst(String term, LinkedContainer container) {
-
-        if (container.isFragment()
-                && container.asFragment().terms().contains(term)) {
-            return container.asFragment().property(term);
-        }
-
-        for (final LinkedNode node : container.nodes()) {
-
-            if (node.isFragment()
-                    && node.asFragment().terms().contains(term)) {
-                return node.asFragment().property(term);
-            }
-
-            if (node.isContainer()) {
-                final LinkedContainer found = findFirst(term, node.asContainer());
-                if (found != null) {
-                    return found;
-                }
-            }
-        }
-        return null;
-    }
-
 }
