@@ -1,4 +1,4 @@
-package com.apicatalog.linkedtree.adapter;
+package com.apicatalog.linkedtree.reader;
 
 import java.util.Collection;
 import java.util.Map;
@@ -17,6 +17,6 @@ public interface LinkedFragmentReader {
             Collection<String> types,
             Map<String, LinkedContainer> properties,
             Supplier<LinkedTree> rootSupplier
-            );
+            ) throws LinkedReaderError;
 
 }

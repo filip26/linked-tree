@@ -1,4 +1,4 @@
-package com.apicatalog.linkedtree.adapter;
+package com.apicatalog.linkedtree.reader;
 
 import java.util.function.Supplier;
 

@@ -2,6 +2,7 @@ package com.apicatalog.linkedtree.jsonld.io;
 
 import java.io.StringReader;
 import java.util.Collection;
+import java.util.Collections;
 
 import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedFragment;
@@ -41,6 +42,14 @@ public class JsonLdTreeWriter {
         }
 
         return builder.build();
+    }
+
+    public JsonObject writeFragment(LinkedFragment fragment) {
+        return writeFragment(
+                fragment, 
+                Collections.emptyList(),
+                Json.createObjectBuilder()
+                ).build();
     }
 
     JsonObject writeTree(LinkedTree tree) {

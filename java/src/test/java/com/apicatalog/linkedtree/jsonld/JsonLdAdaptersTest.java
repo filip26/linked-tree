@@ -15,15 +15,19 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
+import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeWriter;
 import com.apicatalog.linkedtree.literal.ByteArrayValue;
+import com.apicatalog.linkedtree.reader.LinkedReaderError;
+import com.apicatalog.linkedtree.writer.NodeDebugWriter;
 import com.apicatalog.linkedtree.xsd.XsdDateTime;
 
 import jakarta.json.Json;
@@ -47,7 +51,7 @@ class JsonLdAdaptersTest {
     static JsonLdTreeWriter WRITER = new JsonLdTreeWriter();
 
     @Test
-    void base64ByteArray() throws IOException, URISyntaxException {
+    void base64ByteArray() throws IOException, URISyntaxException, LinkedReaderError {
 
         JsonArray input = resource("custom/base64-1.jsonld");
         JsonArray output = resource("custom/base64-2.jsonld");
@@ -81,19 +85,19 @@ class JsonLdAdaptersTest {
     }
 
     @Test
-    void verifiableCredential() throws IOException, URISyntaxException {
+    void verifiableCredential() throws IOException, URISyntaxException, LinkedReaderError {
 
         JsonArray input = resource("custom/signed-vc-1.jsonld");
 
-        var tree = READER.readExpanded(input);
+        LinkedTree tree = READER.readExpanded(
+                List.of("https://www.w3.org/2018/credentials/v1",
+                        "https://w3id.org/security/data-integrity/v2"),
+                input);
 
         assertNotNull(tree);
 
         VerifiableCredential vc = tree
-                .singleFragment()
-                .id()
-                .target()
-                .cast(VerifiableCredential.class);
+                .single(VerifiableCredential.class);
 
         assertNotNull(vc);
 

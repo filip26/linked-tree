@@ -2,6 +2,7 @@ package com.apicatalog.linkedtree.primitive;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 import com.apicatalog.linkedtree.Link;
 import com.apicatalog.linkedtree.LinkedFragment;
@@ -43,5 +44,27 @@ public class MutableLink implements Link {
 
     public void addFragment(LinkedFragment node) {
         this.fragments.add(node);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(uri);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        MutableLink other = (MutableLink) obj;
+        return Objects.equals(uri, other.uri);
+    }
+
+    @Override
+    public String toString() {
+        return "MutableLink [uri=" + uri + "]";
     }
 }

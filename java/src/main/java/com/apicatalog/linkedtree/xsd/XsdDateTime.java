@@ -35,19 +35,10 @@ public class XsdDateTime implements LinkedLiteral, DateTimeValue {
     }
 
     @Override
-    public Instant datetime() {
+    public Instant datetime() throws DateTimeParseException {
         if (datetime == null && value != null) {
-
-//            datetime = Instant.parse(value);
-            try {
-                OffsetDateTime createdOffset = OffsetDateTime.parse(value);
-
-                datetime = createdOffset.toInstant();
-
-            } catch (DateTimeParseException e) {
-                throw new IllegalArgumentException(e);
-            }
-
+            OffsetDateTime createdOffset = OffsetDateTime.parse(value);
+            datetime = createdOffset.toInstant();
         }
 
         return datetime;

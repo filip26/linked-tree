@@ -9,10 +9,6 @@ import com.apicatalog.linkedtree.LinkedFragment;
 
 public record ImmutableReference(Link id) implements LinkedFragment {
 
-    public static final ImmutableReference of(Link id) {
-        return new ImmutableReference(id);
-    }
-
     @Override
     public Collection<String> type() {
         return Collections.emptySet();

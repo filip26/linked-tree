@@ -6,12 +6,14 @@ import java.util.Collections;
 import java.util.List;
 
 import com.apicatalog.linkedtree.json.JsonUtils;
+import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
-public final class JsonLdContext {
+public record JsonLdContext(
+        Collection<String> context) implements ProcessingInstruction {
 
     /**
      * 
