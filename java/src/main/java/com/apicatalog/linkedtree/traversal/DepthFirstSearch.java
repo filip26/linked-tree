@@ -13,11 +13,12 @@ public class DepthFirstSearch {
             if (node.isContainer()) {
                 postOrder(term, node.asContainer(), consumer);
 
-            } else if (node.isFragment()
+            }
+            if (node.isFragment()
                     && node.asFragment().terms().contains(term)) {
                 consumer.accept(node.asFragment().property(term));
             }
         }
     }
-    
+
 }
