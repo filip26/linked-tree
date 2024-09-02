@@ -7,18 +7,23 @@ import com.apicatalog.linkedtree.LinkedNode;
 
 public class DepthFirstSearch {
 
-    public static void postOrder(String term, LinkedContainer tree, Consumer<LinkedContainer> consumer) {
+    public static void postOrder(String term, LinkedContainer container, Consumer<LinkedContainer> consumer) {
 
-        for (final LinkedNode node : tree.nodes()) {
+        for (final LinkedNode node : container.nodes()) {
             if (node.isContainer()) {
                 postOrder(term, node.asContainer(), consumer);
-
             }
             if (node.isFragment()
                     && node.asFragment().terms().contains(term)) {
                 consumer.accept(node.asFragment().property(term));
             }
         }
+
+        if (container.isFragment()
+                && container.asFragment().terms().contains(term)) {
+            consumer.accept(container.asFragment().property(term));
+        }
+
     }
 
 }
