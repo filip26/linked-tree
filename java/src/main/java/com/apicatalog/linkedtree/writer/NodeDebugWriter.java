@@ -1,6 +1,7 @@
 package com.apicatalog.linkedtree.writer;
 
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -157,4 +158,10 @@ public class NodeDebugWriter {
 
     }
 
+    public static void printToStdout(LinkedNode node) {
+        var s = new StringWriter();
+        new NodeDebugWriter(new PrintWriter(s)).print(node);
+        System.out.println(s);
+    }
+    
 }

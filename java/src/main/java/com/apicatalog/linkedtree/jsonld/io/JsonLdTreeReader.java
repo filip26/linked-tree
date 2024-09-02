@@ -31,6 +31,7 @@ import com.apicatalog.linkedtree.json.JsonInteger;
 import com.apicatalog.linkedtree.json.JsonLiteral;
 import com.apicatalog.linkedtree.json.JsonScalar;
 import com.apicatalog.linkedtree.json.pi.JsonObjectWrite;
+import com.apicatalog.linkedtree.jsonld.JsonLdContext;
 import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 import com.apicatalog.linkedtree.jsonld.JsonLdType;
 import com.apicatalog.linkedtree.lang.ImmutableLangString;
@@ -82,6 +83,10 @@ public class JsonLdTreeReader {
     }
 
     public LinkedTree readExpanded(JsonArray jsonNodes) throws LinkedReaderError {
+        return readExpanded(null, jsonNodes);
+    }
+    
+    public LinkedTree readExpanded(Collection<String> context, JsonArray jsonNodes) throws LinkedReaderError {
 
         if (jsonNodes.isEmpty()) {
             return LinkedTree.EMPTY;
@@ -101,6 +106,10 @@ public class JsonLdTreeReader {
             ((MutableLink) link).target(adapt(((MutableLink) link), mergeTypes(link.refs()), merge(link.refs()), treeInjector));
         }
 
+        if (context != null && !context.isEmpty()) {
+            opsMap.put(0, List.of(new JsonLdContext(context)));
+        }
+        
         treeInjector.accept(tree);
 
         return tree;
@@ -438,9 +447,7 @@ public class JsonLdTreeReader {
                 id != null ? id.uri() : null,
                 type,
                 (t) -> null);
-System.out.println("A 1 > " + id);
-System.out.println("    > " + type);
-System.out.println("    > " + fragmentAdapter);
+
         return materialize(
                 fragmentAdapter != null
                         ? fragmentAdapter.reader()
@@ -464,12 +471,8 @@ System.out.println("    > " + fragmentAdapter);
 
     protected LinkedFragment materialize(LinkedFragmentReader reader, MutableLink id, Collection<String> type, Map<String, LinkedContainer> data, Supplier<LinkedTree> treeSupplier) throws LinkedReaderError {
 
-        System.out.println("A 2 > " + reader);
-
         if (reader != null) {
             final Linkable fragment = reader.read(id, type, data, treeSupplier);
-            System.out.println("  2 > " + fragment);
-            System.out.println("    > " + fragment.ld().asFragment());
             if (fragment != null) {
                 return fragment.ld().asFragment();
             }
