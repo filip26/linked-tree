@@ -10,10 +10,36 @@ import com.apicatalog.linkedtree.traversal.NodeConsumer.IndexScope;
 public class DepthFirstSearch {
 
     public static void postOrder(LinkedNode source, NodeConsumer consumer) {
-        postOrder(source, IndexScope.Root, -1, null, 0, consumer);
+        postOrder(node -> true, source, IndexScope.Root, -1, null, 0, consumer);
     }
 
-    static void postOrder(
+    public static void postOrder(String term, LinkedNode source, Consumer<LinkedNode> consumer) {
+        postOrder(source, (node, indexType, indexOrder, indexTerm, depth) -> consumer.accept(node));
+        
+    }
+    
+    public static void postOrder(String term, LinkedNode source, NodeConsumer consumer) {
+        postOrder(node -> node.isFragment()
+                && node.asFragment().terms().contains(term),
+                source,
+                IndexScope.Root,
+                -1,
+                null,
+                0,
+                (LinkedNode node,
+                        IndexScope indexType,
+                        int indexOrder,
+                        String indexTerm,
+                        int depth) -> consumer.accept(
+                                node.asFragment().property(term),
+                                indexType,
+                                indexOrder,
+                                indexTerm,
+                                depth));
+    }
+
+    protected static void postOrder(
+            final Predicate<LinkedNode> selector,
             final LinkedNode source,
             final IndexScope indexType,
             final int order,
@@ -25,6 +51,7 @@ public class DepthFirstSearch {
             int nodeOrder = 0;
             for (var node : source.asContainer()) {
                 postOrder(
+                        selector,
                         node,
                         IndexScope.Container,
                         nodeOrder++,
@@ -36,6 +63,7 @@ public class DepthFirstSearch {
         if (source.isFragment()) {
             for (var property : source.asFragment().terms()) {
                 postOrder(
+                        selector,
                         source.asFragment().property(property),
                         IndexScope.Fragment,
                         -1,
@@ -44,14 +72,9 @@ public class DepthFirstSearch {
                         consumer);
             }
         }
-        consumer.accept(source, indexType, order, term, depth);
-    }
-
-    public static void postOrder(String term, LinkedNode source, Consumer<LinkedContainer> consumer) {
-        postOrder(node -> node.isFragment()
-                && node.asFragment().terms().contains(term),
-                source,
-                node -> consumer.accept(node.asFragment().property(term)));
+        if (selector.test(source)) {
+            consumer.accept(source, indexType, order, term, depth);
+        }
     }
 
     public static void postOrder(

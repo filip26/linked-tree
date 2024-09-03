@@ -20,7 +20,7 @@ public record GenericTree(
         Map<String, Link> linkMap,
         Collection<LinkedTree> subtrees,
         Supplier<LinkedTree> treeSupplier,
-        Map<Integer, Collection<ProcessingInstruction>> opsMap) implements LinkedTree {
+        Map<Integer, Collection<ProcessingInstruction>> ops) implements LinkedTree {
 
     public static GenericTree of(Collection<LinkedNode> nodes, Map<String, Link> links, Collection<LinkedTree> subtrees, Supplier<LinkedTree> treeSupplier,Map<Integer, Collection<ProcessingInstruction>> opsMap) {
         return new GenericTree(null, Collections.emptySet(), Collections.emptyMap(), nodes, links, subtrees, treeSupplier, opsMap);
@@ -52,8 +52,8 @@ public record GenericTree(
 
     @Override
     public Collection<ProcessingInstruction> pi(int processingOrder) {
-        return opsMap != null
-                ? opsMap.getOrDefault(processingOrder, Collections.emptyList())
+        return ops != null
+                ? ops.getOrDefault(processingOrder, Collections.emptyList())
                 : Collections.emptyList();
     }
 }

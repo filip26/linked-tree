@@ -14,8 +14,8 @@ public interface NodeConsumer {
     void accept(
             LinkedNode node,
             IndexScope indexType,
-            int order,
-            String term,
+            int indexOrder,
+            String indexTerm,
             int depth);
 
 //    public static NodeIndex container(LinkedContainer container, int index) {
