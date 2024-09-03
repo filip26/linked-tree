@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -23,29 +22,29 @@ import com.apicatalog.linkedtree.primitive.GenericFragment;
 import com.apicatalog.linkedtree.primitive.GenericTree;
 import com.apicatalog.linkedtree.traversal.DepthFirstSearch;
 import com.apicatalog.linkedtree.traversal.NodeConsumer;
-import com.apicatalog.linkedtree.traversal.NodeConsumer.IndexScope;
+import com.apicatalog.linkedtree.traversal.NodeSelector;
 
 public class GenericNodeBuilder implements NodeConsumer {
 
     protected Map<String, Link> linkMap;
     
     protected final LinkedNode source;
-    protected LinkedNode clone;
+    protected LinkedTree clone;
     
-    public GenericNodeBuilder(LinkedNode source) {
+    public GenericNodeBuilder(LinkedTree source) {
         this.source = source;
-//        this.linkMap = new HashMap<>(source.links().size());
+        this.linkMap = new HashMap<>(source.links().size());
         this.clone = null;
     }
 
     @Override
     public void accept(LinkedNode node, IndexScope indexType, int indexOrder, String indexTerm, int depth) {
-        // TODO Auto-generated method stub
+System.out.println("A " + indexType + ", " + indexOrder + ", " + indexTerm + ", " + depth);
         
     }
-    
-    public LinkedNode deepClone() {
-        DepthFirstSearch.postOrder(source, this);
+
+    public LinkedTree deepClone(NodeSelector selector) {
+        DepthFirstSearch.preOrder(selector, source, this);
         return clone;
     }
     

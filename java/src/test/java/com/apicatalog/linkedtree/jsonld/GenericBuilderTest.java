@@ -1,9 +1,6 @@
 package com.apicatalog.linkedtree.jsonld;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -11,23 +8,19 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
-import java.time.Instant;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import com.apicatalog.linkedtree.LinkedTree;
+import com.apicatalog.linkedtree.builder.GenericNodeBuilder;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeWriter;
-import com.apicatalog.linkedtree.literal.ByteArrayValue;
 import com.apicatalog.linkedtree.reader.LinkedReaderError;
-import com.apicatalog.linkedtree.writer.NodeDebugWriter;
+import com.apicatalog.linkedtree.traversal.NodeSelector.ProcessingPolicy;
 import com.apicatalog.linkedtree.xsd.XsdDateTime;
 
 import jakarta.json.Json;
@@ -38,9 +31,8 @@ import jakarta.json.JsonWriter;
 import jakarta.json.JsonWriterFactory;
 import jakarta.json.stream.JsonGenerator;
 
-@DisplayName("JsonLd Adapters Suite")
 @TestMethodOrder(OrderAnnotation.class)
-class JsonLdAdaptersTest {
+class GenericBuilderTest {
 
     static JsonLdTreeReader READER = JsonLdTreeReader.create()
             .with(VerifiableCredential.TYPE, VerifiableCredential::of)
@@ -51,41 +43,7 @@ class JsonLdAdaptersTest {
     static JsonLdTreeWriter WRITER = new JsonLdTreeWriter();
 
     @Test
-    void base64ByteArray() throws IOException, URISyntaxException, LinkedReaderError {
-
-        JsonArray input = resource("custom/base64-1.jsonld");
-        JsonArray output = resource("custom/base64-2.jsonld");
-
-        var tree = READER.readExpanded(input);
-
-        assertNotNull(tree);
-
-        ByteArrayValue literal = tree
-                .single()
-                .asFragment()
-                .property("http://example.org/test#property4")
-                .single()
-//TODO                .singleLiteral(ByteArrayValue.class);
-                .asLiteral() // TODO as param
-                .cast(ByteArrayValue.class);
-
-        assertNotNull(literal);
-        assertEquals("RW5jb2RlIHRvIEJhc2U2NCBmb3JtYXQ=", literal.lexicalValue());
-        assertTrue(literal instanceof ByteArrayValue);
-        assertArrayEquals("Encode to Base64 format".getBytes(), ((ByteArrayValue) literal).byteArrayValue());
-
-        ((Base64ByteArray) literal).byteArrayValue("test X".getBytes());
-        assertEquals("dGVzdCBY", literal.lexicalValue());
-
-        JsonArray copy = WRITER.writeExpanded(tree);
-
-        assertNotNull(output);
-
-        assertTrue(compareJson("", copy, output));
-    }
-
-    @Test
-    void verifiableCredential() throws IOException, URISyntaxException, LinkedReaderError {
+    void genericClone() throws IOException, URISyntaxException, LinkedReaderError {
 
         JsonArray input = resource("custom/signed-vc-1.jsonld");
 
@@ -101,30 +59,17 @@ class JsonLdAdaptersTest {
 
         assertNotNull(vc);
 
-        assertEquals("urn:uuid:58172aac-d8ba-11ed-83dd-0b3aef56cc33", vc.id.uri());
+        GenericNodeBuilder builder = new GenericNodeBuilder(tree);
+        var clone = builder.deepClone(
+                (node, indexOrder, indexTerm, depth) -> "https://w3id.org/security#proof".equals(indexTerm)
+                        ? ProcessingPolicy.Dropped
+                        : ProcessingPolicy.Accepted);
 
-        assertEquals(new HashSet<>(Arrays.asList(new String[] {
-                "https://www.w3.org/2018/credentials#VerifiableCredential",
-                "https://www.w3.org/ns/credentials/examples#AlumniCredential"
-        })), vc.type());
+        assertNotNull(clone);
 
-        assertEquals(1, vc.name.size());
-        assertEquals("Alumni Credential", vc.name.single().lexicalValue());
-        assertNull(vc.name.single().language());
+        JsonArray out = WRITER.writeExpanded(clone);
 
-        assertEquals(1, vc.name.strings().size());
-        assertEquals(1, vc.name.langCodes().size());
-
-        assertNotNull(vc.description);
-
-        assertEquals(Instant.parse("2023-01-01T00:00:00Z"), vc.validFrom);
-
-        assertNull(vc.validUntil);
-
-        assertEquals(1, vc.subject().size());
-
-        assertEquals("https://vc.example/issuers/5678", vc.issuer().id().uri());
-
+        assertTrue(compareJson(null, out, input));
     }
 
     static final JsonArray resource(String name) throws IOException, URISyntaxException {
