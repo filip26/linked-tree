@@ -47,84 +47,61 @@ public class DepthFirstSearch {
         consumer.accept(source, indexType, order, term, depth);
     }
 
-    public static void postOrder(String term, LinkedContainer container, Consumer<LinkedContainer> consumer) {
+    public static void postOrder(String term, LinkedNode source, Consumer<LinkedContainer> consumer) {
         postOrder(node -> node.isFragment()
                 && node.asFragment().terms().contains(term),
-                container,
+                source,
                 node -> consumer.accept(node.asFragment().property(term)));
     }
 
     public static void postOrder(
             final Predicate<LinkedNode> selector,
-            final LinkedContainer container,
+            final LinkedNode source,
             final Consumer<LinkedNode> consumer) {
 
-        for (final LinkedNode node : container.nodes()) {
-
-            if (node.isContainer()) {
-                preOrder(selector, node.asContainer(), consumer);
-            }
-
-            if (node.isFragment()) {
-                for (String term : node.asFragment().terms()) {
-                    preOrder(selector, node.asFragment().property(term), consumer);
-                }
-            }
-
-            if (selector.test(node)) {
-                consumer.accept(node);
+        if (source.isContainer()) {
+            for (final LinkedNode node : source.asContainer().nodes()) {
+                preOrder(selector, node, consumer);
             }
         }
 
-        if (container.isFragment()) {
-            for (String term : container.asFragment().terms()) {
-                preOrder(selector, container.asFragment().property(term), consumer);
+        if (source.isFragment()) {
+            for (String term : source.asFragment().terms()) {
+                preOrder(selector, source.asFragment().property(term), consumer);
             }
         }
-        
-        if (selector.test(container)) {
-            consumer.accept(container);
+
+        if (selector.test(source)) {
+            consumer.accept(source);
         }
     }
 
-    public static void preOrder(String term, LinkedContainer container, Consumer<LinkedContainer> consumer) {
+    public static void preOrder(String term, LinkedNode source, Consumer<LinkedContainer> consumer) {
         preOrder(node -> node.isFragment()
                 && node.asFragment().terms().contains(term),
-                container,
+                source,
                 node -> consumer.accept(node.asFragment().property(term)));
     }
 
     public static void preOrder(
             final Predicate<LinkedNode> selector,
-            final LinkedContainer container,
+            final LinkedNode source,
             final Consumer<LinkedNode> consumer) {
 
-        if (selector.test(container)) {
-            consumer.accept(container);
+        if (selector.test(source)) {
+            consumer.accept(source);
         }
 
-        if (container.isFragment()) {
-            for (String term : container.asFragment().terms()) {
-                preOrder(selector, container.asFragment().property(term), consumer);
+        if (source.isFragment()) {
+            for (String term : source.asFragment().terms()) {
+                preOrder(selector, source.asFragment().property(term), consumer);
             }
         }
 
-        for (final LinkedNode node : container.nodes()) {
-
-            if (selector.test(node)) {
-                consumer.accept(node);
+        if (source.isContainer()) {
+            for (final LinkedNode node : source.asContainer().nodes()) {
+                preOrder(selector, node, consumer);
             }
-
-            if (node.isFragment()) {
-                for (String term : node.asFragment().terms()) {
-                    preOrder(selector, node.asFragment().property(term), consumer);
-                }
-            }
-
-            if (node.isContainer()) {
-                preOrder(selector, node.asContainer(), consumer);
-            }
-
         }
     }
 }
