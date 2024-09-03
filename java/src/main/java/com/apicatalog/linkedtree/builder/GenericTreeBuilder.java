@@ -1,7 +1,9 @@
 package com.apicatalog.linkedtree.builder;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Stack;
@@ -10,10 +12,12 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import com.apicatalog.linkedtree.Link;
+import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.lang.ImmutableLangString;
 import com.apicatalog.linkedtree.lang.LangString;
+import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 import com.apicatalog.linkedtree.primitive.GenericContainer;
 import com.apicatalog.linkedtree.primitive.GenericFragment;
 import com.apicatalog.linkedtree.primitive.GenericLiteral;
@@ -140,7 +144,7 @@ public class GenericTreeBuilder implements NodeConsumer, NodeSelector {
                             : new ArrayList<>(source.asTree().subtrees().size()),
 
                     treeSupplier,
-                    Collections.emptyMap());
+                    cloneOps(source.asContainer()));
 
             clonedTrees.push(tree);
 
@@ -153,7 +157,7 @@ public class GenericTreeBuilder implements NodeConsumer, NodeSelector {
                             ? Collections.emptyList()
                             : new ArrayList<>(source.asContainer().size()),
                     treeSupplier,
-                    () -> Collections.emptyMap());
+                    () -> cloneOps(source.asContainer()));
 
         } else if (source.isFragment()) {
             return new GenericFragment(
@@ -195,15 +199,22 @@ public class GenericTreeBuilder implements NodeConsumer, NodeSelector {
         }
 
         return ((GenericTree) clonedTrees.peek()).linkMap().get(source.uri());
+    }
+    
+    protected Map<Integer, Collection<ProcessingInstruction>> cloneOps(LinkedContainer source) {
+        if (source == null || source.size() == 0) {
+            return Collections.emptyMap();
+        }
+        
+        Map<Integer, Collection<ProcessingInstruction>> ops = new HashMap<>();
+        
+        for (int i = 0 ; i < source.size(); i++) {
+            var pi = source.pi(i);
+            if (pi != null) {
+                ops.put(i, pi);
+            }
+        }
 
-//        var links = ((GenericTree)clonedTrees.peek()).linkMap();
-//        
-//        Link link = links.get(source.uri());
-//        if (link == null) {
-//            link = MutableLink.of(source.uri());
-//            links.put(source.uri(), link);
-//        }
-//
-//        return link;
+        return ops;
     }
 }
