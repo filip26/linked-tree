@@ -3,7 +3,6 @@ package com.apicatalog.linkedtree.traversal;
 import java.util.function.Consumer;
 
 import com.apicatalog.linkedtree.LinkedNode;
-import com.apicatalog.linkedtree.traversal.NodeConsumer.IndexScope;
 import com.apicatalog.linkedtree.traversal.NodeSelector.ProcessingPolicy;
 
 public class DepthFirstSearch {
@@ -12,7 +11,6 @@ public class DepthFirstSearch {
         postOrder(
                 selector,
                 source,
-                IndexScope.Root,
                 -1,
                 null,
                 0,
@@ -29,7 +27,7 @@ public class DepthFirstSearch {
     }
 
     public static void postOrder(String term, LinkedNode source, Consumer<LinkedNode> consumer) {
-        postOrder(source, (node, indexType, indexOrder, indexTerm, depth) -> consumer.accept(node));
+        postOrder(source, (node, indexOrder, indexTerm, depth) -> consumer.accept(node));
 
     }
 
@@ -43,12 +41,10 @@ public class DepthFirstSearch {
                                 : ProcessingPolicy.Ignored,
                 source,
                 (LinkedNode node,
-                        IndexScope indexType,
                         int indexOrder,
                         String indexTerm,
                         int depth) -> consumer.accept(
                                 node.asFragment().property(term),
-                                indexType,
                                 indexOrder,
                                 indexTerm,
                                 depth));
@@ -57,7 +53,6 @@ public class DepthFirstSearch {
     protected static void postOrder(
             final NodeSelector selector,
             final LinkedNode source,
-            final IndexScope indexType,
             final int order,
             final String term,
             final int depth,
@@ -75,7 +70,6 @@ public class DepthFirstSearch {
                 postOrder(
                         selector,
                         node,
-                        IndexScope.Container,
                         nodeOrder++,
                         null,
                         depth + 1,
@@ -87,7 +81,6 @@ public class DepthFirstSearch {
                 postOrder(
                         selector,
                         source.asFragment().property(property),
-                        IndexScope.Fragment,
                         -1,
                         property,
                         depth + 1,
@@ -95,7 +88,7 @@ public class DepthFirstSearch {
             }
         }
         if (ProcessingPolicy.Accepted.equals(policy)) {
-            consumer.accept(source, indexType, order, term, depth);
+            consumer.accept(source, order, term, depth);
         }
     }
 
@@ -103,7 +96,6 @@ public class DepthFirstSearch {
         preOrder(
                 selector,
                 source,
-                IndexScope.Root,
                 -1,
                 null,
                 0,
@@ -120,7 +112,7 @@ public class DepthFirstSearch {
     }
 
     public static void preOrder(String term, LinkedNode source, Consumer<LinkedNode> consumer) {
-        preOrder(source, (node, indexType, indexOrder, indexTerm, depth) -> consumer.accept(node));
+        preOrder(source, (node, indexOrder, indexTerm, depth) -> consumer.accept(node));
     }
 
     public static void preOrder(
@@ -136,12 +128,10 @@ public class DepthFirstSearch {
                                 : ProcessingPolicy.Ignored,
                 source,
                 (LinkedNode node,
-                        IndexScope indexType,
                         int indexOrder,
                         String indexTerm,
                         int depth) -> consumer.accept(
                                 node.asFragment().property(term),
-                                indexType,
                                 indexOrder,
                                 indexTerm,
                                 depth));
@@ -150,7 +140,6 @@ public class DepthFirstSearch {
     protected static void preOrder(
             final NodeSelector selector,
             final LinkedNode source,
-            final IndexScope indexType,
             final int order,
             final String term,
             final int depth,
@@ -160,31 +149,31 @@ public class DepthFirstSearch {
 
         if (ProcessingPolicy.Dropped.equals(policy)) {
             return;
+
         } else if (ProcessingPolicy.Accepted.equals(policy)) {
-            consumer.accept(source, indexType, order, term, depth);
+            consumer.accept(source, order, term, depth);
+        }
+
+        if (source.isFragment()) {
+            for (var property : source.asFragment().terms()) {
+                preOrder(
+                        selector,
+                        source.asFragment().property(property),
+                        -1,
+                        property,
+                        depth + 1,
+                        consumer);
+            }
         }
 
         if (source.isContainer()) {
             int nodeOrder = 0;
             for (var node : source.asContainer()) {
-                postOrder(
+                preOrder(
                         selector,
                         node,
-                        IndexScope.Container,
                         nodeOrder++,
                         null,
-                        depth + 1,
-                        consumer);
-            }
-        }
-        if (source.isFragment()) {
-            for (var property : source.asFragment().terms()) {
-                postOrder(
-                        selector,
-                        source.asFragment().property(property),
-                        IndexScope.Fragment,
-                        -1,
-                        property,
                         depth + 1,
                         consumer);
             }

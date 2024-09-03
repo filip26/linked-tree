@@ -1,0 +1,40 @@
+[
+  {
+    "https://www.w3.org/2018/credentials#credentialSubject": [
+      {
+        "https://www.w3.org/ns/credentials/examples#alumniOf": [
+          {
+            "@value": "The School of Examples"
+          }
+        ],
+        "@id": "did:example:abcdefgh"
+      }
+    ],
+    "https://schema.org/description": [
+      {
+        "@value": "A minimum viable example of an Alumni Credential."
+      }
+    ],
+    "@id": "urn:uuid:58172aac-d8ba-11ed-83dd-0b3aef56cc33",
+    "https://www.w3.org/2018/credentials#issuer": [
+      {
+        "@id": "https://vc.example/issuers/5678"
+      }
+    ],
+    "https://schema.org/name": [
+      {
+        "@value": "Alumni Credential"
+      }
+    ],
+    "@type": [
+      "https://www.w3.org/2018/credentials#VerifiableCredential",
+      "https://www.w3.org/ns/credentials/examples#AlumniCredential"
+    ],
+    "https://www.w3.org/2018/credentials#validFrom": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
+        "@value": "2023-01-01T00:00:00Z"
+      }
+    ]
+  }
+]

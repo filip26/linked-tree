@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import com.apicatalog.linkedtree.LinkedTree;
-import com.apicatalog.linkedtree.builder.GenericNodeBuilder;
+import com.apicatalog.linkedtree.builder.GenericTreeBuilder;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeWriter;
 import com.apicatalog.linkedtree.reader.LinkedReaderError;
@@ -32,7 +32,7 @@ import jakarta.json.JsonWriterFactory;
 import jakarta.json.stream.JsonGenerator;
 
 @TestMethodOrder(OrderAnnotation.class)
-class GenericBuilderTest {
+class GenericTreeBuilderTest {
 
     static JsonLdTreeReader READER = JsonLdTreeReader.create()
             .with(VerifiableCredential.TYPE, VerifiableCredential::of)
@@ -59,7 +59,7 @@ class GenericBuilderTest {
 
         assertNotNull(vc);
 
-        GenericNodeBuilder builder = new GenericNodeBuilder(tree);
+        GenericTreeBuilder builder = new GenericTreeBuilder(tree);
         var clone = builder.deepClone(
                 (node, indexOrder, indexTerm, depth) -> "https://w3id.org/security#proof".equals(indexTerm)
                         ? ProcessingPolicy.Dropped
@@ -69,7 +69,9 @@ class GenericBuilderTest {
 
         JsonArray out = WRITER.writeExpanded(clone);
 
-        assertTrue(compareJson(null, out, input));
+        JsonArray expected = resource("custom/unsigned-vc-1.jsonld");
+
+        assertTrue(compareJson(null, out, expected));
     }
 
     static final JsonArray resource(String name) throws IOException, URISyntaxException {
