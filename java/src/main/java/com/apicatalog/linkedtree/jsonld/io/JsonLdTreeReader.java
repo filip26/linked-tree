@@ -601,7 +601,8 @@ public class JsonLdTreeReader {
             return new ImmutableLangString(
                     valueString,
                     getLiteralLanguage(valueJsonObject),
-                    null);
+                    null,     //FIXME direction
+                    treeSupplier);
         }
 
         var pi = getPi(valueJsonObject, JsonLdKeyword.VALUE, JsonLdKeyword.TYPE);
