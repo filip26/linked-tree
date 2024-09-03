@@ -76,6 +76,12 @@ public class DepthFirstSearch {
             }
         }
 
+        if (container.isFragment()) {
+            for (String term : container.asFragment().terms()) {
+                preOrder(selector, container.asFragment().property(term), consumer);
+            }
+        }
+        
         if (selector.test(container)) {
             consumer.accept(container);
         }
@@ -95,6 +101,12 @@ public class DepthFirstSearch {
 
         if (selector.test(container)) {
             consumer.accept(container);
+        }
+
+        if (container.isFragment()) {
+            for (String term : container.asFragment().terms()) {
+                preOrder(selector, container.asFragment().property(term), consumer);
+            }
         }
 
         for (final LinkedNode node : container.nodes()) {
