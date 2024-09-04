@@ -62,8 +62,8 @@ class GenericTreeBuilderTest {
         GenericTreeBuilder builder = new GenericTreeBuilder(tree);
         var clone = builder.deepClone(
                 (node, indexOrder, indexTerm, depth) -> "https://w3id.org/security#proof".equals(indexTerm)
-                        ? ProcessingPolicy.Dropped
-                        : ProcessingPolicy.Accepted);
+                        ? ProcessingPolicy.Drop
+                        : ProcessingPolicy.Accept);
 
         assertNotNull(clone);
 

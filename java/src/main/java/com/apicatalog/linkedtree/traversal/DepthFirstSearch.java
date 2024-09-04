@@ -21,7 +21,7 @@ public class DepthFirstSearch {
         postOrder((LinkedNode node,
                 int indexOrder,
                 String indexTerm,
-                int depth) -> ProcessingPolicy.Accepted,
+                int depth) -> ProcessingPolicy.Accept,
                 source,
                 consumer);
     }
@@ -37,8 +37,8 @@ public class DepthFirstSearch {
                 String indexTerm,
                 int depth) -> node.isFragment()
                         && node.asFragment().terms().contains(term)
-                                ? ProcessingPolicy.Accepted
-                                : ProcessingPolicy.Ignored,
+                                ? ProcessingPolicy.Accept
+                                : ProcessingPolicy.Ignore,
                 source,
                 (LinkedNode node,
                         int indexOrder,
@@ -60,7 +60,7 @@ public class DepthFirstSearch {
 
         final ProcessingPolicy policy = selector.test(source, order, term, depth);
 
-        if (ProcessingPolicy.Dropped.equals(policy)) {
+        if (ProcessingPolicy.Drop.equals(policy)) {
             return;
         }
 
@@ -87,7 +87,7 @@ public class DepthFirstSearch {
                         consumer);
             }
         }
-        if (ProcessingPolicy.Accepted.equals(policy)) {
+        if (ProcessingPolicy.Accept.equals(policy)) {
             consumer.accept(source, order, term, depth);
         }
     }
@@ -106,7 +106,7 @@ public class DepthFirstSearch {
         preOrder((LinkedNode node,
                 int indexOrder,
                 String indexTerm,
-                int depth) -> ProcessingPolicy.Accepted,
+                int depth) -> ProcessingPolicy.Accept,
                 source,
                 consumer);
     }
@@ -124,8 +124,8 @@ public class DepthFirstSearch {
                 String indexTerm,
                 int depth) -> node.isFragment()
                         && node.asFragment().terms().contains(term)
-                                ? ProcessingPolicy.Accepted
-                                : ProcessingPolicy.Ignored,
+                                ? ProcessingPolicy.Accept
+                                : ProcessingPolicy.Ignore,
                 source,
                 (LinkedNode node,
                         int indexOrder,
@@ -147,10 +147,10 @@ public class DepthFirstSearch {
 
         final ProcessingPolicy policy = selector.test(source, order, term, depth);
 
-        if (ProcessingPolicy.Dropped.equals(policy)) {
+        if (ProcessingPolicy.Drop.equals(policy)) {
             return;
 
-        } else if (ProcessingPolicy.Accepted.equals(policy)) {
+        } else if (ProcessingPolicy.Accept.equals(policy)) {
             consumer.accept(source, order, term, depth);
         }
 

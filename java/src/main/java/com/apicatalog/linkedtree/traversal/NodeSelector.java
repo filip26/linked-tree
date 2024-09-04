@@ -7,11 +7,11 @@ public interface NodeSelector {
 
     public enum ProcessingPolicy {
         /* consumed and followed */
-        Accepted,
+        Accept,
         /* not consumed, not followed */
-        Dropped,
+        Drop,
         /* not consumed, but followed */
-        Ignored,
+        Ignore,
     }
     
     ProcessingPolicy test(

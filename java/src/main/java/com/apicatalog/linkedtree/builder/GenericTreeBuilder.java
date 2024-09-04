@@ -57,15 +57,15 @@ public class GenericTreeBuilder implements NodeConsumer, NodeSelector {
 
     @Override
     public ProcessingPolicy test(LinkedNode node, int indexOrder, String indexTerm, int depth) {
-        if (ProcessingPolicy.Accepted == nodeSelector.test(node, indexOrder, indexTerm, depth)) {
+        if (ProcessingPolicy.Accept == nodeSelector.test(node, indexOrder, indexTerm, depth)) {
             nodeStack.push(clone(
                     node,
                     clonedTrees.isEmpty()
                             ? () -> null
                             : () -> clonedTrees.peek()));
-            return ProcessingPolicy.Accepted;
+            return ProcessingPolicy.Accept;
         }
-        return ProcessingPolicy.Dropped;
+        return ProcessingPolicy.Drop;
     }
 
     @Override

@@ -472,7 +472,7 @@ public class JsonLdTreeReader {
     protected LinkedFragment materialize(LinkedFragmentReader reader, MutableLink id, Collection<String> type, Map<String, LinkedContainer> data, Supplier<LinkedTree> treeSupplier) throws LinkedReaderError {
 
         if (reader != null) {
-            final Linkable fragment = reader.read(id, type, data, treeSupplier);
+            final Linkable fragment = reader.read(id, type, data, () -> treeSupplier);
             if (fragment != null) {
                 return fragment.ld().asFragment();
             }
