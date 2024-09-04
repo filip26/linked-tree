@@ -12,8 +12,12 @@ import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.adapter.resolver.FragmentAdapterResolver;
+import com.apicatalog.linkedtree.lang.ImmutableLangString;
+import com.apicatalog.linkedtree.lang.LangString.LanguageDirectionType;
 import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.link.MutableLink;
+import com.apicatalog.linkedtree.literal.ImmutableLiteral;
+import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 import com.apicatalog.linkedtree.primitive.GenericContainer;
 import com.apicatalog.linkedtree.primitive.GenericFragment;
 import com.apicatalog.linkedtree.primitive.GenericTree;
@@ -68,7 +72,7 @@ public abstract class JsonTreeReader implements NodeConsumer<JsonValue>, NodeSel
 
         switch (policy) {
         case Accept, Stop -> nodeStack.push(clone(node));
-        case Drop -> {
+        case Drop, Ignore -> {
         }
         default -> throw new IllegalArgumentException("Unexpected value: " + policy);
         }
@@ -127,13 +131,27 @@ public abstract class JsonTreeReader implements NodeConsumer<JsonValue>, NodeSel
                         : new ArrayList<>(nodes),
                 root(),
 //                FIXME cloneOps(source.asContainer())
-                null);
+                new HashMap<>());
     }
 
+    protected void pi(Collection<ProcessingInstruction> ops) {
+        if (nodeStack.peek() instanceof GenericTree tree) {
+            tree.ops().put(tree.nodes().size() + 1, ops);
+            
+        } else if (nodeStack.peek() instanceof GenericContainer container) {
+            container.ops().put(container.nodes().size() + 1, ops);
+        }
+    }
+    
     protected GenericFragment mutableFragment(
             String id,
             Collection<String> type,
-            int properties) {
+            int properties,
+            Collection<ProcessingInstruction> ops
+            ) {
+        
+        pi(ops);
+        
         return new GenericFragment(
                 cloneLink(id),
 
@@ -147,6 +165,25 @@ public abstract class JsonTreeReader implements NodeConsumer<JsonValue>, NodeSel
 
                 root());
 
+    }
+
+    protected ImmutableLangString immutableLangString(
+            String value,
+            String language,
+            LanguageDirectionType direction,
+            Collection<ProcessingInstruction> ops
+            ) {
+        pi(ops);
+        return new ImmutableLangString(value, language, direction, root());
+    }
+
+    protected ImmutableLiteral immutableLiteral(
+            String value,
+            String datatype,
+            Collection<ProcessingInstruction> ops
+            ) {
+        pi(ops);
+        return new ImmutableLiteral(value, datatype, root());
     }
 
     protected GenericTree mutableTree(
@@ -184,7 +221,7 @@ public abstract class JsonTreeReader implements NodeConsumer<JsonValue>, NodeSel
                 new ArrayList<>(),
                 root(),
 //FIXME                cloneOps(source.asContainer())
-                null);
+                new HashMap<>());
 
         trees.push(tree);
         return tree;
