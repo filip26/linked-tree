@@ -53,11 +53,11 @@ class JsonLdReadWriteTest {
         // skip JsonNull
         assumeFalse(name.startsWith("0122"));
 
-        var tree = READER.readExpanded(input);
+        var tree = READER.read(input);
 
         assertNotNull(tree);
 
-        var output = WRITER.writeExpanded(tree);
+        var output = WRITER.write(tree);
 
         assertNotNull(output);
 

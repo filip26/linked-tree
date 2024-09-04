@@ -8,26 +8,25 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Stack;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import com.apicatalog.linkedtree.Link;
 import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.lang.ImmutableLangString;
 import com.apicatalog.linkedtree.lang.LangString;
+import com.apicatalog.linkedtree.link.Link;
+import com.apicatalog.linkedtree.link.MutableLink;
+import com.apicatalog.linkedtree.literal.ImmutableLiteral;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 import com.apicatalog.linkedtree.primitive.GenericContainer;
 import com.apicatalog.linkedtree.primitive.GenericFragment;
-import com.apicatalog.linkedtree.primitive.GenericLiteral;
 import com.apicatalog.linkedtree.primitive.GenericTree;
-import com.apicatalog.linkedtree.primitive.MutableLink;
 import com.apicatalog.linkedtree.traversal.DepthFirstSearch;
 import com.apicatalog.linkedtree.traversal.NodeConsumer;
 import com.apicatalog.linkedtree.traversal.NodeSelector;
 
-public class GenericTreeBuilder implements NodeConsumer, NodeSelector {
+public class GenericTreeBuilder implements NodeConsumer<LinkedNode>, NodeSelector<LinkedNode> {
 
     protected final LinkedTree sourceTree;
 
@@ -35,7 +34,7 @@ public class GenericTreeBuilder implements NodeConsumer, NodeSelector {
 
     protected Stack<GenericTree> clonedTrees;
 
-    protected NodeSelector nodeSelector;
+    protected NodeSelector<LinkedNode> nodeSelector;
 
     public GenericTreeBuilder(LinkedTree source) {
         this.sourceTree = source;
@@ -44,7 +43,7 @@ public class GenericTreeBuilder implements NodeConsumer, NodeSelector {
         this.nodeSelector = null;
     }
 
-    public LinkedTree deepClone(NodeSelector selector) {
+    public LinkedTree deepClone(NodeSelector<LinkedNode> selector) {
         nodeStack = new Stack<>();
         clonedTrees = new Stack<>();
 
@@ -57,21 +56,23 @@ public class GenericTreeBuilder implements NodeConsumer, NodeSelector {
 
     @Override
     public ProcessingPolicy test(LinkedNode node, int indexOrder, String indexTerm, int depth) {
-        if (ProcessingPolicy.Accept == nodeSelector.test(node, indexOrder, indexTerm, depth)) {
-            nodeStack.push(clone(
-                    node,
-                    clonedTrees.isEmpty()
-                            ? () -> null
-                            : () -> clonedTrees.peek()));
-            return ProcessingPolicy.Accept;
+
+        var policy = nodeSelector.test(node, indexOrder, indexTerm, depth);
+
+        switch (policy) {
+        case Accept, Stop -> nodeStack.push(clone(node));
+        case Drop -> {
         }
-        return ProcessingPolicy.Drop;
+        default -> throw new IllegalArgumentException("Unexpected value: " + policy);
+        }
+
+        return policy;
     }
 
     @Override
-    public void accept(LinkedNode node, int indexOrder, String indexTerm, int depth) {
+    public void accept(LinkedNode source, int indexOrder, String indexTerm, int depth) {
 
-        final LinkedNode child = nodeStack.pop();
+        final LinkedNode node = nodeStack.pop();
 
         if (nodeStack.isEmpty()) {
             return;
@@ -81,10 +82,10 @@ public class GenericTreeBuilder implements NodeConsumer, NodeSelector {
 
         if (indexOrder != -1) {
             if (parent.isTree()) {
-                ((GenericTree) parent.asContainer()).nodes().add(child);
+                ((GenericTree) parent.asContainer()).nodes().add(node);
 
             } else if (parent.isContainer()) {
-                ((GenericContainer) parent.asContainer()).nodes().add(child);
+                ((GenericContainer) parent.asContainer()).nodes().add(node);
 
             } else {
                 throw new IllegalStateException();
@@ -93,10 +94,10 @@ public class GenericTreeBuilder implements NodeConsumer, NodeSelector {
         } else if (indexTerm != null) {
 
             if (parent.isTree()) {
-                ((GenericTree) parent.asTree()).entries().put(indexTerm, child.asContainer());
+                ((GenericTree) parent.asTree()).entries().put(indexTerm, node.asContainer());
 
             } else if (parent.isFragment()) {
-                ((GenericFragment) parent.asFragment()).entries().put(indexTerm, child.asContainer());
+                ((GenericFragment) parent.asFragment()).entries().put(indexTerm, node.asContainer());
 
             } else {
                 throw new IllegalStateException();
@@ -109,7 +110,12 @@ public class GenericTreeBuilder implements NodeConsumer, NodeSelector {
         }
     }
 
-    protected LinkedNode clone(LinkedNode source, Supplier<LinkedTree> treeSupplier) {
+    protected LinkedNode clone(LinkedNode source) {
+
+        final LinkedTree root = clonedTrees.isEmpty()
+                ? null
+                : clonedTrees.peek();
+
         if (source.isTree()) {
 
             // clone links
@@ -143,7 +149,7 @@ public class GenericTreeBuilder implements NodeConsumer, NodeSelector {
                             ? Collections.emptyList()
                             : new ArrayList<>(source.asTree().subtrees().size()),
 
-                    treeSupplier,
+                    root,
                     cloneOps(source.asContainer()));
 
             clonedTrees.push(tree);
@@ -156,8 +162,8 @@ public class GenericTreeBuilder implements NodeConsumer, NodeSelector {
                     source.asContainer().nodes().isEmpty()
                             ? Collections.emptyList()
                             : new ArrayList<>(source.asContainer().size()),
-                    treeSupplier,
-                    () -> cloneOps(source.asContainer()));
+                    root,
+                    cloneOps(source.asContainer()));
 
         } else if (source.isFragment()) {
             return new GenericFragment(
@@ -171,7 +177,7 @@ public class GenericTreeBuilder implements NodeConsumer, NodeSelector {
                             ? Collections.emptyMap()
                             : new LinkedHashMap<>(source.asFragment().terms().size()),
 
-                    treeSupplier);
+                    root);
 
         } else if (source.isLiteral()) {
             if (source.asLiteral() instanceof LangString langString) {
@@ -179,12 +185,12 @@ public class GenericTreeBuilder implements NodeConsumer, NodeSelector {
                         langString.lexicalValue(),
                         langString.language(),
                         langString.direction(),
-                        treeSupplier);
+                        root);
             }
-            return new GenericLiteral(
+            return new ImmutableLiteral(
                     source.asLiteral().lexicalValue(),
                     source.asLiteral().datatype(),
-                    treeSupplier);
+                    root);
         }
         throw new IllegalStateException();
     }
@@ -200,15 +206,15 @@ public class GenericTreeBuilder implements NodeConsumer, NodeSelector {
 
         return ((GenericTree) clonedTrees.peek()).linkMap().get(source.uri());
     }
-    
+
     protected Map<Integer, Collection<ProcessingInstruction>> cloneOps(LinkedContainer source) {
         if (source == null || source.size() == 0) {
             return Collections.emptyMap();
         }
-        
+
         Map<Integer, Collection<ProcessingInstruction>> ops = new HashMap<>();
-        
-        for (int i = 0 ; i < source.size(); i++) {
+
+        for (int i = 0; i < source.size(); i++) {
             var pi = source.pi(i);
             if (pi != null) {
                 ops.put(i, pi);

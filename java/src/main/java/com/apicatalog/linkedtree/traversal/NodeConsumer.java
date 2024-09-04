@@ -1,12 +1,10 @@
 package com.apicatalog.linkedtree.traversal;
 
-import com.apicatalog.linkedtree.LinkedNode;
-
 @FunctionalInterface
-public interface NodeConsumer {
+public interface NodeConsumer<T> {
 
     void accept(
-            LinkedNode node,
+            T node,
             int indexOrder,
             String indexTerm,
             int depth);

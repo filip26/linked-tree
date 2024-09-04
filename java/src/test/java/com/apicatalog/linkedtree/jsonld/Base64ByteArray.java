@@ -1,7 +1,6 @@
 package com.apicatalog.linkedtree.jsonld;
 
 import java.util.Base64;
-import java.util.function.Supplier;
 
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.literal.ByteArrayValue;
@@ -12,13 +11,16 @@ class Base64ByteArray implements ByteArrayValue {
 
     String value;
     byte[] byteArray;
+    
+    final LinkedTree root;
 
-    Base64ByteArray(String value) {
+    Base64ByteArray(String value, LinkedTree root) {
         this.value = value;
+        this.root = root;
     }
 
-    public static Base64ByteArray of(String value, Supplier<LinkedTree> treeSupplier) {
-        return new Base64ByteArray(value);
+    public static Base64ByteArray of(String value, LinkedTree root) {
+        return new Base64ByteArray(value, root);
     }
 
     @Override
@@ -51,5 +53,10 @@ class Base64ByteArray implements ByteArrayValue {
     public void byteArrayValue(byte[] byteArray) {
         this.byteArray = byteArray;
         this.value = null;
+    }
+    
+    @Override
+    public LinkedTree root() {
+        return root;
     }
 }

@@ -3,7 +3,6 @@ package com.apicatalog.linkedtree.xsd;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
-import java.util.function.Supplier;
 
 import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.LinkedTree;
@@ -16,22 +15,26 @@ public class XsdDateTime implements LinkedLiteral, DateTimeValue {
     protected Instant datetime;
     protected String value;
 
-    protected XsdDateTime(String value) {
+    protected final LinkedTree root;
+
+    protected XsdDateTime(String value, LinkedTree root) {
         this.value = value;
         this.datetime = null;
+        this.root = root;
     }
 
-    protected XsdDateTime(Instant datetime) {
+    protected XsdDateTime(Instant datetime, LinkedTree root) {
         this.value = null;
         this.datetime = datetime;
+        this.root = root;
     }
 
-    public static XsdDateTime of(String value, Supplier<LinkedTree> treeSupplier) {
-        return new XsdDateTime(value);
+    public static XsdDateTime of(String value, LinkedTree root) {
+        return new XsdDateTime(value, root);
     }
 
-    public static XsdDateTime of(Instant datetime, Supplier<LinkedTree> treeSupplier) {
-        return new XsdDateTime(datetime);
+    public static XsdDateTime of(Instant datetime, LinkedTree root) {
+        return new XsdDateTime(datetime, root);
     }
 
     @Override

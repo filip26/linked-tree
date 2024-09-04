@@ -41,7 +41,7 @@ class JsonLdLinkTest {
 
         JsonArray input = resource("custom/base64-1.jsonld");
 
-        var tree = READER.readExpanded(input);
+        var tree = READER.read(input);
 
         assertNotNull(tree);
         assertNotNull(tree.links());
@@ -58,7 +58,7 @@ class JsonLdLinkTest {
 
         JsonArray input = resource("custom/signed-vc-1.jsonld");
 
-        var tree = READER.readExpanded(input);
+        var tree = READER.read(input);
 
         assertNotNull(tree);
         assertNotNull(tree.links());

@@ -1,7 +1,5 @@
 package com.apicatalog.linkedtree.reader;
 
-import java.util.function.Supplier;
-
 import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.LinkedTree;
 
@@ -9,6 +7,6 @@ import com.apicatalog.linkedtree.LinkedTree;
 public interface LinkedLiteralReader {
 
     //TODO type
-    LinkedLiteral read(String value, Supplier<LinkedTree> rootSupplier);
+    LinkedLiteral read(String value, LinkedTree root);
 
 }

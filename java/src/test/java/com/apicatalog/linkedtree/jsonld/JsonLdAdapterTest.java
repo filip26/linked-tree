@@ -27,7 +27,6 @@ import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeWriter;
 import com.apicatalog.linkedtree.literal.ByteArrayValue;
 import com.apicatalog.linkedtree.reader.LinkedReaderError;
-import com.apicatalog.linkedtree.writer.NodeDebugWriter;
 import com.apicatalog.linkedtree.xsd.XsdDateTime;
 
 import jakarta.json.Json;
@@ -56,7 +55,7 @@ class JsonLdAdapterTest {
         JsonArray input = resource("custom/base64-1.jsonld");
         JsonArray output = resource("custom/base64-2.jsonld");
 
-        var tree = READER.readExpanded(input);
+        var tree = READER.read(input);
 
         assertNotNull(tree);
 
@@ -77,7 +76,7 @@ class JsonLdAdapterTest {
         ((Base64ByteArray) literal).byteArrayValue("test X".getBytes());
         assertEquals("dGVzdCBY", literal.lexicalValue());
 
-        JsonArray copy = WRITER.writeExpanded(tree);
+        JsonArray copy = WRITER.write(tree);
 
         assertNotNull(output);
 
@@ -89,7 +88,7 @@ class JsonLdAdapterTest {
 
         JsonArray input = resource("custom/signed-vc-1.jsonld");
 
-        LinkedTree tree = READER.readExpanded(
+        LinkedTree tree = READER.read(
                 List.of("https://www.w3.org/2018/credentials/v1",
                         "https://w3id.org/security/data-integrity/v2"),
                 input);

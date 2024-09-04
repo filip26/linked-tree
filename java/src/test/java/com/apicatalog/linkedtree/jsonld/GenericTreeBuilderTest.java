@@ -47,7 +47,7 @@ class GenericTreeBuilderTest {
 
         JsonArray input = resource("custom/signed-vc-1.jsonld");
 
-        LinkedTree tree = READER.readExpanded(
+        LinkedTree tree = READER.read(
                 List.of("https://www.w3.org/2018/credentials/v1",
                         "https://w3id.org/security/data-integrity/v2"),
                 input);
@@ -67,7 +67,7 @@ class GenericTreeBuilderTest {
 
         assertNotNull(clone);
 
-        JsonArray out = WRITER.writeExpanded(clone);
+        JsonArray out = WRITER.write(clone);
 
         JsonArray expected = resource("custom/unsigned-vc-1.jsonld");
 

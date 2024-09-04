@@ -2,6 +2,8 @@ package com.apicatalog.linkedtree;
 
 import java.util.Collection;
 
+import com.apicatalog.linkedtree.link.Link;
+
 public interface LinkedFragment extends LinkedNode {
 
     /**

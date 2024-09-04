@@ -31,7 +31,7 @@ import jakarta.json.stream.JsonParser;
 
 public class JsonLdTreeWriter {
 
-    public JsonArray writeExpanded(LinkedTree tree) {
+    public JsonArray write(LinkedTree tree) {
 
         final JsonArrayBuilder builder = Json.createArrayBuilder();
 
@@ -55,7 +55,7 @@ public class JsonLdTreeWriter {
     JsonObject writeTree(LinkedTree tree) {
 
         final JsonObjectBuilder builder = Json.createObjectBuilder()
-                .add(JsonLdKeyword.GRAPH, writeExpanded(tree));
+                .add(JsonLdKeyword.GRAPH, write(tree));
 
         writeFragment(tree, tree.pi(0), builder);
 

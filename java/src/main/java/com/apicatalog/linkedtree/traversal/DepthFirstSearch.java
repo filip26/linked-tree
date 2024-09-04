@@ -7,7 +7,7 @@ import com.apicatalog.linkedtree.traversal.NodeSelector.ProcessingPolicy;
 
 public class DepthFirstSearch {
 
-    public static void postOrder(NodeSelector selector, LinkedNode source, NodeConsumer consumer) {
+    public static void postOrder(NodeSelector<LinkedNode> selector, LinkedNode source, NodeConsumer<LinkedNode> consumer) {
         postOrder(
                 selector,
                 source,
@@ -17,7 +17,7 @@ public class DepthFirstSearch {
                 consumer);
     }
 
-    public static void postOrder(LinkedNode source, NodeConsumer consumer) {
+    public static void postOrder(LinkedNode source, NodeConsumer<LinkedNode> consumer) {
         postOrder((LinkedNode node,
                 int indexOrder,
                 String indexTerm,
@@ -31,7 +31,7 @@ public class DepthFirstSearch {
 
     }
 
-    public static void postOrder(String term, LinkedNode source, NodeConsumer consumer) {
+    public static void postOrder(String term, LinkedNode source, NodeConsumer<LinkedNode> consumer) {
         postOrder((LinkedNode node,
                 int indexOrder,
                 String indexTerm,
@@ -51,16 +51,21 @@ public class DepthFirstSearch {
     }
 
     protected static void postOrder(
-            final NodeSelector selector,
+            final NodeSelector<LinkedNode> selector,
             final LinkedNode source,
             final int order,
             final String term,
             final int depth,
-            final NodeConsumer consumer) {
+            final NodeConsumer<LinkedNode> consumer) {
 
         final ProcessingPolicy policy = selector.test(source, order, term, depth);
 
         if (ProcessingPolicy.Drop.equals(policy)) {
+            return;
+        }
+
+        if (ProcessingPolicy.Stop.equals(policy)) {
+            consumer.accept(source, order, term, depth);
             return;
         }
 
@@ -92,7 +97,7 @@ public class DepthFirstSearch {
         }
     }
 
-    public static void preOrder(NodeSelector selector, LinkedNode source, NodeConsumer consumer) {
+    public static void preOrder(NodeSelector<LinkedNode> selector, LinkedNode source, NodeConsumer<LinkedNode> consumer) {
         preOrder(
                 selector,
                 source,
@@ -102,7 +107,7 @@ public class DepthFirstSearch {
                 consumer);
     }
 
-    public static void preOrder(LinkedNode source, NodeConsumer consumer) {
+    public static void preOrder(LinkedNode source, NodeConsumer<LinkedNode> consumer) {
         preOrder((LinkedNode node,
                 int indexOrder,
                 String indexTerm,
@@ -118,7 +123,7 @@ public class DepthFirstSearch {
     public static void preOrder(
             final String term,
             final LinkedNode source,
-            final NodeConsumer consumer) {
+            final NodeConsumer<LinkedNode> consumer) {
         preOrder((LinkedNode node,
                 int indexOrder,
                 String indexTerm,
@@ -138,12 +143,12 @@ public class DepthFirstSearch {
     }
 
     protected static void preOrder(
-            final NodeSelector selector,
+            final NodeSelector<LinkedNode> selector,
             final LinkedNode source,
             final int order,
             final String term,
             final int depth,
-            final NodeConsumer consumer) {
+            final NodeConsumer<LinkedNode> consumer) {
 
         final ProcessingPolicy policy = selector.test(source, order, term, depth);
 
@@ -152,6 +157,10 @@ public class DepthFirstSearch {
 
         } else if (ProcessingPolicy.Accept.equals(policy)) {
             consumer.accept(source, order, term, depth);
+
+        } else if (ProcessingPolicy.Stop.equals(policy)) {
+            consumer.accept(source, order, term, depth);
+            return;
         }
 
         if (source.isFragment()) {
