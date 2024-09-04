@@ -83,23 +83,43 @@ public class JsonLdTreeReader extends JsonTreeReader {
     @Override
     public LinkedTree read(JsonStructure source, NodeSelector<JsonValue> selector) {
         return super.read(source, (node, indexOrder, indexTerm, depth) -> {
-            
-            // do not follow @value objects
+
+
             if (ValueType.OBJECT == node.getValueType()) {
 
+                // do not follow @value objects
                 if (node.asJsonObject().containsKey(JsonLdKeyword.VALUE)) {
                     return ProcessingPolicy.Stop;
                 }
             }
             
-            if (JsonLdKeyword.LIST.equals(indexTerm)) {
+            if (ValueType.ARRAY == node.getValueType()) {
+                
+                // skip single item array of an array
+                if (indexTerm != null
+                        && node.asJsonArray().size() == 1
+                        && ValueType.OBJECT ==  node.asJsonArray().iterator().next().getValueType()
+                        ) {
+                    JsonObject item = node.asJsonArray().iterator().next().asJsonObject();
+                    if (
+                            item.containsKey(JsonLdKeyword.GRAPH)
+                            ||  item.containsKey(JsonLdKeyword.LIST) 
+                            ) {
+                        return ProcessingPolicy.Ignore;
+                    }
+                    
+                }
+                
+            }
+
+            if (JsonLdKeyword.LIST.equals(indexTerm)
+                    || JsonLdKeyword.GRAPH.equals(indexTerm)) {
                 return ProcessingPolicy.Ignore;
             }
 
             if (indexTerm != null
                     && indexTerm.startsWith("@")
-                    && indexTerm.length() > 1
-                    ) {
+                    && indexTerm.length() > 1) {
                 return ProcessingPolicy.Drop;
             }
 
@@ -122,20 +142,17 @@ public class JsonLdTreeReader extends JsonTreeReader {
         if (ValueType.OBJECT == source.getValueType()) {
             // tree
             if (source.asJsonObject().containsKey(JsonLdKeyword.GRAPH)) {
-
                 return cloneTree(source.asJsonObject());
 
                 // literal
             } else if (source.asJsonObject().containsKey(JsonLdKeyword.VALUE)) {
-                // FIXME ops
                 return readLiteral(source.asJsonObject(), new ArrayList<>());
 
                 // list
             } else if (source.asJsonObject().containsKey(JsonLdKeyword.LIST)) {
                 return mutableContainer(
                         LinkedContainer.Type.OrderedList,
-                        source.asJsonObject().getJsonArray(JsonLdKeyword.LIST).size()
-                        );
+                        source.asJsonObject().getJsonArray(JsonLdKeyword.LIST).size());
             }
             // fragment
             return cloneFragment(source.asJsonObject());
@@ -148,7 +165,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
             }
 //            if (nodeStack.peek() instanceof LinkedContainer container
 //                    && )
-                
+
             return mutableContainer(
                     LinkedContainer.Type.UnorderedSet,
                     source.asJsonArray().size());
@@ -174,7 +191,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
     }
 
     protected LinkedNode cloneFragment(final JsonObject source) {
-        
+
         return mutableFragment(
                 JsonLdId.string(source),
                 JsonLdType.strings(source),
@@ -187,13 +204,11 @@ public class JsonLdTreeReader extends JsonTreeReader {
             return Collections.emptyList();
         }
         // identify unknown keywords
-        
-        
 
-        //TODO
+        // TODO
         return Collections.emptyList();
     }
-    
+
 //    public LinkedTree readExpanded(JsonArray jsonNodes, TreeBuilderContext ctx) throws LinkedReaderError {
 //        return readExpanded(null, jsonNodes, ctx);
 //    }

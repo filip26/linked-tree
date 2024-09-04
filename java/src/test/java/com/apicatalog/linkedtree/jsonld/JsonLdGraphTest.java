@@ -19,6 +19,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.reader.LinkedReaderError;
+import com.apicatalog.linkedtree.writer.NodeDebugWriter;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -42,7 +43,7 @@ class JsonLdGraphTest {
         JsonArray input = resource("custom/signed-vc-1.jsonld");
 
         var tree = READER.read(input);
-
+NodeDebugWriter.printToStdout(tree);
         assertEquals(1, tree.subtrees().size());
         assertEquals(0, tree.subtrees().iterator().next().subtrees().size());
 

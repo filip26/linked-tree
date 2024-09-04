@@ -98,7 +98,10 @@ public abstract class JsonTreeReader implements NodeConsumer<JsonValue>, NodeSel
             } else if (parent.isContainer()) {
                 ((GenericContainer) parent.asContainer()).nodes().add(child);
 
-            } else {
+            } else if (parent.isFragment() && child.isContainer()) {
+                ((GenericFragment) parent.asFragment()).entries().put(indexTerm, child.asContainer());
+                
+            } else  {
                 throw new IllegalStateException();
             }
 
@@ -130,7 +133,6 @@ public abstract class JsonTreeReader implements NodeConsumer<JsonValue>, NodeSel
                         ? Collections.emptyList()
                         : new ArrayList<>(nodes),
                 root(),
-//                FIXME cloneOps(source.asContainer())
                 new HashMap<>());
     }
 
