@@ -98,10 +98,7 @@ public abstract class JsonTreeReader implements NodeConsumer<JsonValue>, NodeSel
             } else if (parent.isContainer()) {
                 ((GenericContainer) parent.asContainer()).nodes().add(child);
 
-            } else if (parent.isFragment() && child.isContainer()) {
-                ((GenericFragment) parent.asFragment()).entries().put(indexTerm, child.asContainer());
-                
-            } else  {
+            } else {
                 throw new IllegalStateException();
             }
 
@@ -139,21 +136,20 @@ public abstract class JsonTreeReader implements NodeConsumer<JsonValue>, NodeSel
     protected void pi(Collection<ProcessingInstruction> ops) {
         if (nodeStack.peek() instanceof GenericTree tree) {
             tree.ops().put(tree.nodes().size() + 1, ops);
-            
+
         } else if (nodeStack.peek() instanceof GenericContainer container) {
             container.ops().put(container.nodes().size() + 1, ops);
         }
     }
-    
+
     protected GenericFragment mutableFragment(
             String id,
             Collection<String> type,
             int properties,
-            Collection<ProcessingInstruction> ops
-            ) {
-        
+            Collection<ProcessingInstruction> ops) {
+
         pi(ops);
-        
+
         return new GenericFragment(
                 cloneLink(id),
 
@@ -173,8 +169,7 @@ public abstract class JsonTreeReader implements NodeConsumer<JsonValue>, NodeSel
             String value,
             String language,
             LanguageDirectionType direction,
-            Collection<ProcessingInstruction> ops
-            ) {
+            Collection<ProcessingInstruction> ops) {
         pi(ops);
         return new ImmutableLangString(value, language, direction, root());
     }
@@ -182,8 +177,7 @@ public abstract class JsonTreeReader implements NodeConsumer<JsonValue>, NodeSel
     protected ImmutableLiteral immutableLiteral(
             String value,
             String datatype,
-            Collection<ProcessingInstruction> ops
-            ) {
+            Collection<ProcessingInstruction> ops) {
         pi(ops);
         return new ImmutableLiteral(value, datatype, root());
     }

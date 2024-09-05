@@ -84,36 +84,21 @@ public class JsonLdTreeReader extends JsonTreeReader {
     public LinkedTree read(JsonStructure source, NodeSelector<JsonValue> selector) {
         return super.read(source, (node, indexOrder, indexTerm, depth) -> {
 
-
             if (ValueType.OBJECT == node.getValueType()) {
 
                 // do not follow @value objects
                 if (node.asJsonObject().containsKey(JsonLdKeyword.VALUE)) {
                     return ProcessingPolicy.Stop;
                 }
-            }
-            
-            if (ValueType.ARRAY == node.getValueType()) {
-                
-                // skip single item array of an array
-                if (indexTerm != null
-                        && node.asJsonArray().size() == 1
-                        && ValueType.OBJECT ==  node.asJsonArray().iterator().next().getValueType()
-                        ) {
-                    JsonObject item = node.asJsonArray().iterator().next().asJsonObject();
-                    if (
-                            item.containsKey(JsonLdKeyword.GRAPH)
-                            ||  item.containsKey(JsonLdKeyword.LIST) 
-                            ) {
-                        return ProcessingPolicy.Ignore;
-                    }
-                    
+                if (node.asJsonObject().containsKey(JsonLdKeyword.GRAPH)
+//                        || node.asJsonObject().containsKey(JsonLdKeyword.LIST)
+                ) {
+                    return ProcessingPolicy.Ignore;
                 }
-                
             }
 
-            if (JsonLdKeyword.LIST.equals(indexTerm)
-                    || JsonLdKeyword.GRAPH.equals(indexTerm)) {
+            if (JsonLdKeyword.GRAPH.equals(indexTerm)
+                    || JsonLdKeyword.LIST.equals(indexTerm)) {
                 return ProcessingPolicy.Ignore;
             }
 
@@ -122,14 +107,6 @@ public class JsonLdTreeReader extends JsonTreeReader {
                     && indexTerm.length() > 1) {
                 return ProcessingPolicy.Drop;
             }
-
-            // merge root tree and following container
-//            if (trees.size() == 1 
-//                    && nodeStack.size() == 1
-//                    && 
-//                    ) {
-
-//            }
 
             return selector.test(node, indexOrder, indexTerm, depth);
         });
@@ -163,6 +140,14 @@ public class JsonLdTreeReader extends JsonTreeReader {
             if (trees.isEmpty()) {
                 return cloneRoot(source.asJsonArray());
             }
+            if (source.asJsonArray().size() == 1
+                    && ValueType.OBJECT == source.asJsonArray().iterator().next().getValueType()) {
+                JsonObject item = source.asJsonArray().iterator().next().asJsonObject();
+                if (item.containsKey(JsonLdKeyword.GRAPH)) {
+                    return cloneTree(item);
+                }
+
+            }
 //            if (nodeStack.peek() instanceof LinkedContainer container
 //                    && )
 
@@ -179,10 +164,19 @@ public class JsonLdTreeReader extends JsonTreeReader {
                 JsonLdId.string(source),
                 JsonLdType.strings(source),
                 source.size(),
-                source.getJsonArray(JsonLdKeyword.GRAPH).size());
+                source.get(JsonLdKeyword.GRAPH) != null
+                        ? source.getJsonArray(JsonLdKeyword.GRAPH).size()
+                        : 0);
     }
 
     protected LinkedNode cloneRoot(final JsonArray source) {
+
+        if (source.size() == 1
+                && ValueType.OBJECT == source.iterator().next().getValueType()
+                && source.iterator().next().asJsonObject().containsKey(JsonLdKeyword.GRAPH)) {
+            return cloneTree(source.iterator().next().asJsonObject());
+        }
+
         return mutableTree(
                 null,
                 Collections.emptySet(),
