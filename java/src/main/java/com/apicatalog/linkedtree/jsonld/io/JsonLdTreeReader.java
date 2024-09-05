@@ -94,7 +94,10 @@ public class JsonLdTreeReader extends JsonTreeReader {
                 if (node.asJsonObject().containsKey(JsonLdKeyword.GRAPH)
 //                        || node.asJsonObject().containsKey(JsonLdKeyword.LIST)
                 ) {
-                    return ProcessingPolicy.Ignore;
+                    return trees.isEmpty()
+                            ? ProcessingPolicy.Ignore
+                            : ProcessingPolicy.Accept;
+
                 }
             }
 
@@ -217,21 +220,13 @@ public class JsonLdTreeReader extends JsonTreeReader {
                         && !List.of(JsonLdKeyword.ID, JsonLdKeyword.TYPE).contains(e.getKey()))
                 .forEach(e -> unknown.put(e.getKey(), e.getValue()));
 
-        List<ProcessingInstruction> ops;
-
         if (!unknown.isEmpty()) {
-            ops = new ArrayList<>();
+            List<ProcessingInstruction> ops = new ArrayList<>();
             ops.add(new JsonObjectWrite(unknown));
-        } else {
-            ops = Collections.emptyList();
+            return ops;
         }
-
-        return ops;
+        return Collections.emptyList();
     }
-
-//    public LinkedTree readExpanded(JsonArray jsonNodes, TreeBuilderContext ctx) throws LinkedReaderError {
-//        return readExpanded(null, jsonNodes, ctx);
-//    }
 
 //    public LinkedTree readExpanded(Collection<String> context, JsonArray jsonNodes, TreeBuilderContext ctx) throws LinkedReaderError {
 //
