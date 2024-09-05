@@ -1,14 +1,14 @@
 package com.apicatalog.linkedtree.type;
 
-import java.util.Collection;
+import com.apicatalog.linkedtree.LinkedNode;
 
 public interface Type {
 
     String uri();
     
-    <T> T cast(Class<T> clazz) throws ClassCastException;
+    <T> T cast(Class<T> clazz, LinkedNode node) throws ClassCastException;
     
-    Collection<Class<?>> interfaces();
+    <T> Class<T> clazz();
     
     @Override 
     boolean equals(Object obj);
