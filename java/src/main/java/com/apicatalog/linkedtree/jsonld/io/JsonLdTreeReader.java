@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
@@ -123,7 +124,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
 
                 // literal
             } else if (source.asJsonObject().containsKey(JsonLdKeyword.VALUE)) {
-                return readLiteral(source.asJsonObject(), new ArrayList<>());
+                return cloneLiteral(source.asJsonObject(), new ArrayList<>());
 
                 // list
             } else if (source.asJsonObject().containsKey(JsonLdKeyword.LIST)) {
@@ -160,13 +161,22 @@ public class JsonLdTreeReader extends JsonTreeReader {
     }
 
     protected LinkedNode cloneTree(final JsonObject source) {
+
+        var ops = new LinkedList<ProcessingInstruction>();
+
+        var pi = getPi(source, JsonLdKeyword.ID, JsonLdKeyword.TYPE);
+        if (pi != null) {
+            ops.add(pi);
+        }
+
         return mutableTree(
                 JsonLdId.string(source),
                 JsonLdType.strings(source),
                 source.size(),
                 source.get(JsonLdKeyword.GRAPH) != null
                         ? source.getJsonArray(JsonLdKeyword.GRAPH).size()
-                        : 0);
+                        : 0,
+                ops);
     }
 
     protected LinkedNode cloneRoot(final JsonArray source) {
@@ -181,11 +191,11 @@ public class JsonLdTreeReader extends JsonTreeReader {
                 null,
                 Collections.emptySet(),
                 0,
-                source.size());
+                source.size(),
+                Collections.emptyList());
     }
 
     protected LinkedNode cloneFragment(final JsonObject source) {
-
         return mutableFragment(
                 JsonLdId.string(source),
                 JsonLdType.strings(source),
@@ -198,9 +208,25 @@ public class JsonLdTreeReader extends JsonTreeReader {
             return Collections.emptyList();
         }
         // identify unknown keywords
+        Map<String, JsonValue> unknown = new LinkedHashMap<>();
 
-        // TODO
-        return Collections.emptyList();
+        source.entrySet()
+                .stream()
+                .filter(e -> e.getKey().startsWith("@")
+                        && e.getKey().length() > 1
+                        && !List.of(JsonLdKeyword.ID, JsonLdKeyword.TYPE).contains(e.getKey()))
+                .forEach(e -> unknown.put(e.getKey(), e.getValue()));
+
+        List<ProcessingInstruction> ops;
+
+        if (!unknown.isEmpty()) {
+            ops = new ArrayList<>();
+            ops.add(new JsonObjectWrite(unknown));
+        } else {
+            ops = Collections.emptyList();
+        }
+
+        return ops;
     }
 
 //    public LinkedTree readExpanded(JsonArray jsonNodes, TreeBuilderContext ctx) throws LinkedReaderError {
@@ -605,7 +631,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
         return link;
     }
 
-    protected LinkedLiteral readLiteral(final JsonObject valueJsonObject, final Collection<ProcessingInstruction> ops) {
+    protected LinkedLiteral cloneLiteral(final JsonObject valueJsonObject, final Collection<ProcessingInstruction> ops) {
 
 //        final String value = getLiteralValue(valueObject);
 //        final String datatype = getLiteralDataType(valueObject);
@@ -632,6 +658,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
             if (pi != null) {
                 ops.add(pi);
             }
+            pi(ops);
             return JsonLiteral.of(value);
 
         } else if (value != null &&
@@ -642,7 +669,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
             if (pi != null) {
                 ops.add(pi);
             }
-
+            pi(ops);
             return new JsonScalar(value,
                     datatype != null
                             ? datatype
@@ -661,6 +688,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
                 if (pi != null) {
                     ops.add(pi);
                 }
+                pi(ops);
                 return JsonDecimal.of(number,
                         datatype != null
                                 ? datatype
@@ -671,6 +699,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
                 if (pi != null) {
                     ops.add(pi);
                 }
+                pi(ops);
 
                 return JsonInteger.of(
                         number,
@@ -698,6 +727,8 @@ public class JsonLdTreeReader extends JsonTreeReader {
                 if (pi != null) {
                     ops.add(pi);
                 }
+                pi(ops);
+
                 return adapter.read(valueString, root());
             }
         }

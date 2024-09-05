@@ -32,6 +32,25 @@ import jakarta.json.stream.JsonParser;
 public class JsonLdTreeWriter {
 
     public JsonArray write(LinkedTree tree) {
+        if (tree.id() != null
+                || !tree.type().isEmpty()
+                || !tree.asTree().terms().isEmpty()
+                ) {
+            return Json.createArrayBuilder()
+                    .add(writeTree(tree)).build();
+        }
+        return writeTreeNodes(tree);
+    }
+    
+    public JsonObject writeFragment(LinkedFragment fragment) {
+        return writeFragment(
+                fragment, 
+                Collections.emptyList(),
+                Json.createObjectBuilder()
+                ).build();
+    }
+
+    JsonArray writeTreeNodes(LinkedTree tree) {
 
         final JsonArrayBuilder builder = Json.createArrayBuilder();
 
@@ -44,18 +63,10 @@ public class JsonLdTreeWriter {
         return builder.build();
     }
 
-    public JsonObject writeFragment(LinkedFragment fragment) {
-        return writeFragment(
-                fragment, 
-                Collections.emptyList(),
-                Json.createObjectBuilder()
-                ).build();
-    }
-
     JsonObject writeTree(LinkedTree tree) {
 
         final JsonObjectBuilder builder = Json.createObjectBuilder()
-                .add(JsonLdKeyword.GRAPH, write(tree));
+                .add(JsonLdKeyword.GRAPH, writeTreeNodes(tree));
 
         writeFragment(tree, tree.pi(0), builder);
 

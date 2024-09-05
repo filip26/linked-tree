@@ -186,7 +186,16 @@ public abstract class JsonTreeReader implements NodeConsumer<JsonValue>, NodeSel
             String id,
             Collection<String> type,
             int properties,
-            int nodes) {
+            int nodes,
+            Collection<ProcessingInstruction> ops) {
+        
+        
+        var treeOps = new HashMap<Integer, Collection<ProcessingInstruction>>();
+        
+        if (!ops.isEmpty()) {
+            treeOps.put(0, ops);
+        }
+        
         // clone links
 //        final Map<String, Link> links = source.asTree().links().isEmpty()
 //                ? Collections.emptyMap()
@@ -216,8 +225,7 @@ public abstract class JsonTreeReader implements NodeConsumer<JsonValue>, NodeSel
                 // subtrees
                 new ArrayList<>(),
                 root(),
-//FIXME                cloneOps(source.asContainer())
-                new HashMap<>());
+                treeOps);
 
         trees.push(tree);
         return tree;

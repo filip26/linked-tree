@@ -155,6 +155,10 @@ public class NodeDebugWriter {
                 print("direction: ").println(langString.direction().toString());
             }
         }
+        if (ops != null && !ops.isEmpty()) {
+            print("pi: ")
+                    .println(ops.toString());
+        }
 
     }
 

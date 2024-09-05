@@ -27,7 +27,7 @@ import jakarta.json.JsonWriter;
 import jakarta.json.JsonWriterFactory;
 import jakarta.json.stream.JsonGenerator;
 
-@DisplayName("JsonLd Link Suite")
+@DisplayName("JsonLd Links")
 @TestMethodOrder(OrderAnnotation.class)
 class JsonLdLinkTest {
 
