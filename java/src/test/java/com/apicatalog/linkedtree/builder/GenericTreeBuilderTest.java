@@ -1,4 +1,4 @@
-package com.apicatalog.linkedtree.jsonld;
+package com.apicatalog.linkedtree.builder;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -15,8 +15,11 @@ import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
+import com.apicatalog.linkedtree.Base64ByteArray;
 import com.apicatalog.linkedtree.LinkedTree;
-import com.apicatalog.linkedtree.builder.GenericTreeBuilder;
+import com.apicatalog.linkedtree.VerifiableCredential;
+import com.apicatalog.linkedtree.jsonld.JsonLdComparison;
+import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeWriter;
 import com.apicatalog.linkedtree.reader.LinkedReaderError;

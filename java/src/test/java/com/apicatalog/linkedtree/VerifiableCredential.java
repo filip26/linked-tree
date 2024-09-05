@@ -1,13 +1,10 @@
-package com.apicatalog.linkedtree.jsonld;
+package com.apicatalog.linkedtree;
 
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import com.apicatalog.linkedtree.LinkedContainer;
-import com.apicatalog.linkedtree.LinkedFragment;
-import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.builder.TreeBuilderContext;
 import com.apicatalog.linkedtree.lang.LangStringSelector;
 import com.apicatalog.linkedtree.lang.LanguageMap;
@@ -16,7 +13,7 @@ import com.apicatalog.linkedtree.xsd.XsdDateTime;
 
 public class VerifiableCredential implements LinkedFragment {
 
-    static final String TYPE = "https://www.w3.org/2018/credentials#VerifiableCredential";
+    public static final String TYPE = "https://www.w3.org/2018/credentials#VerifiableCredential";
 
     protected LangStringSelector name;
     protected LangStringSelector description;
@@ -103,4 +100,21 @@ public class VerifiableCredential implements LinkedFragment {
     public LinkedContainer property(String term) {
         return properties.get(term);
     }
+
+    public LangStringSelector name() {
+        return name;
+    }
+    
+    public LangStringSelector description() {
+        return name;
+    }
+
+    public Instant validFrom() {
+        return validFrom;
+    }
+ 
+    public Instant validUntil() {
+        return validUntil;
+    }
+    
 }

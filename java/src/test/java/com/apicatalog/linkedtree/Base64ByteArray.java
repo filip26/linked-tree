@@ -1,13 +1,12 @@
-package com.apicatalog.linkedtree.jsonld;
+package com.apicatalog.linkedtree;
 
 import java.util.Base64;
 
-import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.literal.ByteArrayValue;
 
-class Base64ByteArray implements ByteArrayValue {
+public class Base64ByteArray implements ByteArrayValue {
 
-    static String TYPE = "https://test/base64array";
+    public static String TYPE = "https://test/base64array";
 
     String value;
     byte[] byteArray;

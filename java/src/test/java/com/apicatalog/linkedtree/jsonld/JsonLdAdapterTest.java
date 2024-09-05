@@ -22,7 +22,9 @@ import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
+import com.apicatalog.linkedtree.Base64ByteArray;
 import com.apicatalog.linkedtree.LinkedTree;
+import com.apicatalog.linkedtree.VerifiableCredential;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeWriter;
 import com.apicatalog.linkedtree.literal.ByteArrayValue;
@@ -100,25 +102,25 @@ class JsonLdAdapterTest {
 
         assertNotNull(vc);
 
-        assertEquals("urn:uuid:58172aac-d8ba-11ed-83dd-0b3aef56cc33", vc.id.uri());
+        assertEquals("urn:uuid:58172aac-d8ba-11ed-83dd-0b3aef56cc33", vc.id().uri());
 
         assertEquals(new HashSet<>(Arrays.asList(new String[] {
                 "https://www.w3.org/2018/credentials#VerifiableCredential",
                 "https://www.w3.org/ns/credentials/examples#AlumniCredential"
         })), vc.type());
 
-        assertEquals(1, vc.name.size());
-        assertEquals("Alumni Credential", vc.name.single().lexicalValue());
-        assertNull(vc.name.single().language());
+        assertEquals(1, vc.name().size());
+        assertEquals("Alumni Credential", vc.name().single().lexicalValue());
+        assertNull(vc.name().single().language());
 
-        assertEquals(1, vc.name.strings().size());
-        assertEquals(1, vc.name.langCodes().size());
+        assertEquals(1, vc.name().strings().size());
+        assertEquals(1, vc.name().langCodes().size());
 
-        assertNotNull(vc.description);
+        assertNotNull(vc.description());
 
-        assertEquals(Instant.parse("2023-01-01T00:00:00Z"), vc.validFrom);
+        assertEquals(Instant.parse("2023-01-01T00:00:00Z"), vc.validFrom());
 
-        assertNull(vc.validUntil);
+        assertNull(vc.validUntil());
 
         assertEquals(1, vc.subject().size());
 
