@@ -10,10 +10,11 @@ import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
+import com.apicatalog.linkedtree.type.Type;
 
 public record GenericTree(
         Link id,
-        Collection<String> type,
+        Type type,
         Map<String, LinkedContainer> entries,
         Collection<LinkedNode> nodes,
         Map<String, Link> linkMap,
@@ -22,11 +23,11 @@ public record GenericTree(
         Map<Integer, Collection<ProcessingInstruction>> ops) implements LinkedTree {
 
     public static GenericTree of(Collection<LinkedNode> nodes, Map<String, Link> links, Collection<LinkedTree> subtrees, LinkedTree root,Map<Integer, Collection<ProcessingInstruction>> opsMap) {
-        return new GenericTree(null, Collections.emptySet(), Collections.emptyMap(), nodes, links, subtrees, root, opsMap);
+        return new GenericTree(null, Type.EMPTY, Collections.emptyMap(), nodes, links, subtrees, root, opsMap);
     }
 
     public static GenericTree of(LinkedNode node, Map<String, Link> links, Collection<LinkedTree> subtrees, LinkedTree root, Map<Integer, Collection<ProcessingInstruction>> opsMap) {
-        return new GenericTree(null, Collections.emptySet(), Collections.emptyMap(), List.of(node), links, subtrees, root, opsMap);
+        return new GenericTree(null, Type.EMPTY, Collections.emptyMap(), List.of(node), links, subtrees, root, opsMap);
     }
     
     @Override

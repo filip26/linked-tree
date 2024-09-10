@@ -7,6 +7,7 @@ import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.link.Link;
+import com.apicatalog.linkedtree.type.Type;
 
 public record ImmutableReference(
         Link id,
@@ -14,8 +15,8 @@ public record ImmutableReference(
         ) implements LinkedFragment {
 
     @Override
-    public Collection<String> type() {
-        return Collections.emptySet();
+    public Type type() {
+        return Type.EMPTY;
     }
 
     @Override

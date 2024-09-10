@@ -12,10 +12,11 @@ import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
+import com.apicatalog.linkedtree.type.Type;
 
 public record SingleReferenceContainer(
         Link id,
-        Type containerType,
+        ContainerType containerType,
         LinkedTree root,
         Map<Integer, Collection<ProcessingInstruction>> ops) implements LinkedFragment, LinkedContainer {
 
@@ -30,8 +31,8 @@ public record SingleReferenceContainer(
     }
 
     @Override
-    public Collection<String> type() {
-        return Collections.emptySet();
+    public Type type() {
+        return Type.EMPTY;
     }
 
     @Override

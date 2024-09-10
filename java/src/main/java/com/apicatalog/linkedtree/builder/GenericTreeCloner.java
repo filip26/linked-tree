@@ -25,8 +25,10 @@ import com.apicatalog.linkedtree.primitive.GenericTree;
 import com.apicatalog.linkedtree.traversal.DepthFirstSearch;
 import com.apicatalog.linkedtree.traversal.NodeConsumer;
 import com.apicatalog.linkedtree.traversal.NodeSelector;
+import com.apicatalog.linkedtree.type.AdaptableType;
+import com.apicatalog.linkedtree.type.Type;
 
-public class GenericTreeBuilder implements NodeConsumer<LinkedNode>, NodeSelector<LinkedNode> {
+public class GenericTreeCloner implements NodeConsumer<LinkedNode>, NodeSelector<LinkedNode> {
 
     protected final LinkedTree sourceTree;
 
@@ -36,7 +38,7 @@ public class GenericTreeBuilder implements NodeConsumer<LinkedNode>, NodeSelecto
 
     protected NodeSelector<LinkedNode> nodeSelector;
 
-    public GenericTreeBuilder(LinkedTree source) {
+    public GenericTreeCloner(LinkedTree source) {
         this.sourceTree = source;
         this.nodeStack = null;
         this.clonedTrees = null;
@@ -128,16 +130,20 @@ public class GenericTreeBuilder implements NodeConsumer<LinkedNode>, NodeSelecto
                                     Function.identity(),
                                     MutableLink::of));
 
+            var types = source.asTree().type().isEmpty()
+                    ? Type.EMPTY
+                    : AdaptableType.of(source.asTree().type().stream().toList());
+
+            final Map<String, LinkedContainer> treeMeta = source.asFragment().terms().isEmpty()
+                    ? Collections.emptyMap()
+                    : new LinkedHashMap<>(source.asFragment().terms().size());
+
             var tree = new GenericTree(
                     cloneLink(source.asTree().id()),
 
-                    source.asTree().type().isEmpty()
-                            ? Collections.emptySet()
-                            : Collections.unmodifiableCollection(source.asTree().type()),
+                    types,
 
-                    source.asFragment().terms().isEmpty()
-                            ? Collections.emptyMap()
-                            : new LinkedHashMap<>(source.asFragment().terms().size()),
+                    treeMeta,
 
                     source.asContainer().nodes().isEmpty()
                             ? Collections.emptyList()
@@ -151,6 +157,10 @@ public class GenericTreeBuilder implements NodeConsumer<LinkedNode>, NodeSelecto
 
                     root,
                     cloneOps(source.asContainer()));
+
+            if (types instanceof AdaptableType adaptableType) {
+                adaptableType.node(tree);
+            }
 
             clonedTrees.push(tree);
 
@@ -166,18 +176,26 @@ public class GenericTreeBuilder implements NodeConsumer<LinkedNode>, NodeSelecto
                     cloneOps(source.asContainer()));
 
         } else if (source.isFragment()) {
-            return new GenericFragment(
+
+            var types = source.asFragment().type().isEmpty()
+                    ? Type.EMPTY
+                    : AdaptableType.of(source.asFragment().type().stream().toList());
+
+            var fragment = new GenericFragment(
                     cloneLink(source.asFragment().id()),
 
-                    source.asFragment().type().isEmpty()
-                            ? Collections.emptySet()
-                            : Collections.unmodifiableCollection(source.asFragment().type()),
-
+                    types,
+                    
                     source.asFragment().terms().isEmpty()
                             ? Collections.emptyMap()
                             : new LinkedHashMap<>(source.asFragment().terms().size()),
-
                     root);
+
+            if (types instanceof AdaptableType adaptableType) {
+                adaptableType.node(fragment);
+            }
+
+            return fragment;
 
         } else if (source.isLiteral()) {
             if (source.asLiteral() instanceof LangString langString) {

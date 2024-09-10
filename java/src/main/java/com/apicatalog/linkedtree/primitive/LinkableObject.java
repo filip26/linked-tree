@@ -10,6 +10,7 @@ import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.reader.LinkedFragmentReader;
+import com.apicatalog.linkedtree.type.Type;
 
 /**
  * Allows to wrap a custom instance that does not inherit {@link LinkedNode} but
@@ -18,7 +19,7 @@ import com.apicatalog.linkedtree.reader.LinkedFragmentReader;
  */
 public record LinkableObject(
         Link id,
-        Collection<String> type,
+        Type type,
         Map<String, LinkedContainer> entries,
         LinkedTree root,
         Linkable linkable) implements LinkedFragment {
@@ -42,15 +43,5 @@ public record LinkableObject(
     @Override
     public Linkable cast() {
         return linkable;
-    }
-
-    @Override
-    public Link id() {
-        return id;
-    }
-
-    @Override
-    public Collection<String> type() {
-        return type;
     }
 }

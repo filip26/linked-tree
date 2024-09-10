@@ -11,14 +11,14 @@ public interface LinkedContainer extends LinkedNode, Iterable<LinkedNode> {
     public static LinkedContainer EMPTY = new LinkedContainer() {
     };
 
-    public enum Type {
+    public enum ContainerType {
         OrderedList,
         UnorderedSet,
         Tree
     };
 
-    default Type containerType() {
-        return Type.UnorderedSet;
+    default ContainerType containerType() {
+        return ContainerType.UnorderedSet;
     }
 
     default Collection<LinkedNode> nodes() {

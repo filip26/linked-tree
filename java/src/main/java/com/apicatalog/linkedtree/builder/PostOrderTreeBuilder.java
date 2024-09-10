@@ -4,21 +4,29 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Stack;
 
 import com.apicatalog.linkedtree.LinkedContainer;
-import com.apicatalog.linkedtree.LinkedContainer.Type;
+import com.apicatalog.linkedtree.LinkedContainer.ContainerType;
+import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.adapter.resolver.FragmentAdapterResolver;
+import com.apicatalog.linkedtree.lang.ImmutableLangString;
+import com.apicatalog.linkedtree.lang.LangString.LanguageDirectionType;
 import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.link.MutableLink;
+import com.apicatalog.linkedtree.literal.ImmutableLiteral;
+import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 import com.apicatalog.linkedtree.primitive.GenericContainer;
 import com.apicatalog.linkedtree.primitive.GenericFragment;
 import com.apicatalog.linkedtree.primitive.GenericTree;
 import com.apicatalog.linkedtree.reader.LinkedLiteralReader;
 import com.apicatalog.linkedtree.traversal.NodeConsumer;
+import com.apicatalog.linkedtree.type.AdaptableType;
+import com.apicatalog.linkedtree.type.Type;
 
 public class PostOrderTreeBuilder<T> implements NodeConsumer<T> {
 
@@ -53,14 +61,22 @@ public class PostOrderTreeBuilder<T> implements NodeConsumer<T> {
             String id,
             Collection<String> type,
             int propertiesCapacity,
-            int nodesCapacity) {
+            int nodesCapacity,
+            Collection<ProcessingInstruction> ops) {
+        nodeStack.push(mutableTree(id, type, propertiesCapacity, nodesCapacity, ops));
         return this;
     }
 
     public PostOrderTreeBuilder<T> fragment(
             String id,
             Collection<String> type,
-            int capacity) {
+            int capacity,
+            Collection<ProcessingInstruction> ops) {
+        nodeStack.push(mutableFragment(
+                id,
+                type,
+                capacity,
+                ops));
         return this;
     }
 
@@ -77,11 +93,14 @@ public class PostOrderTreeBuilder<T> implements NodeConsumer<T> {
             return this;
         }
 
-        nodeStack.push(mutableContainer(Type.UnorderedSet, capacity));
+        nodeStack.push(mutableContainer(ContainerType.UnorderedSet, capacity));
         return this;
     }
 
     public PostOrderTreeBuilder<T> list(int capacity) {
+        nodeStack.push(mutableContainer(
+                LinkedContainer.ContainerType.OrderedList,
+                capacity));
         return this;
     }
 
@@ -133,10 +152,9 @@ public class PostOrderTreeBuilder<T> implements NodeConsumer<T> {
             nodeStack.pop();
             nodeStack.push(child);
             return this;
-
         }
 
-        if (child.isContainer() && LinkedContainer.Type.OrderedList == child.asContainer().containerType()) {
+        if (child.isContainer() && LinkedContainer.ContainerType.OrderedList == child.asContainer().containerType()) {
             nodeStack.pop();
             nodeStack.push(child);
             return this;
@@ -144,7 +162,7 @@ public class PostOrderTreeBuilder<T> implements NodeConsumer<T> {
         }
 
         nodeStack.pop();
-        parent = nodeStack.push(mutableContainer(Type.UnorderedSet, 1));
+        parent = nodeStack.push(mutableContainer(ContainerType.UnorderedSet, 1));
         ((GenericContainer) parent.asContainer()).nodes().add(child);
         return this;
     }
@@ -166,7 +184,7 @@ public class PostOrderTreeBuilder<T> implements NodeConsumer<T> {
                 : trees.peek();
     }
 
-    public GenericContainer mutableContainer(LinkedContainer.Type type, int nodes) {
+    private GenericContainer mutableContainer(LinkedContainer.ContainerType type, int nodes) {
         return new GenericContainer(
                 type,
                 nodes <= 0
@@ -176,13 +194,161 @@ public class PostOrderTreeBuilder<T> implements NodeConsumer<T> {
                 new HashMap<>());
     }
 
+    protected void pi(Collection<ProcessingInstruction> ops) {
+
+        if (nodeStack.peek() == null) {
+            nodeStack.pop();
+            nodeStack.push(mutableContainer(ContainerType.UnorderedSet, 1));
+        }
+
+        if (nodeStack.peek() instanceof GenericTree tree) {
+            tree.ops().put(tree.nodes().size() + 1, ops);
+
+        } else if (nodeStack.peek() instanceof GenericContainer container) {
+            container.ops().put(container.nodes().size() + 1, ops);
+        }
+    }
+
+    private GenericFragment mutableFragment(
+            String id,
+            Collection<String> type,
+            int properties,
+            Collection<ProcessingInstruction> ops) {
+
+        var types = type.isEmpty()
+                ? Type.EMPTY
+                : AdaptableType.of(type);
+
+        pi(ops);
+
+        var fragment = new GenericFragment(
+                cloneLink(id),
+
+                types,
+
+                properties <= 0
+                        ? Collections.emptyMap()
+                        : new LinkedHashMap<>(properties),
+
+                root());
+
+        if (types instanceof AdaptableType adaptableType) {
+            adaptableType.node(fragment);
+        }
+
+        return fragment;
+
+    }
+
+    protected PostOrderTreeBuilder<T> literal(
+            LinkedLiteral literal) {
+        nodeStack.push(literal);
+        return this;
+    }
+
+    protected PostOrderTreeBuilder<T> immutableLangString(
+            String value,
+            String language,
+            LanguageDirectionType direction,
+            Collection<ProcessingInstruction> ops) {
+        pi(ops);
+        nodeStack.push(new ImmutableLangString(value, language, direction, root()));
+        return this;
+    }
+
+    protected PostOrderTreeBuilder<T> immutableLiteral(
+            String value,
+            String datatype,
+            Collection<ProcessingInstruction> ops) {
+        pi(ops);
+        nodeStack.push(new ImmutableLiteral(value, datatype, root()));
+        return this;
+    }
+
+    private GenericTree mutableTree(
+            String id,
+            Collection<String> type,
+            int properties,
+            int nodes,
+            Collection<ProcessingInstruction> ops) {
+
+        var treeOps = new HashMap<Integer, Collection<ProcessingInstruction>>();
+
+        if (!ops.isEmpty()) {
+            treeOps.put(0, ops);
+        }
+
+        // clone links
+//        final Map<String, Link> links = source.asTree().links().isEmpty()
+//                ? Collections.emptyMap()
+//                : source.asTree().links()
+//                        .stream()
+//                        .map(Link::uri)
+//                        .collect(Collectors.toMap(
+//                                Function.identity(),
+//                                MutableLink::of));
+
+        var types = type.isEmpty()
+                ? Type.EMPTY
+                : AdaptableType.of(type);
+
+        var tree = new GenericTree(
+                cloneLink(id),
+
+                types,
+
+                properties <= 0
+                        ? Collections.emptyMap()
+                        : new LinkedHashMap<>(properties),
+
+                nodes <= 0
+                        ? Collections.emptyList()
+                        : new ArrayList<>(nodes),
+
+                // links
+                new HashMap<>(),
+                // subtrees
+                new ArrayList<>(),
+                root(),
+                treeOps);
+
+        if (types instanceof AdaptableType adaptableType) {
+            adaptableType.node(tree);
+        }
+        
+        trees.push(tree);
+        return tree;
+    }
+
+//        // initialize root
+//        if (trees.isEmpty()) {
+////            final GenericTree tree = treeInstance(switch (source.getValueType()) {
+////            case OBJECT -> source.asJsonObject();
+////            case ARRAY -> source.asJsonArray();
+////            //TODO add a check, and if a root is not provided, create one, adaptive approach
+////            default -> throw new IllegalArgumentException("An uknown root type, expected an object or an array, but got [" + source.getValueType() + "]");
+////            });
+////            
+//        }
+//        
+//        switch (source.getValueType()) {
+//        case OBJECT -> clone(source.asJsonObject());
+//        case ARRAY -> clone(source.asJsonArray());
+//        
+//        }
+//        
+//        
+//
+//        return null;
+//    }
+
     protected LinkedTree root() {
         return trees.isEmpty()
                 ? null
                 : trees.peek();
     }
 
-    protected Link cloneLink(String uri) {
+    private Link cloneLink(String uri) {
         if (uri == null) {
             return null;
         }
@@ -201,5 +367,4 @@ public class PostOrderTreeBuilder<T> implements NodeConsumer<T> {
         }
         return link;
     }
-
 }

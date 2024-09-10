@@ -3,6 +3,7 @@ package com.apicatalog.linkedtree;
 import java.util.Collection;
 
 import com.apicatalog.linkedtree.link.Link;
+import com.apicatalog.linkedtree.type.Type;
 
 public interface LinkedFragment extends LinkedNode {
 
@@ -12,7 +13,7 @@ public interface LinkedFragment extends LinkedNode {
      */
     Link id();
 
-    Collection<String> type();
+    Type type();
 
     Collection<String> terms();
 

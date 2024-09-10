@@ -128,7 +128,7 @@ public class NodeDebugWriter {
         }
         if (fragment.type() != null && !fragment.type().isEmpty()) {
             print("type: ")
-                    .println(fragment.type());
+                    .println(fragment.type().stream().toList());
         }
         if (ops != null && !ops.isEmpty()) {
             print("pi: ")

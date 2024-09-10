@@ -9,6 +9,7 @@ import com.apicatalog.linkedtree.builder.TreeBuilderContext;
 import com.apicatalog.linkedtree.lang.LangStringSelector;
 import com.apicatalog.linkedtree.lang.LanguageMap;
 import com.apicatalog.linkedtree.link.Link;
+import com.apicatalog.linkedtree.type.Type;
 import com.apicatalog.linkedtree.xsd.XsdDateTime;
 
 public class VerifiableCredential implements LinkedFragment {
@@ -24,17 +25,17 @@ public class VerifiableCredential implements LinkedFragment {
     protected LinkedContainer subject;
 
     protected Link id;
-    protected Collection<String> type;
+    protected Type type;
     protected Map<String, LinkedContainer> properties;
     protected Supplier<LinkedTree> treeSupplier; 
 
-    protected VerifiableCredential(Link id, Collection<String> type, Map<String, LinkedContainer> properties) {
+    protected VerifiableCredential(Link id, Type type, Map<String, LinkedContainer> properties) {
         this.id = id;
         this.type = type;
         this.properties = properties;
     }
 
-    public static VerifiableCredential of(Link id, Collection<String> type, Map<String, LinkedContainer> properties, TreeBuilderContext ctx) {
+    public static VerifiableCredential of(Link id, Type type, Map<String, LinkedContainer> properties, TreeBuilderContext ctx) {
         return setup(new VerifiableCredential(id, type, properties), properties, ctx);
     }
 
@@ -87,7 +88,7 @@ public class VerifiableCredential implements LinkedFragment {
     }
 
     @Override
-    public Collection<String> type() {
+    public Type type() {
         return type;
     }
 

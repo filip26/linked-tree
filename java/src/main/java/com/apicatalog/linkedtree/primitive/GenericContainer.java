@@ -11,7 +11,7 @@ import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 
 public record GenericContainer(
-        Type containerType,
+        ContainerType containerType,
         Collection<LinkedNode> nodes,
         LinkedTree root,
         Map<Integer, Collection<ProcessingInstruction>> ops) implements LinkedContainer {
@@ -26,5 +26,5 @@ public record GenericContainer(
         return ops != null
                 ? ops.getOrDefault(processingOrder, Collections.emptyList())
                 : Collections.emptyList();
-    }
+    }    
 }

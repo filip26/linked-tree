@@ -80,7 +80,7 @@ public class JsonLdTreeWriter {
         }
 
         if (fragment.type() != null && !fragment.type().isEmpty()) {
-            builder.add("@type", Json.createArrayBuilder(fragment.type()));
+            builder.add("@type", Json.createArrayBuilder(fragment.type().stream().toList()));
         }
 
         ops.stream()
@@ -105,7 +105,7 @@ public class JsonLdTreeWriter {
             array.add(writeNode(node, container.pi(processingOrder++)));
         }
 
-        if (LinkedContainer.Type.OrderedList.equals(container.containerType())) {
+        if (LinkedContainer.ContainerType.OrderedList.equals(container.containerType())) {
 //            array = Json.createArrayBuilder()
 //                    .add(
             return Json.createObjectBuilder()
@@ -130,7 +130,7 @@ public class JsonLdTreeWriter {
             array.add(writeNode(node, container.pi(processingOrder++)));
         }
 
-        if (LinkedContainer.Type.OrderedList.equals(container.containerType())) {
+        if (LinkedContainer.ContainerType.OrderedList.equals(container.containerType())) {
             array = Json.createArrayBuilder()
                     .add(Json.createObjectBuilder()
                             .add(JsonLdKeyword.LIST, array));

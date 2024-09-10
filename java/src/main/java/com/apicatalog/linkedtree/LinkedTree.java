@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 import com.apicatalog.linkedtree.link.Link;
+import com.apicatalog.linkedtree.type.Type;
 
 public interface LinkedTree extends LinkedFragment, LinkedContainer, LinkedNode {
 
@@ -15,8 +16,8 @@ public interface LinkedTree extends LinkedFragment, LinkedContainer, LinkedNode 
         }
 
         @Override
-        public Collection<String> type() {
-            return Collections.emptySet();
+        public Type type() {
+            return Type.EMPTY;
         }
 
         @Override
@@ -65,7 +66,7 @@ public interface LinkedTree extends LinkedFragment, LinkedContainer, LinkedNode 
     Collection<LinkedTree> subtrees();
     
     @Override
-    default Type containerType() {
-        return Type.Tree;
+    default ContainerType containerType() {
+        return ContainerType.Tree;
     }
 }

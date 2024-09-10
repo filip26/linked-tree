@@ -9,10 +9,11 @@ import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.link.Link;
+import com.apicatalog.linkedtree.type.Type;
 
 public record GenericFragment(
         Link id,
-        Collection<String> type,
+        Type type,
         Map<String, LinkedContainer> entries,
         LinkedTree root) implements LinkedFragment {
 

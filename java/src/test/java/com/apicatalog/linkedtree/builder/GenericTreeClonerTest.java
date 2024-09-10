@@ -15,16 +15,13 @@ import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import com.apicatalog.linkedtree.Base64ByteArray;
 import com.apicatalog.linkedtree.LinkedTree;
-import com.apicatalog.linkedtree.VerifiableCredential;
 import com.apicatalog.linkedtree.jsonld.JsonLdComparison;
 import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeWriter;
 import com.apicatalog.linkedtree.reader.LinkedReaderError;
 import com.apicatalog.linkedtree.traversal.NodeSelector.ProcessingPolicy;
-import com.apicatalog.linkedtree.xsd.XsdDateTime;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -35,13 +32,9 @@ import jakarta.json.JsonWriterFactory;
 import jakarta.json.stream.JsonGenerator;
 
 @TestMethodOrder(OrderAnnotation.class)
-class GenericTreeBuilderTest {
+class GenericTreeClonerTest {
 
-    static JsonLdTreeReader READER = JsonLdTreeReader.create()
-            .with(VerifiableCredential.TYPE, VerifiableCredential::of)
-            .with(Base64ByteArray.TYPE, Base64ByteArray::of)
-            .with(XsdDateTime.TYPE, XsdDateTime::of)
-            .build();
+    static JsonLdTreeReader READER = JsonLdTreeReader.create().build();
 
     static JsonLdTreeWriter WRITER = new JsonLdTreeWriter();
 
@@ -57,12 +50,7 @@ class GenericTreeBuilderTest {
 
         assertNotNull(tree);
 
-        VerifiableCredential vc = tree
-                .single(VerifiableCredential.class);
-
-        assertNotNull(vc);
-
-        GenericTreeBuilder builder = new GenericTreeBuilder(tree);
+        GenericTreeCloner builder = new GenericTreeCloner(tree);
         var clone = builder.deepClone(
                 (node, indexOrder, indexTerm, depth) -> "https://w3id.org/security#proof".equals(indexTerm)
                         ? ProcessingPolicy.Drop
