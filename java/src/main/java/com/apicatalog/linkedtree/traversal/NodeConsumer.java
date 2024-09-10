@@ -1,5 +1,7 @@
 package com.apicatalog.linkedtree.traversal;
 
+import com.apicatalog.linkedtree.LinkedTreeError;
+
 @FunctionalInterface
 public interface NodeConsumer<T> {
 
@@ -7,5 +9,5 @@ public interface NodeConsumer<T> {
             T node,
             int indexOrder,
             String indexTerm,
-            int depth);
+            int depth) throws LinkedTreeError;
 }

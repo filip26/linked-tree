@@ -32,7 +32,7 @@ public record SingleReferenceContainer(
 
     @Override
     public Type type() {
-        return Type.EMPTY;
+        return Type.empty();
     }
 
     @Override

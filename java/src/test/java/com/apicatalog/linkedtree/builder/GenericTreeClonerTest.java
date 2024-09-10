@@ -16,11 +16,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import com.apicatalog.linkedtree.LinkedTree;
+import com.apicatalog.linkedtree.LinkedTreeError;
 import com.apicatalog.linkedtree.jsonld.JsonLdComparison;
 import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeWriter;
-import com.apicatalog.linkedtree.reader.LinkedReaderError;
 import com.apicatalog.linkedtree.traversal.NodeSelector.ProcessingPolicy;
 
 import jakarta.json.Json;
@@ -39,7 +39,7 @@ class GenericTreeClonerTest {
     static JsonLdTreeWriter WRITER = new JsonLdTreeWriter();
 
     @Test
-    void genericClone() throws IOException, URISyntaxException, LinkedReaderError {
+    void genericClone() throws IOException, URISyntaxException, LinkedTreeError {
 
         JsonArray input = resource("custom/signed-vc-1.jsonld");
 

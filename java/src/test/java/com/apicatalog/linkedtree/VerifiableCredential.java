@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.function.Supplier;
 
-import com.apicatalog.linkedtree.builder.TreeBuilderContext;
 import com.apicatalog.linkedtree.lang.LangStringSelector;
 import com.apicatalog.linkedtree.lang.LanguageMap;
 import com.apicatalog.linkedtree.link.Link;
@@ -35,11 +34,11 @@ public class VerifiableCredential implements LinkedFragment {
         this.properties = properties;
     }
 
-    public static VerifiableCredential of(Link id, Type type, Map<String, LinkedContainer> properties, TreeBuilderContext ctx) {
-        return setup(new VerifiableCredential(id, type, properties), properties, ctx);
+    public static VerifiableCredential of(Link id, Type type, Map<String, LinkedContainer> properties) {
+        return setup(new VerifiableCredential(id, type, properties), properties);
     }
 
-    protected static VerifiableCredential setup(VerifiableCredential credential, Map<String, LinkedContainer> properties, TreeBuilderContext ctx) {
+    protected static VerifiableCredential setup(VerifiableCredential credential, Map<String, LinkedContainer> properties) {
 
         credential.name = getLangMap(properties, "https://schema.org/name");
         credential.description = getLangMap(properties, "https://schema.org/description");

@@ -3,11 +3,12 @@ package com.apicatalog.linkedtree.traversal;
 import java.util.function.Consumer;
 
 import com.apicatalog.linkedtree.LinkedNode;
+import com.apicatalog.linkedtree.LinkedTreeError;
 import com.apicatalog.linkedtree.traversal.NodeSelector.ProcessingPolicy;
 
 public class DepthFirstSearch {
 
-    public static void postOrder(NodeSelector<LinkedNode> selector, LinkedNode source, NodeConsumer<LinkedNode> consumer) {
+    public static void postOrder(NodeSelector<LinkedNode> selector, LinkedNode source, NodeConsumer<LinkedNode> consumer) throws LinkedTreeError {
         postOrder(
                 selector,
                 source,
@@ -17,7 +18,7 @@ public class DepthFirstSearch {
                 consumer);
     }
 
-    public static void postOrder(LinkedNode source, NodeConsumer<LinkedNode> consumer) {
+    public static void postOrder(LinkedNode source, NodeConsumer<LinkedNode> consumer) throws LinkedTreeError {
         postOrder((LinkedNode node,
                 int indexOrder,
                 String indexTerm,
@@ -26,12 +27,12 @@ public class DepthFirstSearch {
                 consumer);
     }
 
-    public static void postOrder(String term, LinkedNode source, Consumer<LinkedNode> consumer) {
+    public static void postOrder(String term, LinkedNode source, Consumer<LinkedNode> consumer) throws LinkedTreeError {
         postOrder(source, (node, indexOrder, indexTerm, depth) -> consumer.accept(node));
 
     }
 
-    public static void postOrder(String term, LinkedNode source, NodeConsumer<LinkedNode> consumer) {
+    public static void postOrder(String term, LinkedNode source, NodeConsumer<LinkedNode> consumer) throws LinkedTreeError {
         postOrder((LinkedNode node,
                 int indexOrder,
                 String indexTerm,
@@ -56,7 +57,7 @@ public class DepthFirstSearch {
             final int order,
             final String term,
             final int depth,
-            final NodeConsumer<LinkedNode> consumer) {
+            final NodeConsumer<LinkedNode> consumer) throws LinkedTreeError {
 
         final ProcessingPolicy policy = selector.test(source, order, term, depth);
 
@@ -97,7 +98,7 @@ public class DepthFirstSearch {
         }
     }
 
-    public static void preOrder(NodeSelector<LinkedNode> selector, LinkedNode source, NodeConsumer<LinkedNode> consumer) {
+    public static void preOrder(NodeSelector<LinkedNode> selector, LinkedNode source, NodeConsumer<LinkedNode> consumer) throws LinkedTreeError {
         preOrder(
                 selector,
                 source,
@@ -107,7 +108,7 @@ public class DepthFirstSearch {
                 consumer);
     }
 
-    public static void preOrder(LinkedNode source, NodeConsumer<LinkedNode> consumer) {
+    public static void preOrder(LinkedNode source, NodeConsumer<LinkedNode> consumer) throws LinkedTreeError {
         preOrder((LinkedNode node,
                 int indexOrder,
                 String indexTerm,
@@ -116,14 +117,14 @@ public class DepthFirstSearch {
                 consumer);
     }
 
-    public static void preOrder(String term, LinkedNode source, Consumer<LinkedNode> consumer) {
+    public static void preOrder(String term, LinkedNode source, Consumer<LinkedNode> consumer) throws LinkedTreeError {
         preOrder(source, (node, indexOrder, indexTerm, depth) -> consumer.accept(node));
     }
 
     public static void preOrder(
             final String term,
             final LinkedNode source,
-            final NodeConsumer<LinkedNode> consumer) {
+            final NodeConsumer<LinkedNode> consumer) throws LinkedTreeError {
         preOrder((LinkedNode node,
                 int indexOrder,
                 String indexTerm,
@@ -148,7 +149,7 @@ public class DepthFirstSearch {
             final int order,
             final String term,
             final int depth,
-            final NodeConsumer<LinkedNode> consumer) {
+            final NodeConsumer<LinkedNode> consumer) throws LinkedTreeError {
 
         final ProcessingPolicy policy = selector.test(source, order, term, depth);
 

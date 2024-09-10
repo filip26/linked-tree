@@ -24,11 +24,11 @@ import org.junit.jupiter.api.TestMethodOrder;
 
 import com.apicatalog.linkedtree.Base64ByteArray;
 import com.apicatalog.linkedtree.LinkedTree;
+import com.apicatalog.linkedtree.LinkedTreeError;
 import com.apicatalog.linkedtree.VerifiableCredential;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeWriter;
 import com.apicatalog.linkedtree.literal.ByteArrayValue;
-import com.apicatalog.linkedtree.reader.LinkedReaderError;
 import com.apicatalog.linkedtree.xsd.XsdDateTime;
 
 import jakarta.json.Json;
@@ -52,7 +52,7 @@ class JsonLdAdapterTest {
     static JsonLdTreeWriter WRITER = new JsonLdTreeWriter();
 
     @Test
-    void base64ByteArray() throws IOException, URISyntaxException, LinkedReaderError {
+    void base64ByteArray() throws IOException, URISyntaxException, LinkedTreeError {
 
         JsonArray input = resource("custom/base64-1.jsonld");
         JsonArray output = resource("custom/base64-2.jsonld");
@@ -86,7 +86,7 @@ class JsonLdAdapterTest {
     }
 
     @Test
-    void verifiableCredential() throws IOException, URISyntaxException, LinkedReaderError {
+    void verifiableCredential() throws IOException, URISyntaxException, LinkedTreeError {
 
         JsonArray input = resource("custom/signed-vc-1.jsonld");
 

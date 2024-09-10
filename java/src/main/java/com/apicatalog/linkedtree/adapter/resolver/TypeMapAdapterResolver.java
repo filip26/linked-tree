@@ -8,7 +8,6 @@ import java.util.Objects;
 
 import com.apicatalog.linkedtree.adapter.LinkedFragmentAdapter;
 import com.apicatalog.linkedtree.reader.LinkedFragmentReader;
-import com.apicatalog.linkedtree.selector.StringValueSelector;
 
 public record TypeMapAdapterResolver(
         Map<String, FragmentAdapterResolver> typeMap) implements FragmentAdapterResolver {
@@ -18,12 +17,12 @@ public record TypeMapAdapterResolver(
     }
 
     @Override
-    public LinkedFragmentAdapter resolve(String id, Collection<String> types, StringValueSelector stringSelector) {
+    public LinkedFragmentAdapter resolve(String id, Collection<String> types) {
         return typeMap.keySet()
                 .stream()
                 .filter(types::contains)
                 .map(typeMap::get)
-                .map(resolver -> resolver.resolve(id, types, stringSelector))
+                .map(resolver -> resolver.resolve(id, types))
                 .filter(Objects::nonNull)
                 .findFirst()
                 .orElse(null);
@@ -42,7 +41,7 @@ public record TypeMapAdapterResolver(
         }
 
         public Builder add(String type, LinkedFragmentAdapter adapter) {
-            return add(type, (id, types, stringSelector) -> adapter);
+            return add(type, (id, types) -> adapter);
         }
 
         public Builder add(String type, FragmentAdapterResolver resolver) {

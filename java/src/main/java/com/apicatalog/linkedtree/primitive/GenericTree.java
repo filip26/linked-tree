@@ -2,7 +2,6 @@ package com.apicatalog.linkedtree.primitive;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import com.apicatalog.linkedtree.LinkedContainer;
@@ -22,13 +21,13 @@ public record GenericTree(
         LinkedTree root,
         Map<Integer, Collection<ProcessingInstruction>> ops) implements LinkedTree {
 
-    public static GenericTree of(Collection<LinkedNode> nodes, Map<String, Link> links, Collection<LinkedTree> subtrees, LinkedTree root,Map<Integer, Collection<ProcessingInstruction>> opsMap) {
-        return new GenericTree(null, Type.EMPTY, Collections.emptyMap(), nodes, links, subtrees, root, opsMap);
-    }
-
-    public static GenericTree of(LinkedNode node, Map<String, Link> links, Collection<LinkedTree> subtrees, LinkedTree root, Map<Integer, Collection<ProcessingInstruction>> opsMap) {
-        return new GenericTree(null, Type.EMPTY, Collections.emptyMap(), List.of(node), links, subtrees, root, opsMap);
-    }
+//    public static GenericTree of(Collection<LinkedNode> nodes, Map<String, Link> links, Collection<LinkedTree> subtrees, LinkedTree root,Map<Integer, Collection<ProcessingInstruction>> opsMap) {
+//        return new GenericTree(null, Type.empty(), Collections.emptyMap(), nodes, links, subtrees, root, opsMap);
+//    }
+//
+//    public static GenericTree of(LinkedNode node, Map<String, Link> links, Collection<LinkedTree> subtrees, LinkedTree root, Map<Integer, Collection<ProcessingInstruction>> opsMap) {
+//        return new GenericTree(null, Type.empty(), Collections.emptyMap(), List.of(node), links, subtrees, root, opsMap);
+//    }
     
     @Override
     public Collection<String> terms() {

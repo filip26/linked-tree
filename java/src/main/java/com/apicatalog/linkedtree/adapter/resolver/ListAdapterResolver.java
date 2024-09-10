@@ -4,16 +4,15 @@ import java.util.Collection;
 import java.util.Objects;
 
 import com.apicatalog.linkedtree.adapter.LinkedFragmentAdapter;
-import com.apicatalog.linkedtree.selector.StringValueSelector;
 
 public record ListAdapterResolver(
         Collection<FragmentAdapterResolver> resolvers) implements FragmentAdapterResolver {
 
     @Override
-    public LinkedFragmentAdapter resolve(String id, Collection<String> types, StringValueSelector stringSelector) {
+    public LinkedFragmentAdapter resolve(String id, Collection<String> types) {
         return resolvers
                 .stream()
-                .map(resolver -> resolver.resolve(id, types, stringSelector))
+                .map(resolver -> resolver.resolve(id, types))
                 .filter(Objects::nonNull)
                 .findFirst()
                 .orElse(null);

@@ -2,6 +2,7 @@ package com.apicatalog.linkedtree.json;
 
 import java.util.function.Consumer;
 
+import com.apicatalog.linkedtree.LinkedTreeError;
 import com.apicatalog.linkedtree.traversal.NodeConsumer;
 import com.apicatalog.linkedtree.traversal.NodeSelector;
 import com.apicatalog.linkedtree.traversal.NodeSelector.ProcessingPolicy;
@@ -11,7 +12,7 @@ import jakarta.json.JsonValue.ValueType;
 
 public class JsonTreeSearch<T> {
 
-    public static void postOrder(NodeSelector<JsonValue> selector, JsonValue source, NodeConsumer<JsonValue> consumer) {
+    public static void postOrder(NodeSelector<JsonValue> selector, JsonValue source, NodeConsumer<JsonValue> consumer) throws LinkedTreeError {
         postOrder(
                 selector,
                 source,
@@ -21,7 +22,7 @@ public class JsonTreeSearch<T> {
                 consumer);
     }
 
-    public static void postOrder(JsonValue source, NodeConsumer<JsonValue> consumer) {
+    public static void postOrder(JsonValue source, NodeConsumer<JsonValue> consumer) throws LinkedTreeError {
         postOrder((JsonValue node,
                 int indexOrder,
                 String indexTerm,
@@ -30,7 +31,7 @@ public class JsonTreeSearch<T> {
                 consumer);
     }
 
-    public static void postOrder(String term, JsonValue source, Consumer<JsonValue> consumer) {
+    public static void postOrder(String term, JsonValue source, Consumer<JsonValue> consumer) throws LinkedTreeError {
         postOrder(source, (node, indexOrder, indexTerm, depth) -> consumer.accept(node));
 
     }
@@ -41,7 +42,7 @@ public class JsonTreeSearch<T> {
             final int order,
             final String term,
             final int depth,
-            final NodeConsumer<JsonValue> consumer) {
+            final NodeConsumer<JsonValue> consumer) throws LinkedTreeError {
 
         final ProcessingPolicy policy = selector.test(source, order, term, depth);
 

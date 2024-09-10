@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Stack;
 
 import com.apicatalog.linkedtree.LinkedTree;
+import com.apicatalog.linkedtree.LinkedTreeError;
 import com.apicatalog.linkedtree.adapter.resolver.FragmentAdapterResolver;
 import com.apicatalog.linkedtree.builder.PostOrderTreeBuilder;
 import com.apicatalog.linkedtree.reader.LinkedLiteralReader;
@@ -25,7 +26,7 @@ public abstract class JsonTreeReader extends PostOrderTreeBuilder<JsonValue> imp
 
     }
 
-    public LinkedTree read(JsonStructure source, NodeSelector<JsonValue> selector) {
+    public LinkedTree read(JsonStructure source, NodeSelector<JsonValue> selector) throws LinkedTreeError {
         nodeStack = new Stack<>();
         trees = new Stack<>();
 

@@ -9,15 +9,14 @@ public interface Link {
     String uri();
 
     /**
-     * All fragments using the same id found in a tree - never adapted
+     * All fragments using the same id found in a tree.
      * 
      * @return a collection of fragments in a tree
      */
     Collection<LinkedFragment> refs();
 
     /**
-     * A fragment composed of all {@link Link#refs()}, adapted if an appropriate
-     * adapter is found.
+     * A fragment composed of all {@link Link#refs()}.
      * 
      * @return a fragment
      */

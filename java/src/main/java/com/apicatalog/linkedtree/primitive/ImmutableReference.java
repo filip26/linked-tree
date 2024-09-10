@@ -16,7 +16,7 @@ public record ImmutableReference(
 
     @Override
     public Type type() {
-        return Type.EMPTY;
+        return Type.empty();
     }
 
     @Override
