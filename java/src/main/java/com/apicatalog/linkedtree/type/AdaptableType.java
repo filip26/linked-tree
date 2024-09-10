@@ -1,11 +1,10 @@
 package com.apicatalog.linkedtree.type;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import com.apicatalog.linkedtree.LinkedNode;
 
@@ -13,7 +12,7 @@ public class AdaptableType implements Type {
 
     protected final Map<String, TypeAdapter> type;
     protected LinkedNode node;
-    
+
     protected AdaptableType(Map<String, TypeAdapter> type) {
         this.type = type;
         this.node = null;
@@ -23,9 +22,9 @@ public class AdaptableType implements Type {
             Collection<String> type) {
         return new AdaptableType(
                 type.stream()
-                        .collect(Collectors.toMap(
-                                Function.identity(),
-                                null)));
+                        .collect(
+                                HashMap::new,
+                                (c, t) -> c.put(t, null), HashMap::putAll));
     }
 
     public void node(LinkedNode node) {
