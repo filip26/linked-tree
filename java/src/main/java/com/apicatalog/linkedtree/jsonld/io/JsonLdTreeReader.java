@@ -12,7 +12,7 @@ import java.util.Stack;
 
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.adapter.LinkedFragmentAdapter;
-import com.apicatalog.linkedtree.adapter.LinkedLiteralAdapter;
+import com.apicatalog.linkedtree.adapter.LiteralAdapter;
 import com.apicatalog.linkedtree.adapter.resolver.FragmentAdapterResolver;
 import com.apicatalog.linkedtree.adapter.resolver.TypeMapAdapterResolver;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
@@ -29,7 +29,7 @@ import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.link.MutableLink;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 import com.apicatalog.linkedtree.reader.LinkedFragmentReader;
-import com.apicatalog.linkedtree.reader.LinkedLiteralReader;
+import com.apicatalog.linkedtree.reader.LiteralReader;
 import com.apicatalog.linkedtree.traversal.NodeSelector;
 import com.apicatalog.linkedtree.xsd.XsdConstants;
 
@@ -44,11 +44,11 @@ import jakarta.json.JsonValue.ValueType;
 public class JsonLdTreeReader extends JsonTreeReader {
 
     protected FragmentAdapterResolver fragmentAdapterResolver;
-    protected Stack<Map<String, LinkedLiteralReader>> literalAdapters;
+    protected Stack<Map<String, LiteralReader>> literalAdapters;
 
     protected JsonLdTreeReader(
             FragmentAdapterResolver fragmentAdapterResolver,
-            Map<String, LinkedLiteralReader> literalAdapters) {
+            Map<String, LiteralReader> literalAdapters) {
         super(fragmentAdapterResolver, literalAdapters);
     }
 
@@ -517,7 +517,6 @@ public class JsonLdTreeReader extends JsonTreeReader {
 //        return adapt(null, types, properties, ctx);
 //    }
 
-
 //    protected LinkedFragmentAdapter adapter(MutableLink id, Collection<String> type, JsonObject jsonObject) {
 //
 ////      final StringValueSelector selector = (term) -> jsonObject.getString(term);
@@ -528,7 +527,6 @@ public class JsonLdTreeReader extends JsonTreeReader {
 //                (t) -> null);
 //
 //    }
-
 
     protected static MutableLink getOrCreate(String uri, Map<String, Link> links) {
 
@@ -614,14 +612,14 @@ public class JsonLdTreeReader extends JsonTreeReader {
             return;
         }
 
-        if (datatype == null) {
-            datatype = XsdConstants.STRING;
-        }
+        final String valueString = ((JsonString) value).getString();
 
-        String valueString = ((JsonString) value).getString();
+        if (datatype != null
+                && literalAdapters != null
+                && !literalAdapters.isEmpty()) {
 
-        if (literalAdapters != null && !literalAdapters.isEmpty()) {
-            final LinkedLiteralReader adapter = literalAdapters.peek().get(datatype);
+            final LiteralReader adapter = literalAdapters.peek().get(datatype);
+
             if (adapter != null) {
                 var pi = getPi(valueJsonObject, JsonLdKeyword.VALUE, JsonLdKeyword.TYPE);
                 if (pi != null) {
@@ -631,6 +629,10 @@ public class JsonLdTreeReader extends JsonTreeReader {
                 literal(adapter.read(valueString, root()));
                 return;
             }
+        }
+
+        if (datatype == null) {
+            datatype = XsdConstants.STRING;
         }
 
         if (XsdConstants.STRING.equals(datatype)) {
@@ -709,7 +711,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
     public static class Builder {
 
         protected TypeMapAdapterResolver.Builder fragmentMap;
-        protected Map<String, LinkedLiteralReader> literalMap;
+        protected Map<String, LiteralReader> literalMap;
 
         public Builder() {
             this.fragmentMap = new TypeMapAdapterResolver.Builder();
@@ -726,12 +728,12 @@ public class JsonLdTreeReader extends JsonTreeReader {
             return this;
         }
 
-        public Builder with(LinkedLiteralAdapter adapter) {
+        public Builder with(LiteralAdapter adapter) {
             this.literalMap.put(adapter.datatype(), adapter);
             return this;
         }
 
-        public Builder with(String datatype, LinkedLiteralReader reader) {
+        public Builder with(String datatype, LiteralReader reader) {
             this.literalMap.put(datatype, reader);
             return this;
         }

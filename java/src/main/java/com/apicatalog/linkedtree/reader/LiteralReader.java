@@ -4,9 +4,8 @@ import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.LinkedTree;
 
 @FunctionalInterface
-public interface LinkedLiteralReader {
+public interface LiteralReader {
 
-    //TODO type
     LinkedLiteral read(String value, LinkedTree root);
 
 }

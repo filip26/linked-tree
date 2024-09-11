@@ -10,7 +10,7 @@ public interface LinkedFragmentAdapter {
 
     LinkedFragmentReader reader();
 
-    default Collection<LinkedLiteralAdapter> literalAdapters() {
+    default Collection<LiteralAdapter> literalAdapters() {
         return Collections.emptyList();
     }
 }

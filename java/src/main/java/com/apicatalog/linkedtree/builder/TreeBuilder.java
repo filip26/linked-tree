@@ -27,23 +27,23 @@ import com.apicatalog.linkedtree.primitive.GenericContainer;
 import com.apicatalog.linkedtree.primitive.GenericFragment;
 import com.apicatalog.linkedtree.primitive.GenericTree;
 import com.apicatalog.linkedtree.reader.LinkedFragmentReader;
-import com.apicatalog.linkedtree.reader.LinkedLiteralReader;
+import com.apicatalog.linkedtree.reader.LiteralReader;
 import com.apicatalog.linkedtree.traversal.NodeConsumer;
 import com.apicatalog.linkedtree.type.AdaptableType;
 import com.apicatalog.linkedtree.type.Type;
 
-public class PostOrderTreeBuilder<T> implements NodeConsumer<T> {
+public class TreeBuilder<T> implements NodeConsumer<T> {
 
     protected FragmentAdapterResolver fragmentAdapterResolver;
-    protected Stack<Map<String, LinkedLiteralReader>> literalAdapters;
+    protected Stack<Map<String, LiteralReader>> literalAdapters;
 
     protected Stack<LinkedNode> nodeStack;
 
     protected Stack<LinkedTree> trees;
 
-    protected PostOrderTreeBuilder(
+    protected TreeBuilder(
             FragmentAdapterResolver fragmentAdapterResolver,
-            Map<String, LinkedLiteralReader> literalAdapters) {
+            Map<String, LiteralReader> literalAdapters) {
         this.fragmentAdapterResolver = fragmentAdapterResolver;
         this.literalAdapters = new Stack<>();
         this.literalAdapters.push(literalAdapters);
@@ -59,12 +59,13 @@ public class PostOrderTreeBuilder<T> implements NodeConsumer<T> {
         } else if (indexTerm != null) {
             bind(indexTerm);
 
+            // root is done
         } else {
-            links(trees.peek().links());
+            postTree(trees.peek());
         }
     }
 
-    public PostOrderTreeBuilder<T> tree(
+    public TreeBuilder<T> tree(
             String id,
             Collection<String> type,
             int propertiesCapacity,
@@ -74,7 +75,7 @@ public class PostOrderTreeBuilder<T> implements NodeConsumer<T> {
         return this;
     }
 
-    public PostOrderTreeBuilder<T> fragment(
+    public TreeBuilder<T> fragment(
             String id,
             Collection<String> type,
             int capacity,
@@ -87,7 +88,7 @@ public class PostOrderTreeBuilder<T> implements NodeConsumer<T> {
         return this;
     }
 
-    public PostOrderTreeBuilder<T> container(int capacity) {
+    public TreeBuilder<T> container(int capacity) {
 
         if (capacity == 0) {
             nodeStack.push(LinkedContainer.EMPTY);
@@ -104,14 +105,14 @@ public class PostOrderTreeBuilder<T> implements NodeConsumer<T> {
         return this;
     }
 
-    public PostOrderTreeBuilder<T> list(int capacity) {
+    public TreeBuilder<T> list(int capacity) {
         nodeStack.push(mutableContainer(
                 LinkedContainer.ContainerType.OrderedList,
                 capacity));
         return this;
     }
 
-    public PostOrderTreeBuilder<T> bind(String term) throws TreeBuilderError {
+    public TreeBuilder<T> bind(String term) throws TreeBuilderError {
 
         LinkedNode child = nodeStack.pop();
         if (child == null) {
@@ -133,7 +134,7 @@ public class PostOrderTreeBuilder<T> implements NodeConsumer<T> {
         return subtree(child);
     }
 
-    public PostOrderTreeBuilder<T> bind(int index) throws TreeBuilderError {
+    public TreeBuilder<T> bind(int index) throws TreeBuilderError {
 
         LinkedNode child = nodeStack.pop();
         if (child == null) {
@@ -174,24 +175,35 @@ public class PostOrderTreeBuilder<T> implements NodeConsumer<T> {
         return this;
     }
 
-    protected PostOrderTreeBuilder<T> subtree(LinkedNode child) throws TreeBuilderError {
+    protected TreeBuilder<T> subtree(LinkedNode child) throws TreeBuilderError {
         if (child.isTree()) {
-            var subtree = trees.pop();
-            trees.peek().subtrees().add(subtree);
-            links(subtree.links());
+            trees.pop();
+            trees.peek().subtrees().add(child.asTree());
+            postTree(child.asTree());
         }
         return this;
+    }
+
+    protected void postFragment(LinkedFragment fragment) throws TreeBuilderError {
+        // TODO types
+    }
+
+    protected void postTree(LinkedTree tree) throws TreeBuilderError {
+        links(tree.links());
+        postFragment(tree);
     }
 
     // process links
     protected void links(Collection<Link> links) throws TreeBuilderError {
         for (final Link link : links) {
             ((MutableLink) link).target(
-                    mutableFragment(
-                            (MutableLink) link,
-                            mergeTypes(link.refs()),
-                            merge(link.refs()),
-                            Collections.emptyList()));
+                    link.refs().size() == 1
+                            ? link.refs().iterator().next()
+                            : mutableFragment(
+                                    (MutableLink) link,
+                                    mergeTypes(link.refs()),
+                                    merge(link.refs()),
+                                    Collections.emptyList()));
         }
     }
 
@@ -337,13 +349,13 @@ public class PostOrderTreeBuilder<T> implements NodeConsumer<T> {
 
     }
 
-    protected PostOrderTreeBuilder<T> literal(
+    protected TreeBuilder<T> literal(
             LinkedLiteral literal) {
         nodeStack.push(literal);
         return this;
     }
 
-    protected PostOrderTreeBuilder<T> immutableLangString(
+    protected TreeBuilder<T> immutableLangString(
             String value,
             String language,
             LanguageDirectionType direction,
@@ -353,7 +365,7 @@ public class PostOrderTreeBuilder<T> implements NodeConsumer<T> {
         return this;
     }
 
-    protected PostOrderTreeBuilder<T> immutableLiteral(
+    protected TreeBuilder<T> immutableLiteral(
             String value,
             String datatype,
             Collection<ProcessingInstruction> ops) {

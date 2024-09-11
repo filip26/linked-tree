@@ -76,8 +76,8 @@ public class NodeDebugWriter {
 //        level++;
 
         if (node.isTree()) {
-            print("class: ")
-                    .println(node.asTree().cast().getClass().getSimpleName());
+//            print("class: ")
+//                    .println(node.asTree().cast().getClass().getSimpleName());
             print("container: ")
                     .println(node.asContainer().containerType().toString());
 
@@ -93,8 +93,8 @@ public class NodeDebugWriter {
             printContainer(node.asContainer(), ops);
 
         } else if (node.isFragment()) {
-            print("class: ")
-                    .println(node.asFragment().cast().getClass().getSimpleName());
+//            print("class: ")
+//                    .println(node.asFragment().cast().getClass().getSimpleName());
 
             printFragment(node.asFragment(), ops);
 

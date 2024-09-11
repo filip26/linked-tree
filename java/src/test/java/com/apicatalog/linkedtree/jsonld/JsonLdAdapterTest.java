@@ -29,6 +29,7 @@ import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeWriter;
 import com.apicatalog.linkedtree.literal.ByteArrayValue;
+import com.apicatalog.linkedtree.type.TypeAdapterError;
 import com.apicatalog.linkedtree.xsd.XsdDateTime;
 
 import jakarta.json.Json;
@@ -86,7 +87,7 @@ class JsonLdAdapterTest {
     }
 
     @Test
-    void verifiableCredential() throws IOException, URISyntaxException, TreeBuilderError {
+    void verifiableCredential() throws IOException, URISyntaxException, TreeBuilderError, ClassCastException, TypeAdapterError {
 
         JsonArray input = resource("custom/signed-vc-1.jsonld");
 

@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Iterator;
 
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
+import com.apicatalog.linkedtree.type.TypeAdapterError;
 
 public interface LinkedContainer extends LinkedNode, Iterable<LinkedNode> {
 
@@ -68,7 +69,7 @@ public interface LinkedContainer extends LinkedNode, Iterable<LinkedNode> {
     }
 
     @SuppressWarnings("unchecked")
-    default <T> T single(Class<T> clazz) {
+    default <T> T single(Class<T> clazz) throws ClassCastException, TypeAdapterError {
 
         final LinkedNode single = single();
 
@@ -76,16 +77,15 @@ public interface LinkedContainer extends LinkedNode, Iterable<LinkedNode> {
             return null;
         }
 
-        if (single.isFragment() 
-                && single.asFragment().id() != null
-                && single.asFragment().id().target() != null
-                ) {
-            return single.ld().asFragment().id().target().cast(clazz);
+        if (single.isFragment()) {
+            if (single.asFragment().id() != null
+                    && single.asFragment().id().target() != null
+                    ) {
+                return single.ld().asFragment().id().target().type().adapt(clazz);
+            }
+            return single.asFragment().type().adapt(clazz);
         }
-
-        if (single.isTree() && single.asTree().id() != null) {
-            return single.asTree().id().target().cast(clazz);
-        }
+        
 
         return (T) single;
     }

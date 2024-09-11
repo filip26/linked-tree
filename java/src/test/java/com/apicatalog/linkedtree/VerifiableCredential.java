@@ -1,6 +1,7 @@
 package com.apicatalog.linkedtree;
 
 import java.time.Instant;
+import java.time.format.DateTimeParseException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -9,6 +10,7 @@ import com.apicatalog.linkedtree.lang.LangStringSelector;
 import com.apicatalog.linkedtree.lang.LanguageMap;
 import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.type.Type;
+import com.apicatalog.linkedtree.type.TypeAdapterError;
 import com.apicatalog.linkedtree.xsd.XsdDateTime;
 
 public class VerifiableCredential implements LinkedFragment {
@@ -34,11 +36,11 @@ public class VerifiableCredential implements LinkedFragment {
         this.properties = properties;
     }
 
-    public static VerifiableCredential of(Link id, Type type, Map<String, LinkedContainer> properties) {
+    public static VerifiableCredential of(Link id, Type type, Map<String, LinkedContainer> properties) throws DateTimeParseException, ClassCastException, TypeAdapterError {
         return setup(new VerifiableCredential(id, type, properties), properties);
     }
 
-    protected static VerifiableCredential setup(VerifiableCredential credential, Map<String, LinkedContainer> properties) {
+    protected static VerifiableCredential setup(VerifiableCredential credential, Map<String, LinkedContainer> properties) throws DateTimeParseException, ClassCastException, TypeAdapterError {
 
         credential.name = getLangMap(properties, "https://schema.org/name");
         credential.description = getLangMap(properties, "https://schema.org/description");

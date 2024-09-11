@@ -17,6 +17,7 @@ import com.apicatalog.linkedtree.type.Type;
  * {@link Linkable}. Intended to be used as
  * {@link LinkedFragmentReader#read(Link, Collection, Map)} result.
  */
+@Deprecated
 public record LinkableObject(
         Link id,
         Type type,
@@ -34,14 +35,14 @@ public record LinkableObject(
         return entries.get(term);
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public <T> T cast(Class<T> clazz) {
-        return (T) linkable;
-    }
-
-    @Override
-    public Linkable cast() {
-        return linkable;
-    }
+//    @SuppressWarnings("unchecked")
+//    @Override
+//    public <T> T cast(Class<T> clazz) {
+//        return (T) linkable;
+//    }
+//
+//    @Override
+//    public Linkable cast() {
+//        return linkable;
+//    }
 }
