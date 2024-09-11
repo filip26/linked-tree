@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedFragment;
-import com.apicatalog.linkedtree.LinkedTreeError;
+import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.link.Link;
 
 @FunctionalInterface
@@ -14,6 +14,6 @@ public interface LinkedFragmentReader {
     LinkedFragment read(
             Link id,
             Collection<String> types,
-            Map<String, LinkedContainer> properties) throws LinkedTreeError;
+            Map<String, LinkedContainer> properties) throws TreeBuilderError;
 
 }

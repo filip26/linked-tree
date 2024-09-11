@@ -16,7 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
 import com.apicatalog.linkedtree.LinkedTree;
-import com.apicatalog.linkedtree.LinkedTreeError;
 import com.apicatalog.linkedtree.jsonld.JsonLdComparison;
 import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
@@ -39,7 +38,7 @@ class GenericTreeClonerTest {
     static JsonLdTreeWriter WRITER = new JsonLdTreeWriter();
 
     @Test
-    void genericClone() throws IOException, URISyntaxException, LinkedTreeError {
+    void genericClone() throws IOException, URISyntaxException, TreeBuilderError {
 
         JsonArray input = resource("custom/signed-vc-1.jsonld");
 

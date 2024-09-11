@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.LinkedTree;
-import com.apicatalog.linkedtree.LinkedTreeError;
 import com.apicatalog.linkedtree.lang.ImmutableLangString;
 import com.apicatalog.linkedtree.lang.LangString;
 import com.apicatalog.linkedtree.link.Link;
@@ -46,7 +45,7 @@ public class GenericTreeCloner implements NodeConsumer<LinkedNode>, NodeSelector
         this.nodeSelector = null;
     }
 
-    public LinkedTree deepClone(NodeSelector<LinkedNode> selector) throws LinkedTreeError {
+    public LinkedTree deepClone(NodeSelector<LinkedNode> selector) throws TreeBuilderError {
         nodeStack = new Stack<>();
         clonedTrees = new Stack<>();
 

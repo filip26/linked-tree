@@ -11,11 +11,11 @@ import java.util.Map;
 import java.util.Stack;
 
 import com.apicatalog.linkedtree.LinkedTree;
-import com.apicatalog.linkedtree.LinkedTreeError;
 import com.apicatalog.linkedtree.adapter.LinkedFragmentAdapter;
 import com.apicatalog.linkedtree.adapter.LinkedLiteralAdapter;
 import com.apicatalog.linkedtree.adapter.resolver.FragmentAdapterResolver;
 import com.apicatalog.linkedtree.adapter.resolver.TypeMapAdapterResolver;
+import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.json.JsonDecimal;
 import com.apicatalog.linkedtree.json.JsonInteger;
 import com.apicatalog.linkedtree.json.JsonLiteral;
@@ -66,17 +66,17 @@ public class JsonLdTreeReader extends JsonTreeReader {
 //                : Collections.emptyMap());
 //    }
 
-    public LinkedTree read(JsonStructure source) throws LinkedTreeError {
+    public LinkedTree read(JsonStructure source) throws TreeBuilderError {
         return read(Collections.emptyList(), source);
     }
 
-    public LinkedTree read(List<String> context, JsonStructure source) throws LinkedTreeError {
+    public LinkedTree read(List<String> context, JsonStructure source) throws TreeBuilderError {
         // TODO context
         return read(source, ((node, indexOrder, indexTerm, depth) -> ProcessingPolicy.Accept));
     }
 
     @Override
-    public LinkedTree read(JsonStructure source, NodeSelector<JsonValue> selector) throws LinkedTreeError {
+    public LinkedTree read(JsonStructure source, NodeSelector<JsonValue> selector) throws TreeBuilderError {
         return super.read(source, (node, indexOrder, indexTerm, depth) -> {
 
             if (ValueType.OBJECT == node.getValueType()) {

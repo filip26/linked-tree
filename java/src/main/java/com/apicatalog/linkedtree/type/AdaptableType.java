@@ -11,35 +11,6 @@ import com.apicatalog.linkedtree.LinkedNode;
 
 public class AdaptableType implements Type {
 
-    static Type EMPTY = new Type() {
-
-        @Override
-        public Iterator<String> iterator() {
-            return Collections.emptyIterator();
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return true;
-        }
-
-        @Override
-        public boolean contains(String type) {
-            return false;
-        }
-
-//        @Override
-//        public Type get(String type) {
-//            return null;
-//        }
-
-        @Override
-        public <T> T adapt(Class<T> clazz) throws ClassCastException {
-            throw new ClassCastException("A type set is empty. It cannot be cast to an unknown interface/class " + clazz);
-        }
-    };
-
-    
     protected final Map<String, TypeAdapter> type;
     protected LinkedNode node;
 
@@ -60,28 +31,16 @@ public class AdaptableType implements Type {
     public void node(LinkedNode node) {
         this.node = node;
     }
-//    public static GenericTypeSet of(
-//            LinkedNode node,
-//            GenericTypeSet typeSet) {
-//        return new GenericTypeSet(node, typeSet);
-//    }
 
     @Override
     public Iterator<String> iterator() {
         return type.keySet().iterator();
-//        return types.stream().map(Type::uri).iterator();
     }
 
     @Override
     public boolean contains(String name) {
         return type.containsKey(name);
-//        return types.stream().map(Type::uri).anyMatch(type::equals);
     }
-
-//    @Override
-//    public Type get(String type) {
-////        return types.stream().filter(t -> type.equals(t.uri())).findFirst().orElse(null);
-//    }
 
     @Override
     public boolean isEmpty() {
@@ -110,4 +69,27 @@ public class AdaptableType implements Type {
     public TypeAdapter getAdapter(String name) {
         return type.get(name);
     }
+
+    static Type EMPTY = new Type() {
+
+        @Override
+        public Iterator<String> iterator() {
+            return Collections.emptyIterator();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return true;
+        }
+
+        @Override
+        public boolean contains(String type) {
+            return false;
+        }
+
+        @Override
+        public <T> T adapt(Class<T> clazz) throws ClassCastException {
+            throw new ClassCastException("A type set is empty. It cannot be cast to an unknown interface/class " + clazz);
+        }
+    };
 }
