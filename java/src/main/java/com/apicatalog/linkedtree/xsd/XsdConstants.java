@@ -1,7 +1,11 @@
 package com.apicatalog.linkedtree.xsd;
 
-public final class XsdConstants {
+public class XsdConstants {
 
+    protected XsdConstants() {
+        // protected
+    }
+    
     public static final String STRING = "http://www.w3.org/2001/XMLSchema#string";
 
     public static final String BOOLEAN = "http://www.w3.org/2001/XMLSchema#boolean";

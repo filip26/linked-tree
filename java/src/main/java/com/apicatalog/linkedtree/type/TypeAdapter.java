@@ -1,21 +1,18 @@
 package com.apicatalog.linkedtree.type;
 
-import com.apicatalog.linkedtree.LinkedNode;
+import com.apicatalog.linkedtree.LinkedFragment;
 
 public interface TypeAdapter {
 
     /**
      * Creates a new object instance initialized by values found in the given
-     * {@link LinkedNode}.
+     * {@link LinkedFragment}.
      * 
-     * @param node
+     * @param fragment
      * @return a new instance
      * @throws TypeAdapterError
      */
-    <T> T adapt(LinkedNode node) throws TypeAdapterError;
+    <T> T materialize(LinkedFragment fragment) throws TypeAdapterError;
 
-    Class<?> typeInterface(); 
-//    {
-//        return Object.class;
-//    }
+    Class<?> typeInterface();
 }

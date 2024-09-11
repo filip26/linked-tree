@@ -1,18 +1,18 @@
 package com.apicatalog.linkedtree.type;
 
-import com.apicatalog.linkedtree.LinkedNode;
+import com.apicatalog.linkedtree.LinkedFragment;
 
 public class GenericTypeAdapter implements TypeAdapter {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T adapt(LinkedNode node) throws TypeAdapterError {
-        return (T)node;
+    public <T> T materialize(LinkedFragment fragment) throws TypeAdapterError {
+        return (T)fragment;
     }
 
     @Override
     public Class<?> typeInterface() {
-        return LinkedNode.class;
+        return LinkedFragment.class;
     }
 
 }

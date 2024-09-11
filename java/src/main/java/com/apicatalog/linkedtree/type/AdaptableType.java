@@ -7,16 +7,16 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 
-import com.apicatalog.linkedtree.LinkedNode;
+import com.apicatalog.linkedtree.LinkedFragment;
 
 public class AdaptableType implements Type {
 
     protected final Map<String, TypeAdapter> type;
-    protected LinkedNode node;
+    protected LinkedFragment fragment;
 
     protected AdaptableType(Map<String, TypeAdapter> type) {
         this.type = type;
-        this.node = null;
+        this.fragment = null;
     }
 
     public static AdaptableType of(
@@ -28,8 +28,8 @@ public class AdaptableType implements Type {
                                 (c, t) -> c.put(t, null), HashMap::putAll));
     }
 
-    public void node(LinkedNode node) {
-        this.node = node;
+    public void node(LinkedFragment fragment) {
+        this.fragment = fragment;
     }
 
     @Override
@@ -55,7 +55,7 @@ public class AdaptableType implements Type {
                 .filter(t -> t.typeInterface().isAssignableFrom(clazz))
                 .findFirst()
                 .orElseThrow(ClassCastException::new)
-                .adapt(node);
+                .materialize(fragment);
     }
 
     @Override

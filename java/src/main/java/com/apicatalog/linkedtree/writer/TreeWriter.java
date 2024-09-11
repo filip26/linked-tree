@@ -1,6 +1,6 @@
 package com.apicatalog.linkedtree.writer;
 
-public interface LinkedTreeWriter {
+public interface TreeWriter {
 
     
     

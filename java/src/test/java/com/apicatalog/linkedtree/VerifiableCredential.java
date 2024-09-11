@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.lang.LangStringSelector;
 import com.apicatalog.linkedtree.lang.LanguageMap;
 import com.apicatalog.linkedtree.link.Link;
@@ -28,7 +29,7 @@ public class VerifiableCredential implements LinkedFragment {
     protected Link id;
     protected Type type;
     protected Map<String, LinkedContainer> properties;
-    protected Supplier<LinkedTree> treeSupplier; 
+    protected Supplier<LinkedTree> treeSupplier;
 
     protected VerifiableCredential(Link id, Type type, Map<String, LinkedContainer> properties) {
         this.id = id;
@@ -36,8 +37,12 @@ public class VerifiableCredential implements LinkedFragment {
         this.properties = properties;
     }
 
-    public static VerifiableCredential of(Link id, Type type, Map<String, LinkedContainer> properties) throws DateTimeParseException, ClassCastException, TypeAdapterError {
-        return setup(new VerifiableCredential(id, type, properties), properties);
+    public static VerifiableCredential of(Link id, Type type, Map<String, LinkedContainer> properties) throws TreeBuilderError {
+        try {
+            return setup(new VerifiableCredential(id, type, properties), properties);
+        } catch (DateTimeParseException | ClassCastException | TypeAdapterError e) {
+            throw new TreeBuilderError(e);
+        }
     }
 
     protected static VerifiableCredential setup(VerifiableCredential credential, Map<String, LinkedContainer> properties) throws DateTimeParseException, ClassCastException, TypeAdapterError {
@@ -106,7 +111,7 @@ public class VerifiableCredential implements LinkedFragment {
     public LangStringSelector name() {
         return name;
     }
-    
+
     public LangStringSelector description() {
         return name;
     }
@@ -114,9 +119,9 @@ public class VerifiableCredential implements LinkedFragment {
     public Instant validFrom() {
         return validFrom;
     }
- 
+
     public Instant validUntil() {
         return validUntil;
     }
-    
+
 }
