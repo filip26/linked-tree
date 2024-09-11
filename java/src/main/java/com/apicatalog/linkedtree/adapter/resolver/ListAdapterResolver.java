@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import com.apicatalog.linkedtree.adapter.LinkedFragmentAdapter;
 
+@Deprecated
 public record ListAdapterResolver(
         Collection<FragmentAdapterResolver> resolvers) implements FragmentAdapterResolver {
 

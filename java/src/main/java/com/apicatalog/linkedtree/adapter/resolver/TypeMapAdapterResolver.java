@@ -9,6 +9,7 @@ import java.util.Objects;
 import com.apicatalog.linkedtree.adapter.LinkedFragmentAdapter;
 import com.apicatalog.linkedtree.reader.LinkedFragmentReader;
 
+@Deprecated
 public record TypeMapAdapterResolver(
         Map<String, FragmentAdapterResolver> typeMap) implements FragmentAdapterResolver {
 

@@ -11,10 +11,7 @@ import java.util.Map;
 import java.util.Stack;
 
 import com.apicatalog.linkedtree.LinkedTree;
-import com.apicatalog.linkedtree.adapter.LinkedFragmentAdapter;
 import com.apicatalog.linkedtree.adapter.LiteralAdapter;
-import com.apicatalog.linkedtree.adapter.resolver.FragmentAdapterResolver;
-import com.apicatalog.linkedtree.adapter.resolver.TypeMapAdapterResolver;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.json.JsonDecimal;
 import com.apicatalog.linkedtree.json.JsonInteger;
@@ -28,9 +25,9 @@ import com.apicatalog.linkedtree.jsonld.JsonLdType;
 import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.link.MutableLink;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
-import com.apicatalog.linkedtree.reader.LinkedFragmentReader;
 import com.apicatalog.linkedtree.reader.LiteralReader;
 import com.apicatalog.linkedtree.traversal.NodeSelector;
+import com.apicatalog.linkedtree.type.TypeAdapter;
 import com.apicatalog.linkedtree.xsd.XsdConstants;
 
 import jakarta.json.JsonArray;
@@ -43,13 +40,12 @@ import jakarta.json.JsonValue.ValueType;
 
 public class JsonLdTreeReader extends JsonTreeReader {
 
-    protected FragmentAdapterResolver fragmentAdapterResolver;
     protected Stack<Map<String, LiteralReader>> literalAdapters;
 
     protected JsonLdTreeReader(
-            FragmentAdapterResolver fragmentAdapterResolver,
+            Map<String, TypeAdapter> typeAdapters,
             Map<String, LiteralReader> literalAdapters) {
-        super(fragmentAdapterResolver, literalAdapters);
+        super(typeAdapters, literalAdapters);
     }
 
 //    public static JsonLdTreeReader with(LinkedLiteralAdapter... literalAdapters) {
@@ -710,21 +706,26 @@ public class JsonLdTreeReader extends JsonTreeReader {
 
     public static class Builder {
 
-        protected TypeMapAdapterResolver.Builder fragmentMap;
+        protected Map<String, TypeAdapter> typeMap;
         protected Map<String, LiteralReader> literalMap;
 
         public Builder() {
-            this.fragmentMap = new TypeMapAdapterResolver.Builder();
+            this.typeMap = new LinkedHashMap<>();
             this.literalMap = new LinkedHashMap<>();
         }
 
-        public Builder with(String type, LinkedFragmentReader reader) {
-            fragmentMap.add(type, reader);
-            return this;
-        }
+//        public Builder with(String type, LinkedFragmentReader reader) {
+//            typeMap.add(type, reader);
+//            return this;
+//        }
+//
+//        public Builder with(String type, LinkedFragmentAdapter adapter) {
+//            typeMap.add(type, adapter);
+//            return this;
+//        }
 
-        public Builder with(String type, LinkedFragmentAdapter adapter) {
-            fragmentMap.add(type, adapter);
+        public Builder with(String type, TypeAdapter adapter) {
+            this.typeMap.put(type, adapter);
             return this;
         }
 
@@ -739,7 +740,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
         }
 
         public JsonLdTreeReader build() {
-            return new JsonLdTreeReader(fragmentMap.build(), literalMap);
+            return new JsonLdTreeReader(typeMap, literalMap);
         }
     }
 }

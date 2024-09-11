@@ -103,12 +103,12 @@ class JsonLdAdapterTest {
 
         assertNotNull(vc);
 
-        assertEquals("urn:uuid:58172aac-d8ba-11ed-83dd-0b3aef56cc33", vc.id().uri());
+        assertEquals("urn:uuid:58172aac-d8ba-11ed-83dd-0b3aef56cc33", vc.id());
 
         assertEquals(new HashSet<>(Arrays.asList(new String[] {
                 "https://www.w3.org/2018/credentials#VerifiableCredential",
                 "https://www.w3.org/ns/credentials/examples#AlumniCredential"
-        })), vc.type());
+        })), vc.type().stream().toArray());
 
         assertEquals(1, vc.name().size());
         assertEquals("Alumni Credential", vc.name().single().lexicalValue());

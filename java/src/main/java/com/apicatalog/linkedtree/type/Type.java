@@ -22,7 +22,7 @@ public interface Type extends Iterable<String> {
      * @return
      * @throws ClassCastException
      */
-    default <T> T adapt(Class<T> clazz) throws TypeAdapterError, ClassCastException {
+    default <T> T materialize(Class<T> clazz) throws TypeAdapterError, ClassCastException {
         throw new ClassCastException();
     }
 

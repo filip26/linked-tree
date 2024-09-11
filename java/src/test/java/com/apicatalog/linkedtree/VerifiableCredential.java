@@ -3,18 +3,12 @@ package com.apicatalog.linkedtree;
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
 import java.util.Collection;
-import java.util.Map;
-import java.util.function.Supplier;
 
-import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.lang.LangStringSelector;
 import com.apicatalog.linkedtree.lang.LanguageMap;
-import com.apicatalog.linkedtree.link.Link;
-import com.apicatalog.linkedtree.type.Type;
 import com.apicatalog.linkedtree.type.TypeAdapterError;
-import com.apicatalog.linkedtree.xsd.XsdDateTime;
 
-public class VerifiableCredential implements LinkedFragment {
+public class VerifiableCredential {
 
     public static final String TYPE = "https://www.w3.org/2018/credentials#VerifiableCredential";
 
@@ -26,86 +20,64 @@ public class VerifiableCredential implements LinkedFragment {
 
     protected LinkedContainer subject;
 
-    protected Link id;
-    protected Type type;
-    protected Map<String, LinkedContainer> properties;
-    protected Supplier<LinkedTree> treeSupplier;
+    protected LinkedFragment source;
 
-    protected VerifiableCredential(Link id, Type type, Map<String, LinkedContainer> properties) {
-        this.id = id;
-        this.type = type;
-        this.properties = properties;
+    protected VerifiableCredential(LinkedFragment source) {
+        this.source = source;
     }
 
-    public static VerifiableCredential of(Link id, Type type, Map<String, LinkedContainer> properties) throws TreeBuilderError {
+    public static VerifiableCredential of(LinkedFragment fragment) throws TypeAdapterError {
         try {
-            return setup(new VerifiableCredential(id, type, properties), properties);
-        } catch (DateTimeParseException | ClassCastException | TypeAdapterError e) {
-            throw new TreeBuilderError(e);
+            return setup(
+                    new VerifiableCredential(fragment),
+                    fragment);
+        } catch (DateTimeParseException | ClassCastException e) {
+            throw new TypeAdapterError(e);
         }
     }
 
-    protected static VerifiableCredential setup(VerifiableCredential credential, Map<String, LinkedContainer> properties) throws DateTimeParseException, ClassCastException, TypeAdapterError {
+    protected static VerifiableCredential setup(VerifiableCredential credential, LinkedFragment source) throws DateTimeParseException, ClassCastException, TypeAdapterError {
 
-        credential.name = getLangMap(properties, "https://schema.org/name");
-        credential.description = getLangMap(properties, "https://schema.org/description");
+        credential.name = getLangMap(source, "https://schema.org/name");
+        credential.description = getLangMap(source, "https://schema.org/description");
 
-        credential.validFrom = properties.containsKey("https://www.w3.org/2018/credentials#validFrom")
-                ? properties.get("https://www.w3.org/2018/credentials#validFrom")
-                        .single(XsdDateTime.class)
-                        .datetime()
-                : null;
-
-        credential.validUntil = properties.containsKey("https://www.w3.org/2018/credentials#validUntil")
-                ? properties.get("https://www.w3.org/2018/credentials#validUntil")
-                        .single()
-                        .asLiteral()
-                        .cast(XsdDateTime.class)
-                        .datetime()
-                : null;
+//        credential.validFrom = source.containsKey("https://www.w3.org/2018/credentials#validFrom")
+//                ? source.property("https://www.w3.org/2018/credentials#validFrom")
+//                        .single(XsdDateTime.class)
+//                        .datetime()
+//                : null;
+//
+//        credential.validUntil = source.containsKey("https://www.w3.org/2018/credentials#validUntil")
+//                ? source.get("https://www.w3.org/2018/credentials#validUntil")
+//                        .single()
+//                        .asLiteral()
+//                        .cast(XsdDateTime.class)
+//                        .datetime()
+//                : null;
 
         return credential;
     }
 
     public LinkedContainer subject() {
-        return properties.get("https://www.w3.org/2018/credentials#credentialSubject");
+//        return properties.get("https://www.w3.org/2018/credentials#credentialSubject");
+        return null;
     }
 
     public LinkedFragment issuer() {
-        return properties.containsKey("https://www.w3.org/2018/credentials#issuer")
-                ? properties.get("https://www.w3.org/2018/credentials#issuer")
-                        .single()
-                        .asFragment()
-                : null;
-
+//        return properties.containsKey("https://www.w3.org/2018/credentials#issuer")
+//                ? properties.get("https://www.w3.org/2018/credentials#issuer")
+//                        .single()
+//                        .asFragment()
+//                : null;
+        return null;
     }
 
-    protected static LangStringSelector getLangMap(Map<String, LinkedContainer> properties, String term) {
-        final LinkedContainer container = properties.get(term);
+    protected static LangStringSelector getLangMap(LinkedFragment fragment, String term) {
+        final LinkedContainer container = fragment.property(term);
         if (container != null) {
             return LanguageMap.of(container);
         }
         return null;
-    }
-
-    @Override
-    public Link id() {
-        return id;
-    }
-
-    @Override
-    public Type type() {
-        return type;
-    }
-
-    @Override
-    public Collection<String> terms() {
-        return properties.keySet();
-    }
-
-    @Override
-    public LinkedContainer property(String term) {
-        return properties.get(term);
     }
 
     public LangStringSelector name() {
@@ -122,6 +94,16 @@ public class VerifiableCredential implements LinkedFragment {
 
     public Instant validUntil() {
         return validUntil;
+    }
+
+    public String id() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    public Collection<String> type() {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

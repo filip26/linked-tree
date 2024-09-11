@@ -81,9 +81,9 @@ public interface LinkedContainer extends LinkedNode, Iterable<LinkedNode> {
             if (single.asFragment().id() != null
                     && single.asFragment().id().target() != null
                     ) {
-                return single.ld().asFragment().id().target().type().adapt(clazz);
+                return single.ld().asFragment().id().target().type().materialize(clazz);
             }
-            return single.asFragment().type().adapt(clazz);
+            return single.asFragment().type().materialize(clazz);
         }
         
 

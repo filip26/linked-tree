@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import com.apicatalog.linkedtree.adapter.LinkedFragmentAdapter;
 
+@Deprecated
 public interface FragmentAdapterResolver {
 
     LinkedFragmentAdapter resolve(

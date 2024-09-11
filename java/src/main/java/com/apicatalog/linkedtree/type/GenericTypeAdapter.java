@@ -4,10 +4,9 @@ import com.apicatalog.linkedtree.LinkedFragment;
 
 public class GenericTypeAdapter implements TypeAdapter {
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <T> T materialize(LinkedFragment fragment) throws TypeAdapterError {
-        return (T)fragment;
+    public Object materialize(LinkedFragment fragment) throws TypeAdapterError {
+        return fragment;
     }
 
     @Override

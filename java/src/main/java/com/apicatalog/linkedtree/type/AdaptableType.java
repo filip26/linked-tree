@@ -47,9 +47,10 @@ public class AdaptableType implements Type {
         return type.isEmpty();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public <T> T adapt(Class<T> clazz) throws TypeAdapterError, ClassCastException {
-        return type.values()
+    public <T> T materialize(Class<T> clazz) throws TypeAdapterError, ClassCastException {
+        return (T) type.values()
                 .stream()
                 .filter(Objects::nonNull)
                 .filter(t -> t.typeInterface().isAssignableFrom(clazz))
@@ -66,10 +67,14 @@ public class AdaptableType implements Type {
                 .anyMatch(t -> t.typeInterface().isAssignableFrom(clazz));
     }
 
-    public TypeAdapter getAdapter(String name) {
+    public TypeAdapter adapter(String name) {
         return type.get(name);
     }
 
+    public void adapter(String name, TypeAdapter adapter) {
+        type.put(name, adapter);
+    }
+    
     static Type EMPTY = new Type() {
 
         @Override
@@ -88,7 +93,7 @@ public class AdaptableType implements Type {
         }
 
         @Override
-        public <T> T adapt(Class<T> clazz) throws ClassCastException {
+        public <T> T materialize(Class<T> clazz) throws ClassCastException {
             throw new ClassCastException("A type set is empty. It cannot be cast to an unknown interface/class " + clazz);
         }
     };

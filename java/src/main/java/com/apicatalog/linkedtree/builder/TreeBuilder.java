@@ -15,7 +15,6 @@ import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.LinkedTree;
-import com.apicatalog.linkedtree.adapter.resolver.FragmentAdapterResolver;
 import com.apicatalog.linkedtree.lang.ImmutableLangString;
 import com.apicatalog.linkedtree.lang.LangString.LanguageDirectionType;
 import com.apicatalog.linkedtree.link.Link;
@@ -25,7 +24,6 @@ import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 import com.apicatalog.linkedtree.primitive.GenericContainer;
 import com.apicatalog.linkedtree.primitive.GenericFragment;
 import com.apicatalog.linkedtree.primitive.GenericTree;
-import com.apicatalog.linkedtree.reader.LinkedFragmentReader;
 import com.apicatalog.linkedtree.reader.LiteralReader;
 import com.apicatalog.linkedtree.traversal.NodeConsumer;
 import com.apicatalog.linkedtree.type.AdaptableType;
@@ -34,9 +32,6 @@ import com.apicatalog.linkedtree.type.TypeAdapter;
 
 public class TreeBuilder<T> implements NodeConsumer<T> {
 
-    @Deprecated
-    protected FragmentAdapterResolver fragmentAdapterResolver;
-    
     protected Map<String, TypeAdapter> typeAdapters;
     protected Stack<Map<String, LiteralReader>> literalAdapters;
 
@@ -45,9 +40,9 @@ public class TreeBuilder<T> implements NodeConsumer<T> {
     protected Stack<LinkedTree> trees;
 
     protected TreeBuilder(
-            FragmentAdapterResolver fragmentAdapterResolver,
+            Map<String, TypeAdapter> typeAdapters,
             Map<String, LiteralReader> literalAdapters) {
-        this.fragmentAdapterResolver = fragmentAdapterResolver;
+        this.typeAdapters = typeAdapters;
         this.literalAdapters = new Stack<>();
         this.literalAdapters.push(literalAdapters);
         this.nodeStack = null;
@@ -161,7 +156,7 @@ public class TreeBuilder<T> implements NodeConsumer<T> {
 
         // remove null placeholder
         nodeStack.pop();
-        
+
         if (child.isTree()) {
             nodeStack.push(child);
             return this;
@@ -189,19 +184,12 @@ public class TreeBuilder<T> implements NodeConsumer<T> {
 
     // Pred, ne po?!
     protected void postFragment(LinkedFragment fragment) throws TreeBuilderError {
-
-        if (fragment.type().isEmpty()) {
-            return;
-        }
-        
-        for (final String type : fragment.type()) {
+        fragment.type().forEach(type -> {
             final TypeAdapter typeAdapter = typeAdapters.get(type);
             if (typeAdapter != null) {
-                
+                ((AdaptableType) fragment.type()).adapter(type, typeAdapter);
             }
-        }
-        
-//        ((AdaptableType) fragment.type()).adapter();
+        });
     }
 
     protected void postTree(LinkedTree tree) throws TreeBuilderError {
@@ -250,36 +238,36 @@ public class TreeBuilder<T> implements NodeConsumer<T> {
         return map;
     }
 
-    protected LinkedFragment adapt(MutableLink id, Collection<String> type, Map<String, LinkedContainer> data) throws TreeBuilderError {
-
-        var fragmentAdapter = fragmentAdapterResolver.resolve(
-                id != null ? id.uri() : null,
-                type);
-
-        return materialize(
-                fragmentAdapter != null
-                        ? fragmentAdapter.reader()
-                        : null,
-                id,
-                type,
-                data);
-    }
-
-    protected LinkedFragment materialize(LinkedFragmentReader reader, MutableLink id, Collection<String> type, Map<String, LinkedContainer> data) throws TreeBuilderError {
-
-//        if (reader != null) {
-//            final Linkable fragment = reader.read(id, type, data);
-//            if (fragment != null) {
-//                return fragment.ld().asFragment();
-//            }
-//        }
-
-        return mutableFragment(
-                id,
-                type,
-                data,
-                Collections.emptyList());
-    }
+//    protected LinkedFragment adapt(MutableLink id, Collection<String> type, Map<String, LinkedContainer> data) throws TreeBuilderError {
+//
+//        var fragmentAdapter = fragmentAdapterResolver.resolve(
+//                id != null ? id.uri() : null,
+//                type);
+//
+//        return materialize(
+//                fragmentAdapter != null
+//                        ? fragmentAdapter.reader()
+//                        : null,
+//                id,
+//                type,
+//                data);
+//    }
+//
+//    protected LinkedFragment materialize(LinkedFragmentReader reader, MutableLink id, Collection<String> type, Map<String, LinkedContainer> data) throws TreeBuilderError {
+//
+////        if (reader != null) {
+////            final Linkable fragment = reader.read(id, type, data);
+////            if (fragment != null) {
+////                return fragment.ld().asFragment();
+////            }
+////        }
+//
+//        return mutableFragment(
+//                id,
+//                type,
+//                data,
+//                Collections.emptyList());
+//    }
 
     public LinkedTree tree() {
         if (trees.size() > 1) {
