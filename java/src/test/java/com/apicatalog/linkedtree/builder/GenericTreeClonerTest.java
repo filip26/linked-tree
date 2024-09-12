@@ -1,7 +1,6 @@
-package com.apicatalog.linkedtree.jsonld;
+package com.apicatalog.linkedtree.builder;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -10,16 +9,18 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.util.Collections;
+import java.util.List;
 
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import com.apicatalog.linkedtree.LinkedNode;
-import com.apicatalog.linkedtree.builder.TreeBuilderError;
+import com.apicatalog.linkedtree.LinkedTree;
+import com.apicatalog.linkedtree.jsonld.JsonLdComparison;
+import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
-import com.apicatalog.linkedtree.writer.NodeDebugWriter;
+import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeWriter;
+import com.apicatalog.linkedtree.traversal.NodeSelector.ProcessingPolicy;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -29,42 +30,38 @@ import jakarta.json.JsonWriter;
 import jakarta.json.JsonWriterFactory;
 import jakarta.json.stream.JsonGenerator;
 
-@DisplayName("JsonLd @graph Tests")
 @TestMethodOrder(OrderAnnotation.class)
-class JsonLdGraphTest {
+class GenericTreeClonerTest {
 
-    static JsonLdTreeReader READER = JsonLdTreeReader
-            .create()
-            .build();
+    static JsonLdTreeReader READER = JsonLdTreeReader.create().build();
+
+    static JsonLdTreeWriter WRITER = new JsonLdTreeWriter();
 
     @Test
-    void level1Graph() throws IOException, URISyntaxException, TreeBuilderError {
+    void genericClone() throws IOException, URISyntaxException, TreeBuilderError {
 
         JsonArray input = resource("custom/signed-vc-1.jsonld");
 
-        var tree = READER.read(input);
-NodeDebugWriter.printToStdout(tree);
-        assertEquals(1, tree.subtrees().size());
-        assertEquals(0, tree.subtrees().iterator().next().subtrees().size());
+        LinkedTree tree = READER.read(
+                List.of("https://www.w3.org/2018/credentials/v1",
+                        "https://w3id.org/security/data-integrity/v2"),
+                input);
 
-        assertNull(tree.root());
-        
-        assertTrue(tree.nodes()
-                .stream()
-                .map(LinkedNode::root)
-                .allMatch(tree::equals));
+        assertNotNull(tree);
 
-        var proof = tree.fragment()
-                .container("https://w3id.org/security#proof")
-//                .asContainer()
-//                .single()
-                .asTree();
+        GenericTreeCloner builder = new GenericTreeCloner(tree);
+        var clone = builder.deepClone(
+                (node, indexOrder, indexTerm, depth) -> "https://w3id.org/security#proof".equals(indexTerm)
+                        ? ProcessingPolicy.Drop
+                        : ProcessingPolicy.Accept);
 
-        assertTrue(proof
-                .nodes()
-                .stream()
-                .map(LinkedNode::root)
-                .allMatch(proof::equals));
+        assertNotNull(clone);
+
+        JsonArray out = WRITER.write(clone);
+
+        JsonArray expected = resource("custom/unsigned-vc-1.jsonld");
+
+        assertTrue(compareJson(null, out, expected));
     }
 
     static final JsonArray resource(String name) throws IOException, URISyntaxException {

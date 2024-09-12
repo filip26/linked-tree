@@ -20,10 +20,11 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import com.apicatalog.linkedtree.Base64ByteArray;
 import com.apicatalog.linkedtree.LinkedNode;
+import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeWriter;
-import com.apicatalog.linkedtree.reader.LinkedReaderError;
 import com.apicatalog.linkedtree.writer.NodeDebugWriter;
 
 import jakarta.json.Json;
@@ -40,7 +41,7 @@ class JsonLdReadWriteTest {
 
     static JsonLdTreeReader READER = JsonLdTreeReader
             .create()
-            .with(Base64ByteArray.TYPE, Base64ByteArray::of)
+            .with(Base64ByteArray.typeAdapter())
             .build();
 
     static JsonLdTreeWriter WRITER = new JsonLdTreeWriter();
@@ -48,16 +49,16 @@ class JsonLdReadWriteTest {
     @DisplayName("Read/Write")
     @ParameterizedTest(name = "{0}")
     @MethodSource({ "expandedResources", "literalResources" })
-    void readWrite(String name, JsonArray input) throws LinkedReaderError {
+    void readWrite(String name, JsonArray input) throws TreeBuilderError {
 
         // skip JsonNull
         assumeFalse(name.startsWith("0122"));
 
-        var tree = READER.readExpanded(input);
+        var tree = READER.read(input);
 
         assertNotNull(tree);
 
-        var output = WRITER.writeExpanded(tree);
+        var output = WRITER.write(tree);
 
         assertNotNull(output);
 

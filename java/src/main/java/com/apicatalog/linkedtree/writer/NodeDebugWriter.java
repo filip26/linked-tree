@@ -5,12 +5,12 @@ import java.io.StringWriter;
 import java.util.Collection;
 import java.util.Collections;
 
-import com.apicatalog.linkedtree.Link;
 import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.lang.LangString;
+import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 
 public class NodeDebugWriter {
@@ -76,8 +76,8 @@ public class NodeDebugWriter {
 //        level++;
 
         if (node.isTree()) {
-            print("class: ")
-                    .println(node.asTree().cast().getClass().getSimpleName());
+//            print("class: ")
+//                    .println(node.asTree().cast().getClass().getSimpleName());
             print("container: ")
                     .println(node.asContainer().containerType().toString());
 
@@ -93,8 +93,8 @@ public class NodeDebugWriter {
             printContainer(node.asContainer(), ops);
 
         } else if (node.isFragment()) {
-            print("class: ")
-                    .println(node.asFragment().cast().getClass().getSimpleName());
+//            print("class: ")
+//                    .println(node.asFragment().cast().getClass().getSimpleName());
 
             printFragment(node.asFragment(), ops);
 
@@ -128,7 +128,7 @@ public class NodeDebugWriter {
         }
         if (fragment.type() != null && !fragment.type().isEmpty()) {
             print("type: ")
-                    .println(fragment.type());
+                    .println(fragment.type().stream().toList());
         }
         if (ops != null && !ops.isEmpty()) {
             print("pi: ")
@@ -137,7 +137,7 @@ public class NodeDebugWriter {
         for (String term : fragment.terms()) {
             println(term + ": ");
             level++;
-            print(fragment.property(term));
+            print(fragment.container(term));
             level--;
         }
 
@@ -154,6 +154,10 @@ public class NodeDebugWriter {
             if (langString.direction() != null) {
                 print("direction: ").println(langString.direction().toString());
             }
+        }
+        if (ops != null && !ops.isEmpty()) {
+            print("pi: ")
+                    .println(ops.toString());
         }
 
     }

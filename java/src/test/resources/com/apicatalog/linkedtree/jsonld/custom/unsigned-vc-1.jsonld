@@ -26,45 +26,6 @@
         "@value": "Alumni Credential"
       }
     ],
-    "https://w3id.org/security#proof": [
-      {
-        "@graph": [
-          {
-            "http://purl.org/dc/terms/created": [
-              {
-                "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
-                "@value": "2023-02-24T23:36:38Z"
-              }
-            ],
-            "https://w3id.org/security#cryptosuite": [
-              {
-                "@type": "https://w3id.org/security#cryptosuiteString",
-                "@value": "eddsa-rdfc-2022"
-              }
-            ],
-            "https://w3id.org/security#proofPurpose": [
-              {
-                "@id": "https://w3id.org/security#assertionMethod"
-              }
-            ],
-            "https://w3id.org/security#proofValue": [
-              {
-                "@type": "https://w3id.org/security#multibase",
-                "@value": "z21EVs3eXERqTn4acNHT9viboqgzUaQ3kTmhPT3eA8qrVPE7CrQq78WkzctnMX5W4CrzcKnHw8V6dvy5pgWYCU5e9"
-              }
-            ],
-            "@type": [
-              "https://w3id.org/security#DataIntegrityProof"
-            ],
-            "https://w3id.org/security#verificationMethod": [
-              {
-                "@id": "https://vc.example/issuers/5678#z6MkrJVnaZkeFzdQyMZu1cgjg7k1pZZ6pvBQ7XJPt4swbTQ2"
-              }
-            ]
-          }
-        ]
-      }
-    ],
     "https://www.w3.org/2018/credentials#credentialStatus": [
       {
         "@id": "https://license.example/credentials/status/84#14278",
@@ -120,5 +81,4 @@
       }
     ]
   }
-
 ]

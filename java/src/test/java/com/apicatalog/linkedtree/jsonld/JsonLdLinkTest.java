@@ -1,7 +1,6 @@
 package com.apicatalog.linkedtree.jsonld;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
@@ -16,8 +15,8 @@ import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
+import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
-import com.apicatalog.linkedtree.reader.LinkedReaderError;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -27,46 +26,42 @@ import jakarta.json.JsonWriter;
 import jakarta.json.JsonWriterFactory;
 import jakarta.json.stream.JsonGenerator;
 
-@DisplayName("JsonLd Link Suite")
+@DisplayName("JsonLd Links")
 @TestMethodOrder(OrderAnnotation.class)
 class JsonLdLinkTest {
 
     static JsonLdTreeReader READER = JsonLdTreeReader
             .create()
-            .with(Base64ByteArray.TYPE, Base64ByteArray::of)
             .build();
 
     @Test
-    void singleRootLink() throws IOException, URISyntaxException, LinkedReaderError {
+    void singleRootLink() throws IOException, URISyntaxException, TreeBuilderError {
 
         JsonArray input = resource("custom/base64-1.jsonld");
 
-        var tree = READER.readExpanded(input);
+        var tree = READER.read(input);
 
-        assertNotNull(tree);
-        assertNotNull(tree.links());
         assertEquals(1, tree.links().size());
-        assertNotNull(tree.links().iterator().next());
-        assertNotNull(tree.links().iterator().next().refs());
-        assertNotNull(tree.links().iterator().next().target());
-        assertTrue(tree.links().iterator().next().target().isFragment());
-
+        
+        for (var link : tree.links()) {
+            assertEquals(1, link.refs().size());
+            assertTrue(link.target().isFragment());
+        }
     }
 
     @Test
-    void signedVcLinks() throws IOException, URISyntaxException, LinkedReaderError {
+    void signedVcLinks() throws IOException, URISyntaxException, TreeBuilderError {
 
         JsonArray input = resource("custom/signed-vc-1.jsonld");
 
-        var tree = READER.readExpanded(input);
+        var tree = READER.read(input);
 
-        assertNotNull(tree);
-        assertNotNull(tree.links());
-        assertEquals(3, tree.links().size());
-        assertNotNull(tree.links().iterator().next());
-        assertNotNull(tree.links().iterator().next().refs());
-        assertNotNull(tree.links().iterator().next().target());
-        assertTrue(tree.links().iterator().next().target().isFragment());
+        assertEquals(7, tree.links().size());
+        
+        for (var link : tree.links()) {
+            assertEquals(1, link.refs().size());
+            assertTrue(link.target().isFragment());
+        }
     }
 
     static final JsonArray resource(String name) throws IOException, URISyntaxException {

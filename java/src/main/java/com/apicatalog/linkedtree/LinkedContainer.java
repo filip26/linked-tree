@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
+import com.apicatalog.linkedtree.adapter.AdapterError;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 
 public interface LinkedContainer extends LinkedNode, Iterable<LinkedNode> {
@@ -11,14 +12,14 @@ public interface LinkedContainer extends LinkedNode, Iterable<LinkedNode> {
     public static LinkedContainer EMPTY = new LinkedContainer() {
     };
 
-    public enum Type {
+    public enum ContainerType {
         OrderedList,
         UnorderedSet,
         Tree
     };
 
-    default Type containerType() {
-        return Type.UnorderedSet;
+    default ContainerType containerType() {
+        return ContainerType.UnorderedSet;
     }
 
     default Collection<LinkedNode> nodes() {
@@ -56,7 +57,7 @@ public interface LinkedContainer extends LinkedNode, Iterable<LinkedNode> {
         return nodes().size();
     }
 
-    default LinkedNode single() {
+    default LinkedNode node() {
         final Collection<LinkedNode> nodes = nodes();
         if (nodes.isEmpty()) {
             return null;
@@ -68,34 +69,33 @@ public interface LinkedContainer extends LinkedNode, Iterable<LinkedNode> {
     }
 
     @SuppressWarnings("unchecked")
-    default <T> T single(Class<T> clazz) {
+    default <T> T object(Class<T> clazz) throws AdapterError {
 
-        final LinkedNode single = single();
+        final LinkedNode single = node();
 
         if (single == null) {
             return null;
         }
 
-        if (single.isFragment() 
-                && single.asFragment().id() != null
-                && single.asFragment().id().target() != null
-                ) {
-            return single.ld().asFragment().id().target().cast(clazz);
+        if (single.isFragment()) {
+            if (single.asFragment().id() != null
+                    && single.asFragment().id().target() != null
+                    ) {
+                return single.ld().asFragment().id().target().type().materialize(clazz);
+            }
+            return single.asFragment().type().materialize(clazz);
         }
-
-        if (single.isTree() && single.asTree().id() != null) {
-            return single.asTree().id().target().cast(clazz);
-        }
+        
 
         return (T) single;
     }
 
-    default LinkedLiteral singleLiteral() {
-        return single().asLiteral();
+    default LinkedLiteral literal() {
+        return node().asLiteral();
     }
 
-    default LinkedFragment singleFragment() {
-        return single().asFragment();
+    default LinkedFragment fragment() {
+        return node().asFragment();
     }
 
     default Iterator<LinkedNode> iterator() {

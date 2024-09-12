@@ -3,6 +3,9 @@ package com.apicatalog.linkedtree;
 import java.util.Collection;
 import java.util.Collections;
 
+import com.apicatalog.linkedtree.link.Link;
+import com.apicatalog.linkedtree.type.Type;
+
 public interface LinkedTree extends LinkedFragment, LinkedContainer, LinkedNode {
 
     static LinkedTree EMPTY = new LinkedTree() {
@@ -13,8 +16,8 @@ public interface LinkedTree extends LinkedFragment, LinkedContainer, LinkedNode 
         }
 
         @Override
-        public Collection<String> type() {
-            return Collections.emptySet();
+        public Type type() {
+            return Type.empty();
         }
 
         @Override
@@ -23,7 +26,7 @@ public interface LinkedTree extends LinkedFragment, LinkedContainer, LinkedNode 
         }
 
         @Override
-        public LinkedContainer property(String term) {
+        public LinkedContainer container(String term) {
             return null;
         }
 
@@ -63,7 +66,7 @@ public interface LinkedTree extends LinkedFragment, LinkedContainer, LinkedNode 
     Collection<LinkedTree> subtrees();
     
     @Override
-    default Type containerType() {
-        return Type.Tree;
+    default ContainerType containerType() {
+        return ContainerType.Tree;
     }
 }

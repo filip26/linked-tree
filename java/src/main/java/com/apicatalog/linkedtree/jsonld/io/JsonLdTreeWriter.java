@@ -31,7 +31,26 @@ import jakarta.json.stream.JsonParser;
 
 public class JsonLdTreeWriter {
 
-    public JsonArray writeExpanded(LinkedTree tree) {
+    public JsonArray write(LinkedTree tree) {
+        if (tree.id() != null
+                || !tree.type().isEmpty()
+                || !tree.asTree().terms().isEmpty()
+                ) {
+            return Json.createArrayBuilder()
+                    .add(writeTree(tree)).build();
+        }
+        return writeTreeNodes(tree);
+    }
+    
+    public JsonObject writeFragment(LinkedFragment fragment) {
+        return writeFragment(
+                fragment, 
+                Collections.emptyList(),
+                Json.createObjectBuilder()
+                ).build();
+    }
+
+    JsonArray writeTreeNodes(LinkedTree tree) {
 
         final JsonArrayBuilder builder = Json.createArrayBuilder();
 
@@ -44,18 +63,10 @@ public class JsonLdTreeWriter {
         return builder.build();
     }
 
-    public JsonObject writeFragment(LinkedFragment fragment) {
-        return writeFragment(
-                fragment, 
-                Collections.emptyList(),
-                Json.createObjectBuilder()
-                ).build();
-    }
-
     JsonObject writeTree(LinkedTree tree) {
 
         final JsonObjectBuilder builder = Json.createObjectBuilder()
-                .add(JsonLdKeyword.GRAPH, writeExpanded(tree));
+                .add(JsonLdKeyword.GRAPH, writeTreeNodes(tree));
 
         writeFragment(tree, tree.pi(0), builder);
 
@@ -69,7 +80,7 @@ public class JsonLdTreeWriter {
         }
 
         if (fragment.type() != null && !fragment.type().isEmpty()) {
-            builder.add("@type", Json.createArrayBuilder(fragment.type()));
+            builder.add("@type", Json.createArrayBuilder(fragment.type().stream().toList()));
         }
 
         ops.stream()
@@ -78,7 +89,7 @@ public class JsonLdTreeWriter {
                 .forEach(pi -> pi.write(builder));
 
         for (final String term : fragment.terms()) {
-            builder.add(term, writeValues(fragment.property(term)));
+            builder.add(term, writeValues(fragment.container(term)));
         }
 
         return builder;
@@ -94,7 +105,7 @@ public class JsonLdTreeWriter {
             array.add(writeNode(node, container.pi(processingOrder++)));
         }
 
-        if (LinkedContainer.Type.OrderedList.equals(container.containerType())) {
+        if (LinkedContainer.ContainerType.OrderedList.equals(container.containerType())) {
 //            array = Json.createArrayBuilder()
 //                    .add(
             return Json.createObjectBuilder()
@@ -119,7 +130,7 @@ public class JsonLdTreeWriter {
             array.add(writeNode(node, container.pi(processingOrder++)));
         }
 
-        if (LinkedContainer.Type.OrderedList.equals(container.containerType())) {
+        if (LinkedContainer.ContainerType.OrderedList.equals(container.containerType())) {
             array = Json.createArrayBuilder()
                     .add(Json.createObjectBuilder()
                             .add(JsonLdKeyword.LIST, array));
