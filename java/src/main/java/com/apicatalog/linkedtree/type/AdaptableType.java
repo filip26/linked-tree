@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import com.apicatalog.linkedtree.LinkedFragment;
+import com.apicatalog.linkedtree.adapter.AdapterError;
 
 public class AdaptableType implements Type {
 
@@ -49,13 +50,13 @@ public class AdaptableType implements Type {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T materialize(Class<T> clazz) throws TypeAdapterError {
+    public <T> T materialize(Class<T> clazz) throws AdapterError {
         return (T) type.values()
                 .stream()
                 .filter(Objects::nonNull)
                 .filter(t -> t.typeInterface().isAssignableFrom(clazz))
                 .findFirst()
-                .orElseThrow(TypeAdapterError::new)
+                .orElseThrow(AdapterError::new)
                 .materialize(fragment);
     }
 

@@ -27,11 +27,11 @@ import com.apicatalog.linkedtree.AlumniCredential;
 import com.apicatalog.linkedtree.Base64ByteArray;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.VerifiableCredential;
+import com.apicatalog.linkedtree.adapter.AdapterError;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeWriter;
 import com.apicatalog.linkedtree.literal.ByteArrayValue;
-import com.apicatalog.linkedtree.type.TypeAdapterError;
 import com.apicatalog.linkedtree.xsd.XsdDateTime;
 
 import jakarta.json.Json;
@@ -56,7 +56,7 @@ class JsonLdAdapterTest {
     static JsonLdTreeWriter WRITER = new JsonLdTreeWriter();
 
     @Test
-    void base64ByteArray() throws IOException, URISyntaxException, TreeBuilderError, ClassCastException, TypeAdapterError {
+    void base64ByteArray() throws IOException, URISyntaxException, TreeBuilderError, ClassCastException, AdapterError {
 
         JsonArray input = resource("custom/base64-1.jsonld");
         JsonArray output = resource("custom/base64-2.jsonld");
@@ -84,7 +84,7 @@ class JsonLdAdapterTest {
     }
 
     @Test
-    void verifiableCredential() throws IOException, URISyntaxException, TreeBuilderError, ClassCastException, TypeAdapterError {
+    void verifiableCredential() throws IOException, URISyntaxException, TreeBuilderError, ClassCastException, AdapterError {
 
         JsonArray input = resource("custom/signed-vc-1.jsonld");
 

@@ -6,12 +6,12 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.function.Function;
 
+import com.apicatalog.linkedtree.adapter.AdapterError;
 import com.apicatalog.linkedtree.lang.LangStringSelector;
 import com.apicatalog.linkedtree.lang.LanguageMap;
 import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.selector.InvalidSelector;
 import com.apicatalog.linkedtree.type.Type;
-import com.apicatalog.linkedtree.type.TypeAdapterError;
 import com.apicatalog.linkedtree.xsd.XsdDateTime;
 
 public interface LinkedFragment extends LinkedNode {
@@ -29,7 +29,7 @@ public interface LinkedFragment extends LinkedNode {
     LinkedContainer property(String term);
 
     @SuppressWarnings("unchecked")
-    default <T extends Linkable> T single(String term, Class<T> clazz) throws InvalidSelector, TypeAdapterError {
+    default <T extends Linkable> T single(String term, Class<T> clazz) throws InvalidSelector, AdapterError {
 
         Objects.requireNonNull(clazz);
 
@@ -169,7 +169,7 @@ public interface LinkedFragment extends LinkedNode {
 //        throw new DocumentError(ErrorType.Invalid, Keywords.ID);
 //    }
 
-    default URI id(String term) throws InvalidSelector, TypeAdapterError {
+    default URI id(String term) throws InvalidSelector, AdapterError {
         try {
 
             LinkedFragment node = single(term, LinkedFragment.class);

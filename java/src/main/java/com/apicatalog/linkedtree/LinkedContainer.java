@@ -4,8 +4,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
+import com.apicatalog.linkedtree.adapter.AdapterError;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
-import com.apicatalog.linkedtree.type.TypeAdapterError;
 
 public interface LinkedContainer extends LinkedNode, Iterable<LinkedNode> {
 
@@ -69,7 +69,7 @@ public interface LinkedContainer extends LinkedNode, Iterable<LinkedNode> {
     }
 
     @SuppressWarnings("unchecked")
-    default <T> T single(Class<T> clazz) throws ClassCastException, TypeAdapterError {
+    default <T> T single(Class<T> clazz) throws AdapterError {
 
         final LinkedNode single = single();
 

@@ -7,7 +7,7 @@ import com.apicatalog.linkedtree.fragment.FragmentAdapterResolver;
 import com.apicatalog.linkedtree.fragment.LinkedFragmentAdapter;
 
 @Deprecated
-public record SerialAdapterResolver(
+public record SequenceAdapterResolver(
         Collection<FragmentAdapterResolver> resolvers) implements FragmentAdapterResolver {
 
     @Override
@@ -20,7 +20,7 @@ public record SerialAdapterResolver(
                 .orElse(null);
     }
 
-    public SerialAdapterResolver add(FragmentAdapterResolver resolver) {
+    public SequenceAdapterResolver add(FragmentAdapterResolver resolver) {
         this.resolvers.add(resolver);
         return this;
     }

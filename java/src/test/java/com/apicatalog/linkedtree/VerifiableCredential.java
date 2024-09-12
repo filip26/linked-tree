@@ -2,11 +2,12 @@ package com.apicatalog.linkedtree;
 
 import java.time.Instant;
 
+import com.apicatalog.linkedtree.adapter.AdapterError;
 import com.apicatalog.linkedtree.lang.LangStringSelector;
 import com.apicatalog.linkedtree.selector.InvalidSelector;
+import com.apicatalog.linkedtree.type.GenericTypeAdapter;
 import com.apicatalog.linkedtree.type.Type;
 import com.apicatalog.linkedtree.type.TypeAdapter;
-import com.apicatalog.linkedtree.type.TypeAdapterError;
 
 public class VerifiableCredential {
 
@@ -27,11 +28,11 @@ public class VerifiableCredential {
     protected VerifiableCredential() {
     }
 
-    public static VerifiableCredential of(LinkedFragment fragment) throws TypeAdapterError {
+    public static VerifiableCredential of(LinkedFragment fragment) throws AdapterError {
         try {
             return setup(new VerifiableCredential(), fragment);
         } catch (InvalidSelector e) {
-            throw new TypeAdapterError(e);
+            throw new AdapterError(e);
         }
     }
 
@@ -93,18 +94,9 @@ public class VerifiableCredential {
         return type;
     }
 
-    static final TypeAdapter ADAPTER = new TypeAdapter() {
-
-        @Override
-        public Class<?> typeInterface() {
-            return VerifiableCredential.class;
-        }
-
-        @Override
-        public Object materialize(LinkedFragment fragment) throws TypeAdapterError {
-            return VerifiableCredential.of(fragment);
-        }
-    };
+    static final TypeAdapter ADAPTER = new GenericTypeAdapter(
+            VerifiableCredential.class,
+            VerifiableCredential::of);
 
     public static TypeAdapter typeAdapter() {
         return ADAPTER;

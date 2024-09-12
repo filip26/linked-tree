@@ -3,6 +3,8 @@ package com.apicatalog.linkedtree.type;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import com.apicatalog.linkedtree.adapter.AdapterError;
+
 public interface Type extends Iterable<String> {
 
     public static Type empty() {
@@ -22,7 +24,7 @@ public interface Type extends Iterable<String> {
      * @return
      * @throws ClassCastException
      */
-    default <T> T materialize(Class<T> clazz) throws TypeAdapterError {
+    default <T> T materialize(Class<T> clazz) throws AdapterError {
         throw new ClassCastException();
     }
 

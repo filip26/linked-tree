@@ -54,13 +54,13 @@ public record TypeMapAdapterResolver(
                 return this;
             }
 
-            if (previous instanceof SerialAdapterResolver list) {
+            if (previous instanceof SequenceAdapterResolver list) {
                 list.add(resolver);
                 return this;
             }
 
             typeMap.put(type,
-                    new SerialAdapterResolver(List.of(
+                    new SequenceAdapterResolver(List.of(
                             previous,
                             resolver)));
             return this;
