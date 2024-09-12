@@ -48,9 +48,9 @@ class JsonLdAdapterTest {
 
     static JsonLdTreeReader READER = JsonLdTreeReader.create()
             .with(VerifiableCredential.TYPE, VerifiableCredential.typeAdapter())
-//            .with(AlumniCredential.TYPE, AlumniCredential::of)
-            .with(Base64ByteArray.TYPE, Base64ByteArray::of)
-            .with(XsdDateTime.TYPE, XsdDateTime::of)
+            .with(AlumniCredential.TYPE, AlumniCredential::of)
+            .with(Base64ByteArray.typeAdapter())
+            .with(XsdDateTime.typeAdapter())
             .build();
 
     static JsonLdTreeWriter WRITER = new JsonLdTreeWriter();
@@ -95,8 +95,7 @@ class JsonLdAdapterTest {
 
         assertNotNull(tree);
 
-        VerifiableCredential vc = tree
-                .single(VerifiableCredential.class);
+        VerifiableCredential vc = tree.single(VerifiableCredential.class);
 
         assertNotNull(vc);
 

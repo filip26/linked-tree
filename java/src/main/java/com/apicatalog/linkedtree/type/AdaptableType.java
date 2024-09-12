@@ -51,6 +51,7 @@ public class AdaptableType implements Type {
     @Override
     public <T> T materialize(Class<T> clazz) throws TypeAdapterError {
         System.out.println("2 >>> " + clazz);
+        System.out.println("2 >>> " + type);
         System.out.println("  >>> " + type.get("https://www.w3.org/2018/credentials#VerifiableCredential").typeInterface());
         System.out.println("  >>> " + type.get("https://www.w3.org/2018/credentials#VerifiableCredential").typeInterface().getSimpleName());
 

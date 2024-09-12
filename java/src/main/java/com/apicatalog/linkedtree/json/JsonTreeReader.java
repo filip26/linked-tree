@@ -6,7 +6,7 @@ import java.util.Stack;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.builder.TreeBuilder;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
-import com.apicatalog.linkedtree.literal.LiteralReader;
+import com.apicatalog.linkedtree.literal.LiteralAdapter;
 import com.apicatalog.linkedtree.traversal.NodeConsumer;
 import com.apicatalog.linkedtree.traversal.NodeSelector;
 import com.apicatalog.linkedtree.type.TypeAdapter;
@@ -20,7 +20,7 @@ public abstract class JsonTreeReader extends TreeBuilder<JsonValue> implements N
 
     protected JsonTreeReader(
             Map<String, TypeAdapter> typeAdapters,
-            Map<String, LiteralReader> literalAdapters) {
+            Map<String, LiteralAdapter> literalAdapters) {
         super(typeAdapters, literalAdapters);
         this.nodeSelector = null;
 

@@ -11,17 +11,17 @@ import java.util.stream.Collectors;
 
 import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedContainer.ContainerType;
-import com.apicatalog.linkedtree.fragment.GenericFragment;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.LinkedTree;
+import com.apicatalog.linkedtree.fragment.GenericFragment;
 import com.apicatalog.linkedtree.lang.ImmutableLangString;
 import com.apicatalog.linkedtree.lang.LangString.LanguageDirectionType;
 import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.link.MutableLink;
 import com.apicatalog.linkedtree.literal.ImmutableLiteral;
-import com.apicatalog.linkedtree.literal.LiteralReader;
+import com.apicatalog.linkedtree.literal.LiteralAdapter;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 import com.apicatalog.linkedtree.primitive.GenericContainer;
 import com.apicatalog.linkedtree.primitive.GenericTree;
@@ -33,7 +33,7 @@ import com.apicatalog.linkedtree.type.TypeAdapter;
 public class TreeBuilder<T> implements NodeConsumer<T> {
 
     protected Map<String, TypeAdapter> typeAdapters;
-    protected Stack<Map<String, LiteralReader>> literalAdapters;
+    protected Map<String, LiteralAdapter> literalAdapters;
 
     protected Stack<LinkedNode> nodeStack;
 
@@ -41,10 +41,9 @@ public class TreeBuilder<T> implements NodeConsumer<T> {
 
     protected TreeBuilder(
             Map<String, TypeAdapter> typeAdapters,
-            Map<String, LiteralReader> literalAdapters) {
+            Map<String, LiteralAdapter> literalAdapters) {
         this.typeAdapters = typeAdapters;
-        this.literalAdapters = new Stack<>();
-        this.literalAdapters.push(literalAdapters);
+        this.literalAdapters = literalAdapters;
         this.nodeStack = null;
         this.trees = null;
     }

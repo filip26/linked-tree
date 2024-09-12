@@ -41,7 +41,7 @@ class JsonLdReadWriteTest {
 
     static JsonLdTreeReader READER = JsonLdTreeReader
             .create()
-            .with(Base64ByteArray.TYPE, Base64ByteArray::of)
+            .with(Base64ByteArray.typeAdapter())
             .build();
 
     static JsonLdTreeWriter WRITER = new JsonLdTreeWriter();

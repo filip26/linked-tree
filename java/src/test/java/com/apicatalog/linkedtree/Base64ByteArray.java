@@ -3,6 +3,7 @@ package com.apicatalog.linkedtree;
 import java.util.Base64;
 
 import com.apicatalog.linkedtree.literal.ByteArrayValue;
+import com.apicatalog.linkedtree.literal.LiteralAdapter;
 
 public class Base64ByteArray implements ByteArrayValue {
 
@@ -57,5 +58,20 @@ public class Base64ByteArray implements ByteArrayValue {
     @Override
     public LinkedTree root() {
         return root;
+    }
+
+    public static LiteralAdapter typeAdapter() {
+        return new LiteralAdapter() {
+            
+            @Override
+            public LinkedLiteral materialize(String value, LinkedTree root) {
+                return Base64ByteArray.of(value, root);
+            }
+            
+            @Override
+            public String datatype() {
+                return Base64ByteArray.TYPE;
+            }
+        };
     }
 }
