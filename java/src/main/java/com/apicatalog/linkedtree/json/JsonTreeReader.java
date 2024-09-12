@@ -6,7 +6,7 @@ import java.util.Stack;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.builder.TreeBuilder;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
-import com.apicatalog.linkedtree.literal.LiteralAdapter;
+import com.apicatalog.linkedtree.literal.adapter.LiteralAdapter;
 import com.apicatalog.linkedtree.traversal.NodeConsumer;
 import com.apicatalog.linkedtree.traversal.NodeSelector;
 import com.apicatalog.linkedtree.type.TypeAdapter;
@@ -42,7 +42,7 @@ public abstract class JsonTreeReader extends TreeBuilder<JsonValue> implements N
             JsonValue node,
             int indexOrder,
             String indexTerm,
-            int depth) {
+            int depth) throws TreeBuilderError {
 
         var policy = nodeSelector.test(node, indexOrder, indexTerm, depth);
 
@@ -56,5 +56,5 @@ public abstract class JsonTreeReader extends TreeBuilder<JsonValue> implements N
         return policy;
     }
 
-    protected abstract void process(JsonValue source);
+    protected abstract void process(JsonValue source) throws TreeBuilderError;
 }

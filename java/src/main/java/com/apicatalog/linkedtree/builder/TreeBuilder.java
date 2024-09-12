@@ -21,7 +21,7 @@ import com.apicatalog.linkedtree.lang.LangString.LanguageDirectionType;
 import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.link.MutableLink;
 import com.apicatalog.linkedtree.literal.ImmutableLiteral;
-import com.apicatalog.linkedtree.literal.LiteralAdapter;
+import com.apicatalog.linkedtree.literal.adapter.LiteralAdapter;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 import com.apicatalog.linkedtree.primitive.GenericContainer;
 import com.apicatalog.linkedtree.primitive.GenericTree;

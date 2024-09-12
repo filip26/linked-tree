@@ -1,5 +1,7 @@
 package com.apicatalog.linkedtree.traversal;
 
+import com.apicatalog.linkedtree.builder.TreeBuilderError;
+
 @FunctionalInterface
 public interface NodeSelector<T> {
 
@@ -19,5 +21,5 @@ public interface NodeSelector<T> {
             T node,
             int indexOrder,
             String indexTerm,
-            int depth);
+            int depth) throws TreeBuilderError;
 }

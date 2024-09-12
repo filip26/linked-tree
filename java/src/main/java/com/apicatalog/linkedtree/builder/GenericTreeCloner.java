@@ -57,7 +57,7 @@ public class GenericTreeCloner implements NodeConsumer<LinkedNode>, NodeSelector
     }
 
     @Override
-    public ProcessingPolicy test(LinkedNode node, int indexOrder, String indexTerm, int depth) {
+    public ProcessingPolicy test(LinkedNode node, int indexOrder, String indexTerm, int depth) throws TreeBuilderError {
 
         var policy = nodeSelector.test(node, indexOrder, indexTerm, depth);
 

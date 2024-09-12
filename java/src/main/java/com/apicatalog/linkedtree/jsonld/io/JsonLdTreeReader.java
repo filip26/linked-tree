@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.apicatalog.linkedtree.LinkedTree;
+import com.apicatalog.linkedtree.adapter.AdapterError;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.json.JsonDecimal;
 import com.apicatalog.linkedtree.json.JsonInteger;
@@ -22,7 +23,7 @@ import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 import com.apicatalog.linkedtree.jsonld.JsonLdType;
 import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.link.MutableLink;
-import com.apicatalog.linkedtree.literal.LiteralAdapter;
+import com.apicatalog.linkedtree.literal.adapter.LiteralAdapter;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 import com.apicatalog.linkedtree.traversal.NodeSelector;
 import com.apicatalog.linkedtree.type.TypeAdapter;
@@ -85,7 +86,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
     }
 
     @Override
-    protected void process(final JsonValue source) {
+    protected void process(final JsonValue source) throws TreeBuilderError {
         if (ValueType.OBJECT == source.getValueType()) {
             // tree
             if (source.asJsonObject().containsKey(JsonLdKeyword.GRAPH)) {
@@ -190,7 +191,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
         return link;
     }
 
-    protected void jsonLdLiteral(final JsonObject valueJsonObject, final Collection<ProcessingInstruction> ops) {
+    protected void jsonLdLiteral(final JsonObject valueJsonObject, final Collection<ProcessingInstruction> ops) throws TreeBuilderError {
 
         final JsonValue value = valueJsonObject.get(JsonLdKeyword.VALUE);
 
@@ -272,13 +273,17 @@ public class JsonLdTreeReader extends JsonTreeReader {
             final LiteralAdapter adapter = literalAdapters.get(datatype);
 
             if (adapter != null) {
-                var pi = getPi(valueJsonObject, JsonLdKeyword.VALUE, JsonLdKeyword.TYPE);
-                if (pi != null) {
-                    ops.add(pi);
+                try {
+                    var pi = getPi(valueJsonObject, JsonLdKeyword.VALUE, JsonLdKeyword.TYPE);
+                    if (pi != null) {
+                        ops.add(pi);
+                    }
+                    pi(ops);
+                    literal(adapter.materialize(valueString, root()));
+                    return;
+                } catch (AdapterError e) {
+                    throw new TreeBuilderError(e);
                 }
-                pi(ops);
-                literal(adapter.materialize(valueString, root()));
-                return;
             }
         }
 
