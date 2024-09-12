@@ -25,8 +25,8 @@ public class VerifiableCredential {
     protected Instant validUntil;
 
     protected LinkedContainer subject;
-    protected LinkedFragment issuer;
-    
+    protected URI issuer;
+
     protected Collection<Status> status;
 
     protected VerifiableCredential() {
@@ -60,15 +60,14 @@ public class VerifiableCredential {
         credential.subject = source.container(
                 "https://www.w3.org/2018/credentials#credentialSubject");
 
-        credential.issuer = source.fragment(
+        credential.issuer = source.uri(
                 "https://www.w3.org/2018/credentials#issuer");
 
         credential.status = source.collection(
                 "https://www.w3.org/2018/credentials#credentialStatus",
                 Status.class,
-                UnknownStatus::new
-                );
-        
+                UnknownStatus::new);
+
         return credential;
     }
 
@@ -76,7 +75,7 @@ public class VerifiableCredential {
         return subject;
     }
 
-    public LinkedFragment issuer() {
+    public URI issuer() {
         return issuer;
     }
 
@@ -107,7 +106,7 @@ public class VerifiableCredential {
     public Collection<Status> status() {
         return status;
     }
-    
+
     static final TypeAdapter ADAPTER = new GenericTypeAdapter(
             VerifiableCredential.class,
             VerifiableCredential::of);

@@ -171,7 +171,7 @@ public interface LinkedFragment extends LinkedNode {
         throw new InvalidSelector(JsonLdKeyword.ID);
     }
 
-    default URI uri(String term) throws InvalidSelector, AdapterError {
+    default URI uri(String term) throws InvalidSelector {
         try {
 
             LinkedFragment node = object(term, LinkedFragment.class);
@@ -186,8 +186,8 @@ public interface LinkedFragment extends LinkedNode {
 
             throw new InvalidSelector(term);
 
-        } catch (IllegalArgumentException e) {
-            throw new InvalidSelector(term);
+        } catch (IllegalArgumentException | AdapterError e) {
+            throw new InvalidSelector(e, term);
         }
     }
 

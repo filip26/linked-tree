@@ -135,7 +135,9 @@ class JsonLdAdapterTest {
 
         assertEquals(1, vc.subject().size());
 
-        assertEquals("https://vc.example/issuers/5678", vc.issuer().id().uri());
+        assertEquals(
+                URI.create("https://vc.example/issuers/5678"),
+                vc.issuer());
 
         AlumniCredential avc = vc.type().materialize(AlumniCredential.class);
         assertNotNull(avc);
