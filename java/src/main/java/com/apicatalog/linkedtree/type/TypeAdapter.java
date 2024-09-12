@@ -2,7 +2,6 @@ package com.apicatalog.linkedtree.type;
 
 import com.apicatalog.linkedtree.LinkedFragment;
 
-@FunctionalInterface
 public interface TypeAdapter {
 
     /**
@@ -15,9 +14,5 @@ public interface TypeAdapter {
      */
     Object materialize(LinkedFragment fragment) throws TypeAdapterError;
 
-//    Class<?> typeInterface();
-    
-    default Class<?> typeInterface() {
-        return this.getClass();
-    }
+    Class<?> typeInterface();    
 }

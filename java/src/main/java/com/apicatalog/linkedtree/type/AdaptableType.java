@@ -50,11 +50,6 @@ public class AdaptableType implements Type {
     @SuppressWarnings("unchecked")
     @Override
     public <T> T materialize(Class<T> clazz) throws TypeAdapterError {
-        System.out.println("2 >>> " + clazz);
-        System.out.println("2 >>> " + type);
-        System.out.println("  >>> " + type.get("https://www.w3.org/2018/credentials#VerifiableCredential").typeInterface());
-        System.out.println("  >>> " + type.get("https://www.w3.org/2018/credentials#VerifiableCredential").typeInterface().getSimpleName());
-
         return (T) type.values()
                 .stream()
                 .filter(Objects::nonNull)
@@ -66,8 +61,6 @@ public class AdaptableType implements Type {
 
     @Override
     public boolean isAdaptableTo(Class<?> clazz) {
-        System.out.println(">>> " + clazz);
-        System.out.println(">>> " + type);
         return type.values()
                 .stream()
                 .filter(Objects::nonNull)
@@ -79,8 +72,6 @@ public class AdaptableType implements Type {
     }
 
     public void adapter(String name, TypeAdapter adapter) {
-        System.out.println("1 " + name + ", " + adapter);
-
         type.put(name, adapter);
     }
 

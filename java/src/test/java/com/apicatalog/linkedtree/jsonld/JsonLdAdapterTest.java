@@ -48,7 +48,7 @@ class JsonLdAdapterTest {
 
     static JsonLdTreeReader READER = JsonLdTreeReader.create()
             .with(VerifiableCredential.TYPE, VerifiableCredential.typeAdapter())
-            .with(AlumniCredential.TYPE, AlumniCredential::of)
+            .with(AlumniCredential.TYPE, AlumniCredential.typeAdapter())
             .with(Base64ByteArray.typeAdapter())
             .with(XsdDateTime.typeAdapter())
             .build();
