@@ -1,4 +1,4 @@
-package com.apicatalog.linkedtree.reader;
+package com.apicatalog.linkedtree.literal;
 
 import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.LinkedTree;

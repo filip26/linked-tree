@@ -6,7 +6,7 @@ import java.util.Stack;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.builder.TreeBuilder;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
-import com.apicatalog.linkedtree.reader.LiteralReader;
+import com.apicatalog.linkedtree.literal.LiteralReader;
 import com.apicatalog.linkedtree.traversal.NodeConsumer;
 import com.apicatalog.linkedtree.traversal.NodeSelector;
 import com.apicatalog.linkedtree.type.TypeAdapter;

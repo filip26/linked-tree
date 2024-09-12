@@ -6,8 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import com.apicatalog.linkedtree.adapter.LinkedFragmentAdapter;
-import com.apicatalog.linkedtree.reader.LinkedFragmentReader;
+import com.apicatalog.linkedtree.fragment.FragmentAdapterResolver;
+import com.apicatalog.linkedtree.fragment.LinkedFragmentAdapter;
+import com.apicatalog.linkedtree.fragment.LinkedFragmentReader;
 
 @Deprecated
 public record TypeMapAdapterResolver(
@@ -53,13 +54,13 @@ public record TypeMapAdapterResolver(
                 return this;
             }
 
-            if (previous instanceof ListAdapterResolver list) {
+            if (previous instanceof SerialAdapterResolver list) {
                 list.add(resolver);
                 return this;
             }
 
             typeMap.put(type,
-                    new ListAdapterResolver(List.of(
+                    new SerialAdapterResolver(List.of(
                             previous,
                             resolver)));
             return this;

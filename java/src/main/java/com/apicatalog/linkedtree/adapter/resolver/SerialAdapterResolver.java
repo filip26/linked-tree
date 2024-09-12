@@ -3,10 +3,11 @@ package com.apicatalog.linkedtree.adapter.resolver;
 import java.util.Collection;
 import java.util.Objects;
 
-import com.apicatalog.linkedtree.adapter.LinkedFragmentAdapter;
+import com.apicatalog.linkedtree.fragment.FragmentAdapterResolver;
+import com.apicatalog.linkedtree.fragment.LinkedFragmentAdapter;
 
 @Deprecated
-public record ListAdapterResolver(
+public record SerialAdapterResolver(
         Collection<FragmentAdapterResolver> resolvers) implements FragmentAdapterResolver {
 
     @Override
@@ -19,7 +20,7 @@ public record ListAdapterResolver(
                 .orElse(null);
     }
 
-    public ListAdapterResolver add(FragmentAdapterResolver resolver) {
+    public SerialAdapterResolver add(FragmentAdapterResolver resolver) {
         this.resolvers.add(resolver);
         return this;
     }

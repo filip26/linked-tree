@@ -1,19 +1,28 @@
-package com.apicatalog.linkedtree.primitive;
+package com.apicatalog.linkedtree.fragment;
 
 import java.util.Collection;
 import java.util.Map;
 
+import com.apicatalog.linkedtree.Linkable;
 import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedFragment;
+import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.type.Type;
 
-public record GenericFragment(
+/**
+ * Allows to wrap a custom instance that does not inherit {@link LinkedNode} but
+ * {@link Linkable}. Intended to be used as
+ * {@link LinkedFragmentReader#read(Link, Collection, Map)} result.
+ */
+@Deprecated
+public record LinkableObject(
         Link id,
         Type type,
         Map<String, LinkedContainer> entries,
-        LinkedTree root) implements LinkedFragment {
+        LinkedTree root,
+        Linkable linkable) implements LinkedFragment {
 
     @Override
     public Collection<String> terms() {
@@ -24,26 +33,15 @@ public record GenericFragment(
     public LinkedContainer property(String term) {
         return entries.get(term);
     }
-//
-//    @Override
+
 //    @SuppressWarnings("unchecked")
+//    @Override
 //    public <T> T cast(Class<T> clazz) {
-//        if (id() != null 
-//                && id().target() != null
-//                && !Objects.equals(id().target(), this)) {
-//            return (T) id().target().cast(clazz);
-//        }
-//        return (T) this;
+//        return (T) linkable;
 //    }
 //
 //    @Override
 //    public Linkable cast() {
-//        if (id() != null 
-//                && id().target() != null
-//                && !Objects.equals(id().target(), this)) {
-//            return id().target().cast();
-//        }
-//        return this;
+//        return linkable;
 //    }
-
 }

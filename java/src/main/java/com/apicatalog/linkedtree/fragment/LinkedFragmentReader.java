@@ -1,4 +1,4 @@
-package com.apicatalog.linkedtree.reader;
+package com.apicatalog.linkedtree.fragment;
 
 import java.util.Map;
 

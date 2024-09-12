@@ -1,8 +1,6 @@
-package com.apicatalog.linkedtree.adapter.resolver;
+package com.apicatalog.linkedtree.fragment;
 
 import java.util.Collection;
-
-import com.apicatalog.linkedtree.adapter.LinkedFragmentAdapter;
 
 @Deprecated
 public interface FragmentAdapterResolver {

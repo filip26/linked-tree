@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Stack;
 
 import com.apicatalog.linkedtree.LinkedTree;
-import com.apicatalog.linkedtree.adapter.LiteralAdapter;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.json.JsonDecimal;
 import com.apicatalog.linkedtree.json.JsonInteger;
@@ -24,8 +23,9 @@ import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 import com.apicatalog.linkedtree.jsonld.JsonLdType;
 import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.link.MutableLink;
+import com.apicatalog.linkedtree.literal.LiteralAdapter;
+import com.apicatalog.linkedtree.literal.LiteralReader;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
-import com.apicatalog.linkedtree.reader.LiteralReader;
 import com.apicatalog.linkedtree.traversal.NodeSelector;
 import com.apicatalog.linkedtree.type.TypeAdapter;
 import com.apicatalog.linkedtree.xsd.XsdConstants;

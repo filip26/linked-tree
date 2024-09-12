@@ -1,9 +1,9 @@
-package com.apicatalog.linkedtree.adapter;
+package com.apicatalog.linkedtree.fragment;
 
 import java.util.Collection;
 import java.util.Collections;
 
-import com.apicatalog.linkedtree.reader.LinkedFragmentReader;
+import com.apicatalog.linkedtree.literal.LiteralAdapter;
 
 @FunctionalInterface
 public interface LinkedFragmentAdapter {
