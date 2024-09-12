@@ -35,7 +35,6 @@ import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeWriter;
 import com.apicatalog.linkedtree.literal.ByteArrayValue;
-import com.apicatalog.linkedtree.type.GenericTypeAdapter;
 import com.apicatalog.linkedtree.xsd.XsdDateTime;
 
 import jakarta.json.Json;
@@ -55,9 +54,8 @@ class JsonLdAdapterTest {
             .with(VerifiableCredential.TYPE, VerifiableCredential.typeAdapter())
             .with(AlumniCredential.TYPE, AlumniCredential.typeAdapter())
             .with(BitstringStatusListEntry.TYPE,
-                    new GenericTypeAdapter(
-                            BitstringStatusListEntry.class,
-                            BitstringStatusListEntry::of))
+                    BitstringStatusListEntry.class,
+                    BitstringStatusListEntry::of)
 
             // literals
             .with(Base64ByteArray.typeAdapter())

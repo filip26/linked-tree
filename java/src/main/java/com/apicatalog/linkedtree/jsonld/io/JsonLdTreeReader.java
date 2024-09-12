@@ -9,7 +9,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedTree;
+import com.apicatalog.linkedtree.adapter.Adapter;
 import com.apicatalog.linkedtree.adapter.AdapterError;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.json.JsonDecimal;
@@ -26,6 +28,7 @@ import com.apicatalog.linkedtree.link.MutableLink;
 import com.apicatalog.linkedtree.literal.adapter.LiteralAdapter;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 import com.apicatalog.linkedtree.traversal.NodeSelector;
+import com.apicatalog.linkedtree.type.GenericTypeAdapter;
 import com.apicatalog.linkedtree.type.TypeAdapter;
 import com.apicatalog.linkedtree.xsd.XsdConstants;
 
@@ -49,7 +52,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
         return read(Collections.emptyList(), source);
     }
 
-    public LinkedTree read(List<String> context, JsonStructure source) throws TreeBuilderError {
+    public LinkedTree read(Collection<String> context, JsonStructure source) throws TreeBuilderError {
         // TODO context
         return read(source, ((node, indexOrder, indexTerm, depth) -> ProcessingPolicy.Accept));
     }
@@ -377,6 +380,13 @@ public class JsonLdTreeReader extends JsonTreeReader {
         public Builder with(String type, TypeAdapter adapter) {
             this.typeMap.put(type, adapter);
             return this;
+        }
+        
+        public Builder with(
+                String type, 
+                Class<?> typeInterface,
+                Adapter<LinkedFragment, Object> adapter) {
+            return with(type, new GenericTypeAdapter(typeInterface, adapter));
         }
 
         public Builder with(LiteralAdapter adapter) {

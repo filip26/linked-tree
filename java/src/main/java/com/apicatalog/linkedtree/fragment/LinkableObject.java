@@ -13,8 +13,7 @@ import com.apicatalog.linkedtree.type.Type;
 
 /**
  * Allows to wrap a custom instance that does not inherit {@link LinkedNode} but
- * {@link Linkable}. Intended to be used as
- * {@link LinkedFragmentReader#read(Link, Collection, Map)} result.
+ * {@link Linkable}.
  */
 @Deprecated
 public record LinkableObject(
