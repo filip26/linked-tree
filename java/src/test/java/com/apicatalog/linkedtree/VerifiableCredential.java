@@ -2,15 +2,19 @@ package com.apicatalog.linkedtree;
 
 import java.time.Instant;
 import java.time.format.DateTimeParseException;
-import java.util.Collection;
 
 import com.apicatalog.linkedtree.lang.LangStringSelector;
 import com.apicatalog.linkedtree.lang.LanguageMap;
+import com.apicatalog.linkedtree.type.Type;
+import com.apicatalog.linkedtree.type.TypeAdapter;
 import com.apicatalog.linkedtree.type.TypeAdapterError;
 
 public class VerifiableCredential {
 
     public static final String TYPE = "https://www.w3.org/2018/credentials#VerifiableCredential";
+
+    protected String id;
+    protected Type type;
 
     protected LangStringSelector name;
     protected LangStringSelector description;
@@ -37,6 +41,9 @@ public class VerifiableCredential {
     }
 
     protected static VerifiableCredential setup(VerifiableCredential credential, LinkedFragment source) throws DateTimeParseException, ClassCastException, TypeAdapterError {
+
+        credential.id = source.id().uri();
+        credential.type = source.type();
 
         credential.name = getLangMap(source, "https://schema.org/name");
         credential.description = getLangMap(source, "https://schema.org/description");
@@ -97,13 +104,28 @@ public class VerifiableCredential {
     }
 
     public String id() {
-        // TODO Auto-generated method stub
-        return null;
+        return id;
     }
 
-    public Collection<String> type() {
-        // TODO Auto-generated method stub
-        return null;
+    public Type type() {
+        return type;
+    }
+
+    static final TypeAdapter ADAPTER = new TypeAdapter() {
+
+        @Override
+        public Class<?> typeInterface() {
+            return VerifiableCredential.class;
+        }
+
+        @Override
+        public Object materialize(LinkedFragment fragment) throws TypeAdapterError {
+            return VerifiableCredential.of(fragment);
+        }
+    };
+
+    public static TypeAdapter typeAdapter() {
+        return ADAPTER;
     }
 
 }

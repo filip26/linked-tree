@@ -15,6 +15,8 @@ public interface TypeAdapter {
      */
     Object materialize(LinkedFragment fragment) throws TypeAdapterError;
 
+//    Class<?> typeInterface();
+    
     default Class<?> typeInterface() {
         return this.getClass();
     }

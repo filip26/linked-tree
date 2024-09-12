@@ -51,6 +51,8 @@ public class TreeBuilder<T> implements NodeConsumer<T> {
 
     @Override
     public void accept(T node, int indexOrder, String indexTerm, int depth) throws TreeBuilderError {
+        
+        
         if (indexOrder != -1) {
             bind(indexOrder);
 
@@ -115,6 +117,9 @@ public class TreeBuilder<T> implements NodeConsumer<T> {
         LinkedNode child = nodeStack.pop();
         if (child == null) {
             child = LinkedContainer.EMPTY;
+            
+        } else if (child.isFragment()) {
+            postFragment(child.asFragment());
         }
 
         final LinkedNode parent = nodeStack.peek();
@@ -137,8 +142,11 @@ public class TreeBuilder<T> implements NodeConsumer<T> {
         LinkedNode child = nodeStack.pop();
         if (child == null) {
             child = LinkedContainer.EMPTY;
+            
+        } else if (child.isFragment()) {
+            postFragment(child.asFragment());
         }
-
+        
         LinkedNode parent = nodeStack.peek();
 
         if (parent != null) {
@@ -182,7 +190,6 @@ public class TreeBuilder<T> implements NodeConsumer<T> {
         return this;
     }
 
-    // Pred, ne po?!
     protected void postFragment(LinkedFragment fragment) throws TreeBuilderError {
         fragment.type().forEach(type -> {
             final TypeAdapter typeAdapter = typeAdapters.get(type);
@@ -194,7 +201,6 @@ public class TreeBuilder<T> implements NodeConsumer<T> {
 
     protected void postTree(LinkedTree tree) throws TreeBuilderError {
         links(tree.links());
-        postFragment(tree);
     }
 
     // process links

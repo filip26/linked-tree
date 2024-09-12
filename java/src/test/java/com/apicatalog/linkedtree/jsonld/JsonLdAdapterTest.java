@@ -16,12 +16,14 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
+import com.apicatalog.linkedtree.AlumniCredential;
 import com.apicatalog.linkedtree.Base64ByteArray;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.VerifiableCredential;
@@ -45,7 +47,8 @@ import jakarta.json.stream.JsonGenerator;
 class JsonLdAdapterTest {
 
     static JsonLdTreeReader READER = JsonLdTreeReader.create()
-            .with(VerifiableCredential.TYPE, VerifiableCredential::of)
+            .with(VerifiableCredential.TYPE, VerifiableCredential.typeAdapter())
+//            .with(AlumniCredential.TYPE, AlumniCredential::of)
             .with(Base64ByteArray.TYPE, Base64ByteArray::of)
             .with(XsdDateTime.TYPE, XsdDateTime::of)
             .build();
@@ -53,7 +56,7 @@ class JsonLdAdapterTest {
     static JsonLdTreeWriter WRITER = new JsonLdTreeWriter();
 
     @Test
-    void base64ByteArray() throws IOException, URISyntaxException, TreeBuilderError {
+    void base64ByteArray() throws IOException, URISyntaxException, TreeBuilderError, ClassCastException, TypeAdapterError {
 
         JsonArray input = resource("custom/base64-1.jsonld");
         JsonArray output = resource("custom/base64-2.jsonld");
@@ -63,18 +66,12 @@ class JsonLdAdapterTest {
         assertNotNull(tree);
 
         ByteArrayValue literal = tree
-                .single()
-                .asFragment()
+                .singleFragment()
                 .property("http://example.org/test#property4")
-                .single()
-//TODO                .singleLiteral(ByteArrayValue.class);
-                .asLiteral() // TODO as param
-                .cast(ByteArrayValue.class);
+                .single(ByteArrayValue.class);
 
-        assertNotNull(literal);
         assertEquals("RW5jb2RlIHRvIEJhc2U2NCBmb3JtYXQ=", literal.lexicalValue());
-        assertTrue(literal instanceof ByteArrayValue);
-        assertArrayEquals("Encode to Base64 format".getBytes(), ((ByteArrayValue) literal).byteArrayValue());
+        assertArrayEquals("Encode to Base64 format".getBytes(), literal.byteArrayValue());
 
         ((Base64ByteArray) literal).byteArrayValue("test X".getBytes());
         assertEquals("dGVzdCBY", literal.lexicalValue());
@@ -108,7 +105,7 @@ class JsonLdAdapterTest {
         assertEquals(new HashSet<>(Arrays.asList(new String[] {
                 "https://www.w3.org/2018/credentials#VerifiableCredential",
                 "https://www.w3.org/ns/credentials/examples#AlumniCredential"
-        })), vc.type().stream().toArray());
+        })), vc.type().stream().collect(Collectors.toSet()));
 
         assertEquals(1, vc.name().size());
         assertEquals("Alumni Credential", vc.name().single().lexicalValue());
@@ -127,6 +124,10 @@ class JsonLdAdapterTest {
 
         assertEquals("https://vc.example/issuers/5678", vc.issuer().id().uri());
 
+        AlumniCredential avc = vc.type().materialize(AlumniCredential.class);
+        assertNotNull(avc);
+
+        
     }
 
     static final JsonArray resource(String name) throws IOException, URISyntaxException {

@@ -1,7 +1,4 @@
-package com.apicatalog.linkedtree.jsonld;
-
-import com.apicatalog.linkedtree.LinkedFragment;
-import com.apicatalog.linkedtree.VerifiableCredential;
+package com.apicatalog.linkedtree;
 
 public class AlumniCredential extends VerifiableCredential {
 
