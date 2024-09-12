@@ -22,18 +22,14 @@ public class VerifiableCredential {
     protected Instant validUntil;
 
     protected LinkedContainer subject;
+    protected LinkedFragment issuer;
 
-    protected LinkedFragment source;
-
-    protected VerifiableCredential(LinkedFragment source) {
-        this.source = source;
+    protected VerifiableCredential() {
     }
 
     public static VerifiableCredential of(LinkedFragment fragment) throws TypeAdapterError {
         try {
-            return setup(
-                    new VerifiableCredential(fragment),
-                    fragment);
+            return setup(new VerifiableCredential(), fragment);
         } catch (InvalidSelector e) {
             throw new TypeAdapterError(e);
         }
@@ -44,8 +40,11 @@ public class VerifiableCredential {
         credential.id = source.id().uri();
         credential.type = source.type();
 
-        credential.name = source.langMap("https://schema.org/name");
-        credential.description = source.langMap("https://schema.org/description");
+        credential.name = source.langMap(
+                "https://schema.org/name");
+
+        credential.description = source.langMap(
+                "https://schema.org/description");
 
         credential.validFrom = source.xsdDateTime(
                 "https://www.w3.org/2018/credentials#validFrom");
@@ -53,21 +52,21 @@ public class VerifiableCredential {
         credential.validUntil = source.xsdDateTime(
                 "https://www.w3.org/2018/credentials#validUntil");
 
+        credential.subject = source.property(
+                "https://www.w3.org/2018/credentials#credentialSubject");
+
+        credential.issuer = source.singleFragment(
+                "https://www.w3.org/2018/credentials#issuer");
+
         return credential;
     }
 
     public LinkedContainer subject() {
-//        return properties.get("https://www.w3.org/2018/credentials#credentialSubject");
-        return null;
+        return subject;
     }
 
     public LinkedFragment issuer() {
-//        return properties.containsKey("https://www.w3.org/2018/credentials#issuer")
-//                ? properties.get("https://www.w3.org/2018/credentials#issuer")
-//                        .single()
-//                        .asFragment()
-//                : null;
-        return null;
+        return issuer;
     }
 
     public LangStringSelector name() {

@@ -1,5 +1,6 @@
 package com.apicatalog.linkedtree;
 
+import com.apicatalog.linkedtree.selector.InvalidSelector;
 import com.apicatalog.linkedtree.type.TypeAdapter;
 import com.apicatalog.linkedtree.type.TypeAdapterError;
 
@@ -7,14 +8,17 @@ public class AlumniCredential extends VerifiableCredential {
 
     public static final String TYPE = "https://www.w3.org/ns/credentials/examples#AlumniCredential";
     
-    protected AlumniCredential(LinkedFragment fragment) {
-        super(fragment);
-        // TODO Auto-generated constructor stub
+    protected AlumniCredential() {
+        super();
     }
 
-    public static AlumniCredential of(boolean x) {
-        System.out.println("A");
-        return null;
+    public static AlumniCredential of(LinkedFragment fragment) throws TypeAdapterError {
+        try {
+            return (AlumniCredential) setup(new AlumniCredential(), fragment);
+        } catch (InvalidSelector e) {
+            throw new TypeAdapterError(e);
+        }
+
     }
     
     static final TypeAdapter ADAPTER = new TypeAdapter() {

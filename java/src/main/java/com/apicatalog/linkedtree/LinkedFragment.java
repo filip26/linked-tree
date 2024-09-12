@@ -29,7 +29,7 @@ public interface LinkedFragment extends LinkedNode {
     LinkedContainer property(String term);
 
     @SuppressWarnings("unchecked")
-    default <T extends Linkable> T single(String term, Class<T> clazz) throws InvalidSelector {
+    default <T extends Linkable> T single(String term, Class<T> clazz) throws InvalidSelector, TypeAdapterError {
 
         Objects.requireNonNull(clazz);
 
@@ -66,7 +66,7 @@ public interface LinkedFragment extends LinkedNode {
             }
             throw new InvalidSelector(term);
 
-        } catch (TypeAdapterError | ClassCastException e) {
+        } catch (ClassCastException e) {
             throw new InvalidSelector(e, term);
         }
     }
@@ -146,7 +146,7 @@ public interface LinkedFragment extends LinkedNode {
                 LinkedLiteral::lexicalValue);
     }
 
-    default LinkedFragment fragment(String term) throws InvalidSelector {
+    default LinkedFragment singleFragment(String term) throws InvalidSelector {
         return single(
                 term,
                 LinkedFragment.class,
@@ -169,7 +169,7 @@ public interface LinkedFragment extends LinkedNode {
 //        throw new DocumentError(ErrorType.Invalid, Keywords.ID);
 //    }
 
-    default URI id(String term) throws InvalidSelector {
+    default URI id(String term) throws InvalidSelector, TypeAdapterError {
         try {
 
             LinkedFragment node = single(term, LinkedFragment.class);
@@ -189,7 +189,7 @@ public interface LinkedFragment extends LinkedNode {
         }
     }
 
-    default LangStringSelector langMap(String term) {
+    default LangStringSelector langMap(String term) throws InvalidSelector {
         final LinkedContainer container = property(term);
         if (container != null) {
             return LanguageMap.of(container);
