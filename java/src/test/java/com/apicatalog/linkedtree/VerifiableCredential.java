@@ -1,10 +1,9 @@
 package com.apicatalog.linkedtree;
 
 import java.time.Instant;
-import java.time.format.DateTimeParseException;
 
 import com.apicatalog.linkedtree.lang.LangStringSelector;
-import com.apicatalog.linkedtree.lang.LanguageMap;
+import com.apicatalog.linkedtree.selector.InvalidSelector;
 import com.apicatalog.linkedtree.type.Type;
 import com.apicatalog.linkedtree.type.TypeAdapter;
 import com.apicatalog.linkedtree.type.TypeAdapterError;
@@ -35,32 +34,24 @@ public class VerifiableCredential {
             return setup(
                     new VerifiableCredential(fragment),
                     fragment);
-        } catch (DateTimeParseException | ClassCastException e) {
+        } catch (InvalidSelector e) {
             throw new TypeAdapterError(e);
         }
     }
 
-    protected static VerifiableCredential setup(VerifiableCredential credential, LinkedFragment source) throws DateTimeParseException, ClassCastException, TypeAdapterError {
+    protected static VerifiableCredential setup(VerifiableCredential credential, LinkedFragment source) throws InvalidSelector {
 
         credential.id = source.id().uri();
         credential.type = source.type();
 
-        credential.name = getLangMap(source, "https://schema.org/name");
-        credential.description = getLangMap(source, "https://schema.org/description");
+        credential.name = source.langMap("https://schema.org/name");
+        credential.description = source.langMap("https://schema.org/description");
 
-//        credential.validFrom = source.containsKey("https://www.w3.org/2018/credentials#validFrom")
-//                ? source.property("https://www.w3.org/2018/credentials#validFrom")
-//                        .single(XsdDateTime.class)
-//                        .datetime()
-//                : null;
-//
-//        credential.validUntil = source.containsKey("https://www.w3.org/2018/credentials#validUntil")
-//                ? source.get("https://www.w3.org/2018/credentials#validUntil")
-//                        .single()
-//                        .asLiteral()
-//                        .cast(XsdDateTime.class)
-//                        .datetime()
-//                : null;
+        credential.validFrom = source.xsdDateTime(
+                "https://www.w3.org/2018/credentials#validFrom");
+
+        credential.validUntil = source.xsdDateTime(
+                "https://www.w3.org/2018/credentials#validUntil");
 
         return credential;
     }
@@ -76,14 +67,6 @@ public class VerifiableCredential {
 //                        .single()
 //                        .asFragment()
 //                : null;
-        return null;
-    }
-
-    protected static LangStringSelector getLangMap(LinkedFragment fragment, String term) {
-        final LinkedContainer container = fragment.property(term);
-        if (container != null) {
-            return LanguageMap.of(container);
-        }
         return null;
     }
 
