@@ -45,7 +45,7 @@ public class DepthFirstSearch {
                         int indexOrder,
                         String indexTerm,
                         int depth) -> consumer.accept(
-                                node.asFragment().property(term),
+                                node.asFragment().container(term),
                                 indexOrder,
                                 indexTerm,
                                 depth));
@@ -86,7 +86,7 @@ public class DepthFirstSearch {
             for (var property : source.asFragment().terms()) {
                 postOrder(
                         selector,
-                        source.asFragment().property(property),
+                        source.asFragment().container(property),
                         -1,
                         property,
                         depth + 1,
@@ -137,7 +137,7 @@ public class DepthFirstSearch {
                         int indexOrder,
                         String indexTerm,
                         int depth) -> consumer.accept(
-                                node.asFragment().property(term),
+                                node.asFragment().container(term),
                                 indexOrder,
                                 indexTerm,
                                 depth));
@@ -168,7 +168,7 @@ public class DepthFirstSearch {
             for (var property : source.asFragment().terms()) {
                 preOrder(
                         selector,
-                        source.asFragment().property(property),
+                        source.asFragment().container(property),
                         -1,
                         property,
                         depth + 1,

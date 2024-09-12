@@ -1,6 +1,8 @@
 package com.apicatalog.linkedtree;
 
+import java.net.URI;
 import java.time.Instant;
+import java.util.Collection;
 
 import com.apicatalog.linkedtree.adapter.AdapterError;
 import com.apicatalog.linkedtree.lang.LangStringSelector;
@@ -13,7 +15,7 @@ public class VerifiableCredential {
 
     public static final String TYPE = "https://www.w3.org/2018/credentials#VerifiableCredential";
 
-    protected String id;
+    protected URI id;
     protected Type type;
 
     protected LangStringSelector name;
@@ -24,6 +26,8 @@ public class VerifiableCredential {
 
     protected LinkedContainer subject;
     protected LinkedFragment issuer;
+    
+    protected Collection<Status> status;
 
     protected VerifiableCredential() {
     }
@@ -38,7 +42,7 @@ public class VerifiableCredential {
 
     protected static VerifiableCredential setup(VerifiableCredential credential, LinkedFragment source) throws InvalidSelector {
 
-        credential.id = source.id().uri();
+        credential.id = source.uri();
         credential.type = source.type();
 
         credential.name = source.langMap(
@@ -53,12 +57,18 @@ public class VerifiableCredential {
         credential.validUntil = source.xsdDateTime(
                 "https://www.w3.org/2018/credentials#validUntil");
 
-        credential.subject = source.property(
+        credential.subject = source.container(
                 "https://www.w3.org/2018/credentials#credentialSubject");
 
-        credential.issuer = source.singleFragment(
+        credential.issuer = source.fragment(
                 "https://www.w3.org/2018/credentials#issuer");
 
+        credential.status = source.collection(
+                "https://www.w3.org/2018/credentials#credentialStatus",
+                Status.class,
+                UnknownStatus::new
+                );
+        
         return credential;
     }
 
@@ -86,7 +96,7 @@ public class VerifiableCredential {
         return validUntil;
     }
 
-    public String id() {
+    public URI id() {
         return id;
     }
 
@@ -94,6 +104,10 @@ public class VerifiableCredential {
         return type;
     }
 
+    public Collection<Status> status() {
+        return status;
+    }
+    
     static final TypeAdapter ADAPTER = new GenericTypeAdapter(
             VerifiableCredential.class,
             VerifiableCredential::of);

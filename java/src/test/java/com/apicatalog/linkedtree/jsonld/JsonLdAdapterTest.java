@@ -10,6 +10,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
 import java.util.Arrays;
@@ -25,13 +26,16 @@ import org.junit.jupiter.api.TestMethodOrder;
 
 import com.apicatalog.linkedtree.AlumniCredential;
 import com.apicatalog.linkedtree.Base64ByteArray;
+import com.apicatalog.linkedtree.BitstringStatusListEntry;
 import com.apicatalog.linkedtree.LinkedTree;
+import com.apicatalog.linkedtree.UnknownStatus;
 import com.apicatalog.linkedtree.VerifiableCredential;
 import com.apicatalog.linkedtree.adapter.AdapterError;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeWriter;
 import com.apicatalog.linkedtree.literal.ByteArrayValue;
+import com.apicatalog.linkedtree.type.GenericTypeAdapter;
 import com.apicatalog.linkedtree.xsd.XsdDateTime;
 
 import jakarta.json.Json;
@@ -42,15 +46,23 @@ import jakarta.json.JsonWriter;
 import jakarta.json.JsonWriterFactory;
 import jakarta.json.stream.JsonGenerator;
 
-@DisplayName("JsonLd Adapters Suite")
+@DisplayName("JsonLd Adapter Tests")
 @TestMethodOrder(OrderAnnotation.class)
 class JsonLdAdapterTest {
 
     static JsonLdTreeReader READER = JsonLdTreeReader.create()
+            // types
             .with(VerifiableCredential.TYPE, VerifiableCredential.typeAdapter())
             .with(AlumniCredential.TYPE, AlumniCredential.typeAdapter())
+            .with(BitstringStatusListEntry.TYPE,
+                    new GenericTypeAdapter(
+                            BitstringStatusListEntry.class,
+                            BitstringStatusListEntry::of))
+
+            // literals
             .with(Base64ByteArray.typeAdapter())
             .with(XsdDateTime.typeAdapter())
+
             .build();
 
     static JsonLdTreeWriter WRITER = new JsonLdTreeWriter();
@@ -66,9 +78,9 @@ class JsonLdAdapterTest {
         assertNotNull(tree);
 
         ByteArrayValue literal = tree
-                .singleFragment()
-                .property("http://example.org/test#property4")
-                .single(ByteArrayValue.class);
+                .fragment()
+                .container("http://example.org/test#property4")
+                .object(ByteArrayValue.class);
 
         assertEquals("RW5jb2RlIHRvIEJhc2U2NCBmb3JtYXQ=", literal.lexicalValue());
         assertArrayEquals("Encode to Base64 format".getBytes(), literal.byteArrayValue());
@@ -95,11 +107,13 @@ class JsonLdAdapterTest {
 
         assertNotNull(tree);
 
-        VerifiableCredential vc = tree.single(VerifiableCredential.class);
+        VerifiableCredential vc = tree.object(VerifiableCredential.class);
 
         assertNotNull(vc);
 
-        assertEquals("urn:uuid:58172aac-d8ba-11ed-83dd-0b3aef56cc33", vc.id());
+        assertEquals(
+                URI.create("urn:uuid:58172aac-d8ba-11ed-83dd-0b3aef56cc33"),
+                vc.id());
 
         assertEquals(new HashSet<>(Arrays.asList(new String[] {
                 "https://www.w3.org/2018/credentials#VerifiableCredential",
@@ -126,7 +140,15 @@ class JsonLdAdapterTest {
         AlumniCredential avc = vc.type().materialize(AlumniCredential.class);
         assertNotNull(avc);
 
-        
+        assertEquals(2, avc.status().size());
+
+        var it = avc.status().iterator();
+
+        var status1 = it.next();
+        var status2 = it.next();
+
+        assertTrue(status1 instanceof BitstringStatusListEntry);
+        assertTrue(status2 instanceof UnknownStatus);
     }
 
     static final JsonArray resource(String name) throws IOException, URISyntaxException {

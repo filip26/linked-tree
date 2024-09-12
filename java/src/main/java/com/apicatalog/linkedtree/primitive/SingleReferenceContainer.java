@@ -41,7 +41,7 @@ public record SingleReferenceContainer(
     }
 
     @Override
-    public LinkedContainer property(String term) {
+    public LinkedContainer container(String term) {
         return null;
     }
 

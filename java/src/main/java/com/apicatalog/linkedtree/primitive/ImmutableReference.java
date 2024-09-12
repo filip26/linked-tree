@@ -25,7 +25,7 @@ public record ImmutableReference(
     }
 
     @Override
-    public LinkedContainer property(String term) {
+    public LinkedContainer container(String term) {
         return null;
     }
 

@@ -9,14 +9,14 @@ public class NodeSearch {
 
         if (container.isFragment()
                 && container.asFragment().terms().contains(term)) {
-            return container.asFragment().property(term);
+            return container.asFragment().container(term);
         }
 
         for (final LinkedNode node : container.nodes()) {
 
             if (node.isFragment()
                     && node.asFragment().terms().contains(term)) {
-                return node.asFragment().property(term);
+                return node.asFragment().container(term);
             }
 
             if (node.isContainer()) {

@@ -54,8 +54,8 @@ NodeDebugWriter.printToStdout(tree);
                 .map(LinkedNode::root)
                 .allMatch(tree::equals));
 
-        var proof = tree.singleFragment()
-                .property("https://w3id.org/security#proof")
+        var proof = tree.fragment()
+                .container("https://w3id.org/security#proof")
 //                .asContainer()
 //                .single()
                 .asTree();

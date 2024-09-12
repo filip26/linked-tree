@@ -89,7 +89,7 @@ public class JsonLdTreeWriter {
                 .forEach(pi -> pi.write(builder));
 
         for (final String term : fragment.terms()) {
-            builder.add(term, writeValues(fragment.property(term)));
+            builder.add(term, writeValues(fragment.container(term)));
         }
 
         return builder;

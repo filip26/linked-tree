@@ -57,7 +57,7 @@ public interface LinkedContainer extends LinkedNode, Iterable<LinkedNode> {
         return nodes().size();
     }
 
-    default LinkedNode single() {
+    default LinkedNode node() {
         final Collection<LinkedNode> nodes = nodes();
         if (nodes.isEmpty()) {
             return null;
@@ -69,9 +69,9 @@ public interface LinkedContainer extends LinkedNode, Iterable<LinkedNode> {
     }
 
     @SuppressWarnings("unchecked")
-    default <T> T single(Class<T> clazz) throws AdapterError {
+    default <T> T object(Class<T> clazz) throws AdapterError {
 
-        final LinkedNode single = single();
+        final LinkedNode single = node();
 
         if (single == null) {
             return null;
@@ -90,12 +90,12 @@ public interface LinkedContainer extends LinkedNode, Iterable<LinkedNode> {
         return (T) single;
     }
 
-    default LinkedLiteral singleLiteral() {
-        return single().asLiteral();
+    default LinkedLiteral literal() {
+        return node().asLiteral();
     }
 
-    default LinkedFragment singleFragment() {
-        return single().asFragment();
+    default LinkedFragment fragment() {
+        return node().asFragment();
     }
 
     default Iterator<LinkedNode> iterator() {

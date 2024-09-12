@@ -137,7 +137,7 @@ public class NodeDebugWriter {
         for (String term : fragment.terms()) {
             println(term + ": ");
             level++;
-            print(fragment.property(term));
+            print(fragment.container(term));
             level--;
         }
 

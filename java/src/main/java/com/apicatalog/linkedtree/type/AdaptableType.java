@@ -54,7 +54,7 @@ public class AdaptableType implements Type {
         return (T) type.values()
                 .stream()
                 .filter(Objects::nonNull)
-                .filter(t -> t.typeInterface().isAssignableFrom(clazz))
+                .filter(t -> clazz.isAssignableFrom(t.typeInterface()))
                 .findFirst()
                 .orElseThrow(AdapterError::new)
                 .materialize(fragment);
@@ -65,7 +65,8 @@ public class AdaptableType implements Type {
         return type.values()
                 .stream()
                 .filter(Objects::nonNull)
-                .anyMatch(t -> t.typeInterface().isAssignableFrom(clazz));
+                .map(TypeAdapter::typeInterface)
+                .anyMatch(clazz::isAssignableFrom);
     }
 
     public TypeAdapter adapter(String name) {

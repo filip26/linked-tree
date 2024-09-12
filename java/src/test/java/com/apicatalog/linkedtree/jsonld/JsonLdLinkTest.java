@@ -56,7 +56,7 @@ class JsonLdLinkTest {
 
         var tree = READER.read(input);
 
-        assertEquals(3, tree.links().size());
+        assertEquals(7, tree.links().size());
         
         for (var link : tree.links()) {
             assertEquals(1, link.refs().size());

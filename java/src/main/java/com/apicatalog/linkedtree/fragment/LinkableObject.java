@@ -30,7 +30,7 @@ public record LinkableObject(
     }
 
     @Override
-    public LinkedContainer property(String term) {
+    public LinkedContainer container(String term) {
         return entries.get(term);
     }
 

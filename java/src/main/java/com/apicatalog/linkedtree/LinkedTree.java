@@ -26,7 +26,7 @@ public interface LinkedTree extends LinkedFragment, LinkedContainer, LinkedNode 
         }
 
         @Override
-        public LinkedContainer property(String term) {
+        public LinkedContainer container(String term) {
             return null;
         }
 

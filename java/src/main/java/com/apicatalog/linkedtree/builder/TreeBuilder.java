@@ -238,7 +238,7 @@ public class TreeBuilder<T> implements NodeConsumer<T> {
             map.putAll(generic.entries());
         }
         for (final String term : fragment.terms()) {
-            map.put(term, fragment.property(term));
+            map.put(term, fragment.container(term));
         }
         return map;
     }
