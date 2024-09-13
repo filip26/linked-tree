@@ -50,7 +50,6 @@ public class TreeBuilder<T> implements NodeConsumer<T> {
 
     @Override
     public void accept(T node, int indexOrder, String indexTerm, int depth) throws TreeBuilderError {
-System.out.println("accept " + node);
         if (indexOrder != -1) {
             bind(indexOrder);
 

@@ -26,5 +26,28 @@ public record GenericContainer(
         return ops != null
                 ? ops.getOrDefault(processingOrder, Collections.emptyList())
                 : Collections.emptyList();
-    }    
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(containerType, nodes, ops);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        GenericContainer other = (GenericContainer) obj;
+        return containerType == other.containerType && Objects.equals(nodes, other.nodes) && Objects.equals(ops, other.ops);
+    }
+
+    @Override
+    public String toString() {
+        return "GenericContainer [containerType=" + containerType + ", nodes=" + nodes.size() + ", ops=" + ops.size() + "]";
+    }
+    
 }

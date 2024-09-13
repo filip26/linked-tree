@@ -3,6 +3,7 @@ package com.apicatalog.linkedtree.primitive;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 
 import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedNode;
@@ -50,4 +51,27 @@ public record GenericTree(
                 ? ops.getOrDefault(processingOrder, Collections.emptyList())
                 : Collections.emptyList();
     }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(entries, id, nodes, ops, type);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        GenericTree other = (GenericTree) obj;
+        return Objects.equals(entries, other.entries) && Objects.equals(id, other.id) && Objects.equals(nodes, other.nodes) && Objects.equals(ops, other.ops) && Objects.equals(type, other.type);
+    }
+
+    @Override
+    public String toString() {
+        return "GenericTree [id=" + id + ", type=" + type + ", entries=" + entries.size() + ", nodes=" + nodes.size() + ", ops=" + ops.size() + "]";
+    }
+    
 }

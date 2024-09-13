@@ -45,8 +45,7 @@ public abstract class JsonTreeReader extends TreeBuilder<JsonValue> implements N
             int depth) throws TreeBuilderError {
 
         var policy = nodeSelector.test(node, indexOrder, indexTerm, depth);
-        System.out.println("test " + node);
-        System.out.println("     " + policy);
+
         switch (policy) {
         case Accept, Stop -> process(node);
         case Drop, Ignore -> {
