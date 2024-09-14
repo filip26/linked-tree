@@ -213,6 +213,7 @@ public interface LinkedFragment extends LinkedNode {
             if (uri != null) {
                 return URI.create(uri);
             }
+            return null;
         } catch (IllegalArgumentException e) {
 
         }
@@ -231,8 +232,7 @@ public interface LinkedFragment extends LinkedNode {
                     return URI.create(uri);
                 }
             }
-
-            throw new InvalidSelector(term);
+            return null;
 
         } catch (IllegalArgumentException | AdapterError e) {
             throw new InvalidSelector(e, term);

@@ -54,7 +54,12 @@ public class JsonLdTreeReader extends JsonTreeReader {
 
     public LinkedTree read(Collection<String> context, JsonStructure source) throws TreeBuilderError {
         // TODO context
-        return read(source, ((node, indexOrder, indexTerm, depth) -> ProcessingPolicy.Accept));
+        return read(source, ((node, indexOrder, indexTerm, depth) -> TraversalPolicy.Accept));
+    }
+
+    public LinkedTree read(Collection<String> context, JsonStructure source, NodeSelector<JsonValue> selector) throws TreeBuilderError {
+        // TODO context
+        return read(source, selector);
     }
 
     @Override
@@ -65,22 +70,22 @@ public class JsonLdTreeReader extends JsonTreeReader {
 
                 // do not follow @value objects
                 if (node.asJsonObject().containsKey(JsonLdKeyword.VALUE)) {
-                    return ProcessingPolicy.Stop;
+                    return TraversalPolicy.Stop;
                 }
             }
 
             if (JsonLdKeyword.GRAPH.equals(indexTerm)) {
-                return ProcessingPolicy.Ignore;
+                return TraversalPolicy.Ignore;
             }
 
             if (JsonLdKeyword.LIST.equals(indexTerm)) {
-                return ProcessingPolicy.Ignore;
+                return TraversalPolicy.Ignore;
             }
 
             if (indexTerm != null
                     && indexTerm.startsWith("@")
                     && indexTerm.length() > 1) {
-                return ProcessingPolicy.Drop;
+                return TraversalPolicy.Drop;
             }
 
             return selector.test(node, indexOrder, indexTerm, depth);

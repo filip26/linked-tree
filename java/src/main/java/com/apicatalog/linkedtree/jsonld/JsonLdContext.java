@@ -1,5 +1,6 @@
 package com.apicatalog.linkedtree.jsonld;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -41,20 +42,32 @@ public record JsonLdContext(
         final List<String> strings = new ArrayList<>(items.size());
 
         for (final JsonValue context : items) {
+
             if (JsonUtils.isNotString(context)) {
                 throw new IllegalArgumentException("Invalid context value type. Expected JsonString but got [" + context + "].");
             }
-            // TODO
-//            if (UriUtils.isURI(((JsonString) context).getString())
-//                    ) {
-//              throw new IllegalArgumentException("Invalid context value. Expected URI but got [" + context + "].");
-//            }
 
             final String contextUri = ((JsonString) context).getString();
 
+            if (!isURI(contextUri)) {
+                throw new IllegalArgumentException("Invalid context value. Expected URI but got [" + context + "].");
+            }
             strings.add(contextUri);
         }
 
         return strings;
     }
+
+    protected static final boolean isURI(final String value) {
+
+        try {
+
+            return URI.create(value) != null;
+
+        } catch (IllegalArgumentException e) {
+
+        }
+        return false;
+    }
+
 }

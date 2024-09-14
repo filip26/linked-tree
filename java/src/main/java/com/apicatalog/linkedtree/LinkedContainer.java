@@ -86,7 +86,6 @@ public interface LinkedContainer extends LinkedNode, Iterable<LinkedNode> {
             return single.asFragment().type().materialize(clazz);
         }
         
-
         return (T) single;
     }
 

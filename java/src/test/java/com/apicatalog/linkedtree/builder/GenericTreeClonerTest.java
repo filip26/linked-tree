@@ -20,7 +20,7 @@ import com.apicatalog.linkedtree.jsonld.JsonLdComparison;
 import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeWriter;
-import com.apicatalog.linkedtree.traversal.NodeSelector.ProcessingPolicy;
+import com.apicatalog.linkedtree.traversal.NodeSelector.TraversalPolicy;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -52,8 +52,8 @@ class GenericTreeClonerTest {
         GenericTreeCloner builder = new GenericTreeCloner(tree);
         var clone = builder.deepClone(
                 (node, indexOrder, indexTerm, depth) -> "https://w3id.org/security#proof".equals(indexTerm)
-                        ? ProcessingPolicy.Drop
-                        : ProcessingPolicy.Accept);
+                        ? TraversalPolicy.Drop
+                        : TraversalPolicy.Accept);
 
         assertNotNull(clone);
 

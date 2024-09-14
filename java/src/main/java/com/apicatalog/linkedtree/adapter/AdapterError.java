@@ -7,7 +7,11 @@ public class AdapterError extends Exception {
     public AdapterError() {
         super();
     }
-    
+
+    public AdapterError(String message) {
+        super(message);
+    }
+
     public AdapterError(Throwable e) {
         super(e);
     }

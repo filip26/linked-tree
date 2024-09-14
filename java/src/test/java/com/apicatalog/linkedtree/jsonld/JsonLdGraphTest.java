@@ -43,7 +43,7 @@ class JsonLdGraphTest {
         JsonArray input = resource("custom/signed-vc-1.jsonld");
 
         var tree = READER.read(input);
-NodeDebugWriter.printToStdout(tree);
+NodeDebugWriter.writeToStdOut(tree);
         assertEquals(1, tree.subtrees().size());
         assertEquals(0, tree.subtrees().iterator().next().subtrees().size());
 

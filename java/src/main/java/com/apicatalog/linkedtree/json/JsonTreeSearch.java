@@ -5,7 +5,7 @@ import java.util.function.Consumer;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.traversal.NodeConsumer;
 import com.apicatalog.linkedtree.traversal.NodeSelector;
-import com.apicatalog.linkedtree.traversal.NodeSelector.ProcessingPolicy;
+import com.apicatalog.linkedtree.traversal.NodeSelector.TraversalPolicy;
 
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
@@ -26,7 +26,7 @@ public class JsonTreeSearch<T> {
         postOrder((JsonValue node,
                 int indexOrder,
                 String indexTerm,
-                int depth) -> ProcessingPolicy.Accept,
+                int depth) -> TraversalPolicy.Accept,
                 source,
                 consumer);
     }
@@ -44,13 +44,13 @@ public class JsonTreeSearch<T> {
             final int depth,
             final NodeConsumer<JsonValue> consumer) throws TreeBuilderError {
 
-        final ProcessingPolicy policy = selector.test(source, order, term, depth);
+        final TraversalPolicy policy = selector.test(source, order, term, depth);
 
-        if (ProcessingPolicy.Drop == policy) {
+        if (TraversalPolicy.Drop == policy) {
             return;
         }
 
-        if (ProcessingPolicy.Stop == policy) {
+        if (TraversalPolicy.Stop == policy) {
             consumer.accept(source, order, term, depth);
             return;
         }
@@ -78,7 +78,7 @@ public class JsonTreeSearch<T> {
             }    
         }
         
-        if (ProcessingPolicy.Accept == policy) {
+        if (TraversalPolicy.Accept == policy) {
             consumer.accept(source, order, term, depth);
         }
     }

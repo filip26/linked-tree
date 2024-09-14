@@ -4,7 +4,7 @@ import java.util.function.Consumer;
 
 import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
-import com.apicatalog.linkedtree.traversal.NodeSelector.ProcessingPolicy;
+import com.apicatalog.linkedtree.traversal.NodeSelector.TraversalPolicy;
 
 public class DepthFirstSearch {
 
@@ -22,7 +22,7 @@ public class DepthFirstSearch {
         postOrder((LinkedNode node,
                 int indexOrder,
                 String indexTerm,
-                int depth) -> ProcessingPolicy.Accept,
+                int depth) -> TraversalPolicy.Accept,
                 source,
                 consumer);
     }
@@ -38,8 +38,8 @@ public class DepthFirstSearch {
                 String indexTerm,
                 int depth) -> node.isFragment()
                         && node.asFragment().terms().contains(term)
-                                ? ProcessingPolicy.Accept
-                                : ProcessingPolicy.Ignore,
+                                ? TraversalPolicy.Accept
+                                : TraversalPolicy.Ignore,
                 source,
                 (LinkedNode node,
                         int indexOrder,
@@ -59,13 +59,13 @@ public class DepthFirstSearch {
             final int depth,
             final NodeConsumer<LinkedNode> consumer) throws TreeBuilderError {
 
-        final ProcessingPolicy policy = selector.test(source, order, term, depth);
+        final TraversalPolicy policy = selector.test(source, order, term, depth);
 
-        if (ProcessingPolicy.Drop.equals(policy)) {
+        if (TraversalPolicy.Drop.equals(policy)) {
             return;
         }
 
-        if (ProcessingPolicy.Stop.equals(policy)) {
+        if (TraversalPolicy.Stop.equals(policy)) {
             consumer.accept(source, order, term, depth);
             return;
         }
@@ -93,7 +93,7 @@ public class DepthFirstSearch {
                         consumer);
             }
         }
-        if (ProcessingPolicy.Accept.equals(policy)) {
+        if (TraversalPolicy.Accept.equals(policy)) {
             consumer.accept(source, order, term, depth);
         }
     }
@@ -112,7 +112,7 @@ public class DepthFirstSearch {
         preOrder((LinkedNode node,
                 int indexOrder,
                 String indexTerm,
-                int depth) -> ProcessingPolicy.Accept,
+                int depth) -> TraversalPolicy.Accept,
                 source,
                 consumer);
     }
@@ -130,8 +130,8 @@ public class DepthFirstSearch {
                 String indexTerm,
                 int depth) -> node.isFragment()
                         && node.asFragment().terms().contains(term)
-                                ? ProcessingPolicy.Accept
-                                : ProcessingPolicy.Ignore,
+                                ? TraversalPolicy.Accept
+                                : TraversalPolicy.Ignore,
                 source,
                 (LinkedNode node,
                         int indexOrder,
@@ -151,15 +151,15 @@ public class DepthFirstSearch {
             final int depth,
             final NodeConsumer<LinkedNode> consumer) throws TreeBuilderError {
 
-        final ProcessingPolicy policy = selector.test(source, order, term, depth);
+        final TraversalPolicy policy = selector.test(source, order, term, depth);
 
-        if (ProcessingPolicy.Drop.equals(policy)) {
+        if (TraversalPolicy.Drop.equals(policy)) {
             return;
 
-        } else if (ProcessingPolicy.Accept.equals(policy)) {
+        } else if (TraversalPolicy.Accept.equals(policy)) {
             consumer.accept(source, order, term, depth);
 
-        } else if (ProcessingPolicy.Stop.equals(policy)) {
+        } else if (TraversalPolicy.Stop.equals(policy)) {
             consumer.accept(source, order, term, depth);
             return;
         }

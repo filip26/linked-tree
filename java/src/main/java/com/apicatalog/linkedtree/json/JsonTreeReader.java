@@ -38,7 +38,7 @@ public abstract class JsonTreeReader extends TreeBuilder<JsonValue> implements N
     }
 
     @Override
-    public ProcessingPolicy test(
+    public TraversalPolicy test(
             JsonValue node,
             int indexOrder,
             String indexTerm,

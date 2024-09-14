@@ -1,0 +1,37 @@
+[{
+  "@graph": [
+    {
+      "@type": [
+        "https://w3id.org/security#DataIntegrityProof"
+      ],
+      "https://w3id.org/security#cryptosuite": [
+        {
+          "@value": "test-2022",
+          "@type": "https://w3id.org/security#cryptosuiteString"
+        }
+      ],
+      "https://w3id.org/security#verificationMethod": [
+        {
+          "@id": "https://github.com/filip26/iron-verifiable-credentials/verifier/0005-verification-key.json"
+        }
+      ],
+      "http://purl.org/dc/terms/created": [
+        {
+          "@value": "2022-06-04T20:33:01Z",
+          "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+        }
+      ],
+      "https://w3id.org/security#proofPurpose": [
+        {
+          "@id": "https://w3id.org/security#assertionMethod"
+        }
+      ],
+      "https://w3id.org/security#proofValue": [
+        {
+          "@value": "zDzvG9arTUkqwTCncUFEkwhYvK9iHefBNAHvhorShoj9M",
+          "@type": "https://w3id.org/security#multibase"
+        }
+      ]
+    }
+  ]
+}]
