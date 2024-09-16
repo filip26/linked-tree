@@ -1,4 +1,5 @@
-DICTIONARY: Dictionary concept [aliases, indices, default vocab ] 
+# Dictionary concept [aliases, indices, default vocab ]
+DICTIONARY: { default: https://schema.org, xsd: "...", cred: "...", dateTime: xsd:dateTime  }
 ID: urn:uuid:58172aac-d8ba-11ed-83dd-0b3aef56cc33
 TYPE: [ex:AlumniCredential, cred:VerifiableCredential]
 
@@ -6,18 +7,17 @@ name.en: Alumni Credential
 description.en: A minimum viable example of an Alumni Credential.
     
 cred:credentialSubject: 
-  id: uri=did:example:abcdefgh
+  ID: did:example:abcdefgh
   ex:alumniOf.en: The School of Examples
 
 cred:issuer: uri=https://vc.example/issuers/5678
       
-cred:validFrom: 
-    datatype: xsd:dateTime
-    value: 2023-01-01T00:00:00Z
+cred:validFrom.dateTime: 2023-01-01T00:00:00Z
           
 sec:proof: 
-  DICTIONARY: { schema: https://schema.org, xsd: "...", DEFAULT: "https://sec" } 
-  type: DataIntegrityProof
+  DICTIONARY: { schema: https://schema.org, xsd: "...", default: "https://sec...",  } 
+  TYPE: DataIntegrityProof
+  
   schema:created: 
     datatype: xsd:dateTime
     value: 2023-02-24T23:36:38Z
@@ -31,7 +31,7 @@ sec:proof:
   verificationMethod: uri=https://vc.example/issuers/5678#z6MkrJVnaZkeFzdQyMZu1cgjg7k1pZZ6pvBQ7XJPt4swbTQ2
       
 cred:credentialStatus:
-  - DICTIONARY: { DEFAULT: https://www.w3.org/ns/credentials/status# } 
+  - DICTIONARY: https://www.w3.org/ns/credentials/status#  
     ID: https://license.example/credentials/status/84#14278
     TYPE: BitstringStatusListEntry
   
@@ -39,10 +39,10 @@ cred:credentialStatus:
     statusListIndex.string: 14278
     statusPurpose.string: revocation
     
-  - DICTIONARY: { DEFAULT: https://www.w3.org/ns/credentials/status# }
+  - DICTIONARY: https://www.w3.org/ns/credentials/status# 
     ID: https://license.example/credentials/status/84#82938
-    TYPE: https://www.w3.org/ns/credentials/status#Unknown
+    TYPE: BitstringStatusListEntry
     
-    statusListCredential: uri=https://license.example/credentials/status/84
+    statusListCredential: https://license.example/credentials/status/84
     statusListIndex.string: 82938
     statusPurpose.string: suspension
