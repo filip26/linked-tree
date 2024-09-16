@@ -5,10 +5,9 @@ import com.apicatalog.linkedtree.builder.TreeBuilderError;
 @FunctionalInterface
 public interface NodeSelector<T> {
 
-    public enum ProcessingPolicy {
+    public enum TraversalPolicy {
         /** consumed and followed */
         Accept,
-        //TODO 
         /* consumed, not followed */
         Stop,
         /** not consumed, not followed */
@@ -17,7 +16,7 @@ public interface NodeSelector<T> {
         Ignore,
     }
     
-    ProcessingPolicy test(
+    TraversalPolicy test(
             T node,
             int indexOrder,
             String indexTerm,

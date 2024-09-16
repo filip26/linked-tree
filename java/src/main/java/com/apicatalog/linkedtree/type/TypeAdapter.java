@@ -1,9 +1,9 @@
 package com.apicatalog.linkedtree.type;
 
 import com.apicatalog.linkedtree.LinkedFragment;
-import com.apicatalog.linkedtree.adapter.Adapter;
+import com.apicatalog.linkedtree.adapter.NodeAdapter;
 
-public interface TypeAdapter extends Adapter<LinkedFragment, Object>  {
+public interface TypeAdapter extends NodeAdapter<LinkedFragment, Object>  {
 
     Class<?> typeInterface();
 }

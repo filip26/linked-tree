@@ -162,7 +162,7 @@ public class NodeDebugWriter {
 
     }
 
-    public static void printToStdout(LinkedNode node) {
+    public static void writeToStdOut(LinkedNode node) {
         var s = new StringWriter();
         new NodeDebugWriter(new PrintWriter(s)).print(node);
         System.out.println(s);

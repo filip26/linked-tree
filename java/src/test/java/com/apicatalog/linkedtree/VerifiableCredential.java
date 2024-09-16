@@ -4,7 +4,7 @@ import java.net.URI;
 import java.time.Instant;
 import java.util.Collection;
 
-import com.apicatalog.linkedtree.adapter.AdapterError;
+import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.lang.LangStringSelector;
 import com.apicatalog.linkedtree.selector.InvalidSelector;
 import com.apicatalog.linkedtree.type.GenericTypeAdapter;
@@ -32,11 +32,11 @@ public class VerifiableCredential {
     protected VerifiableCredential() {
     }
 
-    public static VerifiableCredential of(LinkedFragment fragment) throws AdapterError {
+    public static VerifiableCredential of(LinkedFragment fragment) throws NodeAdapterError {
         try {
             return setup(new VerifiableCredential(), fragment);
         } catch (InvalidSelector e) {
-            throw new AdapterError(e);
+            throw new NodeAdapterError(e);
         }
     }
 

@@ -50,8 +50,6 @@ public class TreeBuilder<T> implements NodeConsumer<T> {
 
     @Override
     public void accept(T node, int indexOrder, String indexTerm, int depth) throws TreeBuilderError {
-        
-        
         if (indexOrder != -1) {
             bind(indexOrder);
 
@@ -90,7 +88,7 @@ public class TreeBuilder<T> implements NodeConsumer<T> {
     public TreeBuilder<T> container(int capacity) {
 
         if (capacity == 0) {
-            nodeStack.push(LinkedContainer.EMPTY);
+            nodeStack.push(GenericContainer.empty(root()));
             return this;
         }
 
@@ -115,8 +113,8 @@ public class TreeBuilder<T> implements NodeConsumer<T> {
 
         LinkedNode child = nodeStack.pop();
         if (child == null) {
-            child = LinkedContainer.EMPTY;
-            
+            child = GenericContainer.empty(root());
+
         } else if (child.isFragment()) {
             postFragment(child.asFragment());
         }
@@ -140,12 +138,12 @@ public class TreeBuilder<T> implements NodeConsumer<T> {
 
         LinkedNode child = nodeStack.pop();
         if (child == null) {
-            child = LinkedContainer.EMPTY;
-            
+            child = GenericContainer.empty(root());
+
         } else if (child.isFragment()) {
             postFragment(child.asFragment());
         }
-        
+
         LinkedNode parent = nodeStack.peek();
 
         if (parent != null) {
@@ -295,6 +293,9 @@ public class TreeBuilder<T> implements NodeConsumer<T> {
 
     protected void pi(Collection<ProcessingInstruction> ops) {
 
+        if (ops.isEmpty()) {
+            return;
+        }
         if (nodeStack.peek() == null) {
             nodeStack.pop();
             nodeStack.push(mutableContainer(ContainerType.UnorderedSet, 1));
@@ -343,11 +344,8 @@ public class TreeBuilder<T> implements NodeConsumer<T> {
 
         var fragment = new GenericFragment(
                 link,
-
                 types,
-
                 properties,
-
                 root());
 
         if (types instanceof AdaptableType adaptableType) {

@@ -8,7 +8,8 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.function.Function;
 
-import com.apicatalog.linkedtree.adapter.AdapterError;
+import com.apicatalog.linkedtree.adapter.NodeAdapter;
+import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 import com.apicatalog.linkedtree.lang.LangStringSelector;
 import com.apicatalog.linkedtree.lang.LanguageMap;
@@ -30,9 +31,9 @@ public interface LinkedFragment extends LinkedNode {
     Collection<String> terms();
 
     LinkedContainer container(String term);
-
+    
     @SuppressWarnings("unchecked")
-    default <T extends Linkable> T object(String term, Class<T> clazz) throws InvalidSelector, AdapterError {
+    default <T extends Linkable> T object(String term, Class<T> clazz) throws InvalidSelector, NodeAdapterError {
 
         Objects.requireNonNull(clazz);
 
@@ -72,6 +73,19 @@ public interface LinkedFragment extends LinkedNode {
         } catch (ClassCastException e) {
             throw new InvalidSelector(e, term);
         }
+    }
+
+    default LinkedNode node(String term) throws InvalidSelector {
+        final LinkedContainer container = container(term);
+
+        if (container == null || container.nodes().isEmpty()) {
+            return null;
+        }
+
+        if (container.nodes().size() != 1) {
+            throw new InvalidSelector(term);
+        }
+        return container.node();
     }
 
 //    default <R> R single(String term, LinkableMapper<R> mapper) throws DocumentError {
@@ -116,7 +130,41 @@ public interface LinkedFragment extends LinkedNode {
 //        }
 //    }
 
-    default <T extends Linkable, R> R object(String term, Class<T> clazz, Function<T, R> mapper) throws InvalidSelector {
+    @SuppressWarnings("unchecked")
+    default <R> R fragment(String term, Class<R> clazz, NodeAdapter<LinkedNode, R> mapper) throws NodeAdapterError {
+
+//        try {
+        LinkedFragment node = fragment(term);
+
+        if (node == null) {
+            return null;
+        }
+
+        if (clazz.isInstance(node)) {
+            return (R) node;
+        }
+
+        if (node.type().isAdaptableTo(clazz)) {
+            return node.type().materialize(clazz);
+        }
+
+        if (mapper != null) {
+            return mapper.materialize(node);
+        }
+
+        throw new NodeAdapterError();
+//        } catch (InvalidSelector e) {
+//            throw e;
+//        } catch (Exception e) {
+//            throw new InvalidSelector(e, term);
+//        }
+    }
+
+    default <T extends Linkable> T literal(String term, Class<T> clazz) throws InvalidSelector {
+        return literal(term, clazz, Function.identity());
+    }
+
+    default <T extends Linkable, R> R literal(String term, Class<T> clazz, Function<T, R> mapper) throws InvalidSelector {
 
         Objects.requireNonNull(mapper);
 
@@ -136,21 +184,21 @@ public interface LinkedFragment extends LinkedNode {
     }
 
     default Instant xsdDateTime(String term) throws InvalidSelector {
-        return object(
+        return literal(
                 term,
                 XsdDateTime.class,
                 XsdDateTime::datetime);
     }
 
     default String lexeme(String term) throws InvalidSelector {
-        return object(
+        return literal(
                 term,
                 LinkedLiteral.class,
                 LinkedLiteral::lexicalValue);
     }
 
     default LinkedFragment fragment(String term) throws InvalidSelector {
-        return object(
+        return literal(
                 term,
                 LinkedFragment.class,
                 Function.identity());
@@ -165,6 +213,7 @@ public interface LinkedFragment extends LinkedNode {
             if (uri != null) {
                 return URI.create(uri);
             }
+            return null;
         } catch (IllegalArgumentException e) {
 
         }
@@ -183,10 +232,9 @@ public interface LinkedFragment extends LinkedNode {
                     return URI.create(uri);
                 }
             }
+            return null;
 
-            throw new InvalidSelector(term);
-
-        } catch (IllegalArgumentException | AdapterError e) {
+        } catch (IllegalArgumentException | NodeAdapterError e) {
             throw new InvalidSelector(e, term);
         }
     }
@@ -205,10 +253,11 @@ public interface LinkedFragment extends LinkedNode {
         return collection(term, clazz, null);
     }
 
+    @SuppressWarnings("unchecked")
     default <T> Collection<T> collection(
             String term,
             Class<T> clazz,
-            Function<LinkedNode, T> unmapped) throws InvalidSelector {
+            NodeAdapter<LinkedNode, T> unmapped) throws InvalidSelector {
 
         final LinkedContainer container = container(term);
 
@@ -220,15 +269,18 @@ public interface LinkedFragment extends LinkedNode {
             var collection = new ArrayList<T>(container.nodes().size());
 
             for (final LinkedNode node : container) {
-                
-                if (node.isFragment() && node.asFragment().type().isAdaptableTo(clazz)) {
+
+                if (clazz.isInstance(node)) {
+                    collection.add((T) node);
+
+                } else if (node.isFragment() && node.asFragment().type().isAdaptableTo(clazz)) {
                     collection.add(node.asFragment().type().materialize(clazz));
 
                 } else if (node.isLiteral() && clazz.isInstance(node.asLiteral().cast())) {
                     collection.add(node.asLiteral().cast(clazz));
 
                 } else if (unmapped != null) {
-                    collection.add(unmapped.apply(node));
+                    collection.add(unmapped.materialize(node));
 
                 } else {
                     throw new InvalidSelector(term);
@@ -237,7 +289,7 @@ public interface LinkedFragment extends LinkedNode {
 
             return collection;
 
-        } catch (AdapterError e) {
+        } catch (NodeAdapterError e) {
             throw new InvalidSelector(e, term);
         }
     }

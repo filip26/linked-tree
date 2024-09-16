@@ -20,15 +20,12 @@ import com.apicatalog.linkedtree.literal.ImmutableLiteral;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 import com.apicatalog.linkedtree.primitive.GenericContainer;
 import com.apicatalog.linkedtree.primitive.GenericTree;
-import com.apicatalog.linkedtree.traversal.DepthFirstSearch;
 import com.apicatalog.linkedtree.traversal.NodeConsumer;
 import com.apicatalog.linkedtree.traversal.NodeSelector;
 import com.apicatalog.linkedtree.type.AdaptableType;
 import com.apicatalog.linkedtree.type.Type;
 
-public class GenericTreeCloner implements NodeConsumer<LinkedNode>, NodeSelector<LinkedNode> {
-
-    protected final LinkedTree sourceTree;
+public class GenericTreeCompiler implements NodeConsumer<LinkedNode>, NodeSelector<LinkedNode> {
 
     protected Stack<LinkedNode> nodeStack;
 
@@ -36,22 +33,14 @@ public class GenericTreeCloner implements NodeConsumer<LinkedNode>, NodeSelector
 
     protected NodeSelector<LinkedNode> nodeSelector;
 
-    public GenericTreeCloner(LinkedTree source) {
-        this.sourceTree = source;
+    public GenericTreeCompiler() {
         this.nodeStack = null;
         this.clonedTrees = null;
         this.nodeSelector = null;
-    }
-
-    public LinkedTree deepClone(NodeSelector<LinkedNode> selector) throws TreeBuilderError {
-        nodeStack = new Stack<>();
-        clonedTrees = new Stack<>();
-
-        nodeSelector = selector;
-
-        DepthFirstSearch.postOrder(this, sourceTree, this);
-
-        return clonedTrees.peek();
+        
+      nodeStack = new Stack<>();
+      clonedTrees = new Stack<>();
+      nodeSelector = (node, indexOrder, indexTerm, depth) -> TraversalPolicy.Accept; 
     }
 
     @Override
@@ -130,9 +119,7 @@ public class GenericTreeCloner implements NodeConsumer<LinkedNode>, NodeSelector
         } else if (source.isContainer()) {
             return new GenericContainer(
                     source.asContainer().containerType(),
-                    source.asContainer().nodes().isEmpty()
-                            ? Collections.emptyList()
-                            : new ArrayList<>(source.asContainer().size()),
+                    new ArrayList<>(source.asContainer().size()),
                     root,
                     cloneOps(source.asContainer()));
 
@@ -147,9 +134,7 @@ public class GenericTreeCloner implements NodeConsumer<LinkedNode>, NodeSelector
 
                     types,
                     
-                    source.asFragment().terms().isEmpty()
-                            ? Collections.emptyMap()
-                            : new LinkedHashMap<>(source.asFragment().terms().size()),
+                    new LinkedHashMap<>(source.asFragment().terms().size()),
                     root);
 
             if (types instanceof AdaptableType adaptableType) {
@@ -201,5 +186,9 @@ public class GenericTreeCloner implements NodeConsumer<LinkedNode>, NodeSelector
         }
 
         return ops;
+    }
+
+    public LinkedTree tree() {
+        return clonedTrees.peek();
     }
 }

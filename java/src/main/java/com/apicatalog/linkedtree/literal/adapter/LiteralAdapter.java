@@ -1,9 +1,12 @@
 package com.apicatalog.linkedtree.literal.adapter;
 
 import com.apicatalog.linkedtree.LinkedLiteral;
-import com.apicatalog.linkedtree.adapter.NodeAdapter;
+import com.apicatalog.linkedtree.LinkedTree;
+import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 
-public interface LiteralAdapter extends NodeAdapter<String, LinkedLiteral> {
+@FunctionalInterface
+public interface LiteralAdapter {
 
-    String datatype();
+    LinkedLiteral materialize(String source, LinkedTree root) throws NodeAdapterError;
+    
 }

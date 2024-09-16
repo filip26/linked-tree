@@ -9,8 +9,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedTree;
-import com.apicatalog.linkedtree.adapter.AdapterError;
+import com.apicatalog.linkedtree.adapter.NodeAdapter;
+import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.json.JsonDecimal;
 import com.apicatalog.linkedtree.json.JsonInteger;
@@ -23,9 +25,11 @@ import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 import com.apicatalog.linkedtree.jsonld.JsonLdType;
 import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.link.MutableLink;
+import com.apicatalog.linkedtree.literal.adapter.DatatypeAdapter;
 import com.apicatalog.linkedtree.literal.adapter.LiteralAdapter;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 import com.apicatalog.linkedtree.traversal.NodeSelector;
+import com.apicatalog.linkedtree.type.GenericTypeAdapter;
 import com.apicatalog.linkedtree.type.TypeAdapter;
 import com.apicatalog.linkedtree.xsd.XsdConstants;
 
@@ -49,9 +53,14 @@ public class JsonLdTreeReader extends JsonTreeReader {
         return read(Collections.emptyList(), source);
     }
 
-    public LinkedTree read(List<String> context, JsonStructure source) throws TreeBuilderError {
+    public LinkedTree read(Collection<String> context, JsonStructure source) throws TreeBuilderError {
         // TODO context
-        return read(source, ((node, indexOrder, indexTerm, depth) -> ProcessingPolicy.Accept));
+        return read(source, ((node, indexOrder, indexTerm, depth) -> TraversalPolicy.Accept));
+    }
+
+    public LinkedTree read(Collection<String> context, JsonStructure source, NodeSelector<JsonValue> selector) throws TreeBuilderError {
+        // TODO context
+        return read(source, selector);
     }
 
     @Override
@@ -62,22 +71,22 @@ public class JsonLdTreeReader extends JsonTreeReader {
 
                 // do not follow @value objects
                 if (node.asJsonObject().containsKey(JsonLdKeyword.VALUE)) {
-                    return ProcessingPolicy.Stop;
+                    return TraversalPolicy.Stop;
                 }
             }
 
             if (JsonLdKeyword.GRAPH.equals(indexTerm)) {
-                return ProcessingPolicy.Ignore;
+                return TraversalPolicy.Ignore;
             }
 
             if (JsonLdKeyword.LIST.equals(indexTerm)) {
-                return ProcessingPolicy.Ignore;
+                return TraversalPolicy.Ignore;
             }
 
             if (indexTerm != null
                     && indexTerm.startsWith("@")
                     && indexTerm.length() > 1) {
-                return ProcessingPolicy.Drop;
+                return TraversalPolicy.Drop;
             }
 
             return selector.test(node, indexOrder, indexTerm, depth);
@@ -206,7 +215,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
                 ops.add(pi);
             }
             pi(ops);
-            literal(JsonLiteral.of(value));
+            literal(JsonLiteral.of(value, root()));
             return;
 
         } else if (value != null &&
@@ -221,7 +230,8 @@ public class JsonLdTreeReader extends JsonTreeReader {
             literal(new JsonScalar(value,
                     datatype != null
                             ? datatype
-                            : XsdConstants.BOOLEAN));
+                            : XsdConstants.BOOLEAN,
+                    root()));
             return;
 
         } else if (value != null && ValueType.NUMBER.equals(value.getValueType())) {
@@ -241,7 +251,8 @@ public class JsonLdTreeReader extends JsonTreeReader {
                 literal(JsonDecimal.of(number,
                         datatype != null
                                 ? datatype
-                                : XsdConstants.DOUBLE));
+                                : XsdConstants.DOUBLE,
+                        root()));
                 return;
 
             } else {
@@ -254,7 +265,8 @@ public class JsonLdTreeReader extends JsonTreeReader {
                         number,
                         datatype != null
                                 ? datatype
-                                : XsdConstants.INTEGER));
+                                : XsdConstants.INTEGER,
+                        root()));
                 return;
             }
 
@@ -281,7 +293,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
                     pi(ops);
                     literal(adapter.materialize(valueString, root()));
                     return;
-                } catch (AdapterError e) {
+                } catch (NodeAdapterError e) {
                     throw new TreeBuilderError(e);
                 }
             }
@@ -379,7 +391,14 @@ public class JsonLdTreeReader extends JsonTreeReader {
             return this;
         }
 
-        public Builder with(LiteralAdapter adapter) {
+        public Builder with(
+                String type,
+                Class<?> typeInterface,
+                NodeAdapter<LinkedFragment, Object> adapter) {
+            return with(type, new GenericTypeAdapter(typeInterface, adapter));
+        }
+
+        public Builder with(DatatypeAdapter adapter) {
             this.literalMap.put(adapter.datatype(), adapter);
             return this;
         }

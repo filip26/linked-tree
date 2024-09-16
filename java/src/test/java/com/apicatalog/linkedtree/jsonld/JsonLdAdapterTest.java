@@ -30,12 +30,11 @@ import com.apicatalog.linkedtree.BitstringStatusListEntry;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.UnknownStatus;
 import com.apicatalog.linkedtree.VerifiableCredential;
-import com.apicatalog.linkedtree.adapter.AdapterError;
+import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeWriter;
 import com.apicatalog.linkedtree.literal.ByteArrayValue;
-import com.apicatalog.linkedtree.type.GenericTypeAdapter;
 import com.apicatalog.linkedtree.xsd.XsdDateTime;
 
 import jakarta.json.Json;
@@ -55,9 +54,8 @@ class JsonLdAdapterTest {
             .with(VerifiableCredential.TYPE, VerifiableCredential.typeAdapter())
             .with(AlumniCredential.TYPE, AlumniCredential.typeAdapter())
             .with(BitstringStatusListEntry.TYPE,
-                    new GenericTypeAdapter(
-                            BitstringStatusListEntry.class,
-                            BitstringStatusListEntry::of))
+                    BitstringStatusListEntry.class,
+                    BitstringStatusListEntry::of)
 
             // literals
             .with(Base64ByteArray.typeAdapter())
@@ -68,7 +66,7 @@ class JsonLdAdapterTest {
     static JsonLdTreeWriter WRITER = new JsonLdTreeWriter();
 
     @Test
-    void base64ByteArray() throws IOException, URISyntaxException, TreeBuilderError, ClassCastException, AdapterError {
+    void base64ByteArray() throws IOException, URISyntaxException, TreeBuilderError, ClassCastException, NodeAdapterError {
 
         JsonArray input = resource("custom/base64-1.jsonld");
         JsonArray output = resource("custom/base64-2.jsonld");
@@ -96,7 +94,7 @@ class JsonLdAdapterTest {
     }
 
     @Test
-    void verifiableCredential() throws IOException, URISyntaxException, TreeBuilderError, ClassCastException, AdapterError {
+    void credential() throws IOException, URISyntaxException, TreeBuilderError, ClassCastException, NodeAdapterError {
 
         JsonArray input = resource("custom/signed-vc-1.jsonld");
 

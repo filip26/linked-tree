@@ -1,6 +1,8 @@
 package com.apicatalog.linkedtree.selector;
 
-public class InvalidSelector extends Exception {
+import com.apicatalog.linkedtree.adapter.NodeAdapterError;
+
+public class InvalidSelector extends NodeAdapterError {
 
     private static final long serialVersionUID = -3090034676289710498L;
     

@@ -46,4 +46,22 @@ public record GenericFragment(
 //        return this;
 //    }
 
+    @Override
+    public String toString() {
+        return "GenericFragment [id=" + id + ", type=" + type + ", entries=" + entries.size() + "]";
+    }
+
+    @Override
+    public int hashCode() {
+        return System.identityHashCode(this);
+    }
+
+    @Override
+    // containers cannot be compared as instances
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        return (obj != null);
+    }
 }
