@@ -16,7 +16,8 @@ public interface Link {
     Collection<LinkedFragment> refs();
 
     /**
-     * A fragment composed of all {@link Link#refs()}.
+     * A fragment composed of all {@link Link#refs()}. Can return the same
+     * unmodified instance in a case of single fragment reference.
      * 
      * @return a fragment
      */

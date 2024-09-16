@@ -376,6 +376,17 @@ public class JsonLdTreeReader extends JsonTreeReader {
         return new Builder();
     }
 
+    protected static final JsonLdTreeReader GENERIC = new JsonLdTreeReader(Collections.emptyMap(), Collections.emptyMap());
+    
+    /**
+     * A generic instance with no adapters attached.
+     * 
+     * @return a generic instance 
+     */
+    public static final JsonLdTreeReader generic() {
+        return GENERIC;
+    }
+
     public static class Builder {
 
         protected Map<String, TypeAdapter> typeMap;

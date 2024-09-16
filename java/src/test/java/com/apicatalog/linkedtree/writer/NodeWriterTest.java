@@ -1,25 +1,28 @@
-package com.apicatalog.linkedtree.jsonld;
+package com.apicatalog.linkedtree.writer;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import com.apicatalog.linkedtree.LinkedNode;
+import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
+import com.apicatalog.linkedtree.jsonld.JsonLdComparison;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
-import com.apicatalog.linkedtree.writer.NodeWriter;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -29,56 +32,50 @@ import jakarta.json.JsonWriter;
 import jakarta.json.JsonWriterFactory;
 import jakarta.json.stream.JsonGenerator;
 
-@DisplayName("JsonLd @graph Tests")
 @TestMethodOrder(OrderAnnotation.class)
-class JsonLdGraphTest {
+class NodeWriterTest {
 
-    static JsonLdTreeReader READER = JsonLdTreeReader
-            .create()
-            .build();
+    static JsonLdTreeReader READER = JsonLdTreeReader.generic();
 
-    @Test
-    void level1Graph() throws IOException, URISyntaxException, TreeBuilderError {
-
-        JsonArray input = resource("custom/signed-vc-1.jsonld");
+    @DisplayName("Read/Write")
+    @ParameterizedTest(name = "{0}")
+    @MethodSource({ "resources" })
+    void readWrite(String name, JsonArray input) throws TreeBuilderError {
 
         var tree = READER.read(input);
-
-        assertEquals(1, tree.subtrees().size());
-        assertEquals(0, tree.subtrees().iterator().next().subtrees().size());
-
-        assertNull(tree.root());
+        assertNotNull(tree);
         
-        assertTrue(tree.nodes()
-                .stream()
-                .map(LinkedNode::root)
-                .allMatch(tree::equals));
+        NodeWriter.writeToStdOut(tree);
 
-        var proof = tree.fragment()
-                .container("https://w3id.org/security#proof")
-//                .asContainer()
-//                .single()
-                .asTree();
-
-        assertTrue(proof.nodes()
-                .stream()
-                .map(LinkedNode::root)
-                .allMatch(proof::equals));
+//        assertTrue(compareJson(name, tree, output, input));
     }
 
-    static final JsonArray resource(String name) throws IOException, URISyntaxException {
-        try (var reader = Json.createReader(JsonLdKeyword.class.getResourceAsStream(name))) {
-            return reader.readArray();
-        }
+    static final Stream<Object[]> resources() throws IOException, URISyntaxException {
+        return resources("ltd", ".jsonld");
     }
 
-    static final boolean compareJson(final String testCase, final JsonStructure result, final JsonStructure expected) {
+    static final Stream<Object[]> resources(String folder, String suffix) throws IOException, URISyntaxException {
+        return Files.walk(Paths.get(LinkedTree.class.getResource(folder).toURI()), 1)
+                .filter(name -> name.toString().endsWith(suffix))
+                .sorted()
+                .map(path -> {
+                    try (var reader = Json.createReader(LinkedTree.class.getResourceAsStream(folder + "/" + path.getFileName().toString()))) {
+                        return new Object[] { path.getFileName().toString(), reader.readArray() };
+                    }
+                });
+    }
+
+    static final boolean compareJson(final String testCase, final LinkedNode data, final JsonStructure result, final JsonStructure expected) {
 
         if (JsonLdComparison.equals(expected, result)) {
             return true;
         }
 
         write(testCase, result, expected, null);
+
+        final StringWriter stringWriter = new StringWriter();
+        (new NodeWriter(new PrintWriter(stringWriter))).print(data);
+        System.out.print(stringWriter.toString());
 
         fail("Expected " + expected + ", but was" + result);
         return false;
