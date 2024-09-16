@@ -1,20 +1,18 @@
 package com.apicatalog.linkedtree.adapter;
 
-public class AdapterError extends Exception {
+public class NodeAdapterError extends Exception {
 
     private static final long serialVersionUID = -6115617775469766306L;
 
-    public AdapterError() {
+    public NodeAdapterError() {
         super();
     }
 
-    public AdapterError(String message) {
+    public NodeAdapterError(String message) {
         super(message);
     }
 
-    public AdapterError(Throwable e) {
+    public NodeAdapterError(Throwable e) {
         super(e);
     }
-
-
 }

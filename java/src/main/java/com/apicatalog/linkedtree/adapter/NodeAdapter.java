@@ -1,10 +1,16 @@
 package com.apicatalog.linkedtree.adapter;
 
 import com.apicatalog.linkedtree.LinkedNode;
-import com.apicatalog.linkedtree.LinkedTree;
 
-public interface NodeAdapter<T, R extends LinkedNode> {
+public interface NodeAdapter<T extends LinkedNode, R> {
 
-    R materialize(T source, LinkedTree root) throws AdapterError;
-    
+    /**
+     * Creates a new object instance initialized by values found in the given
+     * source object.
+     * 
+     * @param source
+     * @return a new instance
+     * @throws NodeAdapterError
+     */
+    R materialize(T source) throws NodeAdapterError;
 }

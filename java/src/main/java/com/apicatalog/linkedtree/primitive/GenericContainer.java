@@ -30,24 +30,28 @@ public record GenericContainer(
 
     @Override
     public int hashCode() {
-        return Objects.hash(containerType, nodes, ops);
+        return System.identityHashCode(this);
     }
 
     @Override
+    // containers cannot be compared as instances
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        GenericContainer other = (GenericContainer) obj;
-        return containerType == other.containerType && Objects.equals(nodes, other.nodes) && Objects.equals(ops, other.ops);
+        }
+        return (obj != null);
     }
 
     @Override
     public String toString() {
         return "GenericContainer [containerType=" + containerType + ", nodes=" + nodes.size() + ", ops=" + ops.size() + "]";
     }
-    
+
+    public static GenericContainer empty(final LinkedTree root) {
+        return new GenericContainer(
+                ContainerType.UnorderedSet,
+                Collections.emptyList(),
+                root,
+                Collections.emptyMap());
+    }
 }

@@ -1,16 +1,16 @@
 package com.apicatalog.linkedtree.type;
 
 import com.apicatalog.linkedtree.LinkedFragment;
-import com.apicatalog.linkedtree.adapter.Adapter;
-import com.apicatalog.linkedtree.adapter.AdapterError;
+import com.apicatalog.linkedtree.adapter.NodeAdapter;
+import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 
 public record GenericTypeAdapter(
         Class<?> typeInterface,
-        Adapter<LinkedFragment, Object> materialize
+        NodeAdapter<LinkedFragment, Object> materialize
         ) implements TypeAdapter {
 
     @Override
-    public Object materialize(LinkedFragment fragment) throws AdapterError {
+    public Object materialize(LinkedFragment fragment) throws NodeAdapterError {
         return materialize().materialize(fragment);
     }
 }

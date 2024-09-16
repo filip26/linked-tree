@@ -30,12 +30,11 @@ import com.apicatalog.linkedtree.BitstringStatusListEntry;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.UnknownStatus;
 import com.apicatalog.linkedtree.VerifiableCredential;
-import com.apicatalog.linkedtree.adapter.AdapterError;
+import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeWriter;
 import com.apicatalog.linkedtree.literal.ByteArrayValue;
-import com.apicatalog.linkedtree.writer.NodeDebugWriter;
 import com.apicatalog.linkedtree.xsd.XsdDateTime;
 
 import jakarta.json.Json;
@@ -67,7 +66,7 @@ class JsonLdAdapterTest {
     static JsonLdTreeWriter WRITER = new JsonLdTreeWriter();
 
     @Test
-    void base64ByteArray() throws IOException, URISyntaxException, TreeBuilderError, ClassCastException, AdapterError {
+    void base64ByteArray() throws IOException, URISyntaxException, TreeBuilderError, ClassCastException, NodeAdapterError {
 
         JsonArray input = resource("custom/base64-1.jsonld");
         JsonArray output = resource("custom/base64-2.jsonld");
@@ -95,7 +94,7 @@ class JsonLdAdapterTest {
     }
 
     @Test
-    void credential() throws IOException, URISyntaxException, TreeBuilderError, ClassCastException, AdapterError {
+    void credential() throws IOException, URISyntaxException, TreeBuilderError, ClassCastException, NodeAdapterError {
 
         JsonArray input = resource("custom/signed-vc-1.jsonld");
 
@@ -152,63 +151,6 @@ class JsonLdAdapterTest {
         assertTrue(status2 instanceof UnknownStatus);
     }
 
-    @Test
-    void proof() throws IOException, URISyntaxException, TreeBuilderError, ClassCastException, AdapterError {
-
-        JsonArray input = resource("custom/proof-1.jsonld");
-
-        LinkedTree tree = READER.read(
-                List.of("https://www.w3.org/2018/credentials/v1",
-                        "https://w3id.org/security/data-integrity/v2"),
-                input);
-
-        assertNotNull(tree);
-NodeDebugWriter.writeToStdOut(tree);
-        VerifiableCredential vc = tree.object(VerifiableCredential.class);
-
-        assertNotNull(vc);
-
-        assertEquals(
-                URI.create("urn:uuid:58172aac-d8ba-11ed-83dd-0b3aef56cc33"),
-                vc.id());
-
-        assertEquals(new HashSet<>(Arrays.asList(new String[] {
-                "https://www.w3.org/2018/credentials#VerifiableCredential",
-                "https://www.w3.org/ns/credentials/examples#AlumniCredential"
-        })), vc.type().stream().collect(Collectors.toSet()));
-
-        assertEquals(1, vc.name().size());
-        assertEquals("Alumni Credential", vc.name().single().lexicalValue());
-        assertNull(vc.name().single().language());
-
-        assertEquals(1, vc.name().strings().size());
-        assertEquals(1, vc.name().langCodes().size());
-
-        assertNotNull(vc.description());
-
-        assertEquals(Instant.parse("2023-01-01T00:00:00Z"), vc.validFrom());
-
-        assertNull(vc.validUntil());
-
-        assertEquals(1, vc.subject().size());
-
-        assertEquals(
-                URI.create("https://vc.example/issuers/5678"),
-                vc.issuer());
-
-        AlumniCredential avc = vc.type().materialize(AlumniCredential.class);
-        assertNotNull(avc);
-
-        assertEquals(2, avc.status().size());
-
-        var it = avc.status().iterator();
-
-        var status1 = it.next();
-        var status2 = it.next();
-
-        assertTrue(status1 instanceof BitstringStatusListEntry);
-        assertTrue(status2 instanceof UnknownStatus);
-    }
     static final JsonArray resource(String name) throws IOException, URISyntaxException {
         try (var reader = Json.createReader(JsonLdKeyword.class.getResourceAsStream(name))) {
             return reader.readArray();

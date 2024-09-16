@@ -2,7 +2,6 @@ package com.apicatalog.linkedtree.fragment;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Objects;
 
 import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedFragment;
@@ -49,24 +48,20 @@ public record GenericFragment(
 
     @Override
     public String toString() {
-        return "GenericFragment [id=" + id + ", type=" + type + ", entries=" + entries + "]";
+        return "GenericFragment [id=" + id + ", type=" + type + ", entries=" + entries.size() + "]";
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(entries, id, type);
+        return System.identityHashCode(this);
     }
 
     @Override
+    // containers cannot be compared as instances
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        GenericFragment other = (GenericFragment) obj;
-        return Objects.equals(entries, other.entries) && Objects.equals(id, other.id) && Objects.equals(type, other.type);
+        }
+        return (obj != null);
     }
-
 }

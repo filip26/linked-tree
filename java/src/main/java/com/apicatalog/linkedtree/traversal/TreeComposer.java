@@ -1,6 +1,5 @@
 package com.apicatalog.linkedtree.traversal;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,7 +25,7 @@ public abstract class TreeComposer {
         traversal(root, new Object[0]);
     }
     
-    protected abstract void begin(LinkedNode node, Object[] path);
+    protected abstract void begin(LinkedNode node, Object[] path) throws TreeBuilderError;
     protected abstract void end(LinkedNode node, Object[] path);
     
     // TODO exclude injectors and pass reduced map
@@ -40,6 +39,7 @@ public abstract class TreeComposer {
             int nodeOrder = 0;
             for (final LinkedNode node : source.asContainer()) {
 
+                //TODO better
                 var newPath = new Object[path.length + 1];
                 System.arraycopy(path, 0, newPath, 0, path.length);
                 newPath[path.length] = nodeOrder++;
@@ -47,6 +47,18 @@ public abstract class TreeComposer {
                 traversal(
                         node,
                         newPath);
+            }
+            for (final Map.Entry<NodePointer, LinkedNode> injector : injectors.entrySet()) {
+                if (injector.getKey().match(path)) {
+
+                    var newPath = new Object[path.length + 1];
+                    System.arraycopy(path, 0, newPath, 0, path.length);
+                    newPath[path.length] = injector.getKey().index();
+
+                    traversal(
+                            injector.getValue(),
+                            newPath);
+                }
             }
         }
         if (source.isFragment()) {

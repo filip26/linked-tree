@@ -8,8 +8,8 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.function.Function;
 
-import com.apicatalog.linkedtree.adapter.Adapter;
-import com.apicatalog.linkedtree.adapter.AdapterError;
+import com.apicatalog.linkedtree.adapter.NodeAdapter;
+import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 import com.apicatalog.linkedtree.lang.LangStringSelector;
 import com.apicatalog.linkedtree.lang.LanguageMap;
@@ -31,9 +31,9 @@ public interface LinkedFragment extends LinkedNode {
     Collection<String> terms();
 
     LinkedContainer container(String term);
-
+    
     @SuppressWarnings("unchecked")
-    default <T extends Linkable> T object(String term, Class<T> clazz) throws InvalidSelector, AdapterError {
+    default <T extends Linkable> T object(String term, Class<T> clazz) throws InvalidSelector, NodeAdapterError {
 
         Objects.requireNonNull(clazz);
 
@@ -87,7 +87,7 @@ public interface LinkedFragment extends LinkedNode {
         }
         return container.node();
     }
-    
+
 //    default <R> R single(String term, LinkableMapper<R> mapper) throws DocumentError {
 //
 //        Objects.requireNonNull(term);
@@ -131,39 +131,39 @@ public interface LinkedFragment extends LinkedNode {
 //    }
 
     @SuppressWarnings("unchecked")
-    default <R> R fragment(String term, Class<R> clazz, Adapter<LinkedNode, R> mapper) throws AdapterError {
+    default <R> R fragment(String term, Class<R> clazz, NodeAdapter<LinkedNode, R> mapper) throws NodeAdapterError {
 
 //        try {
-            LinkedFragment node = fragment(term);
-            
-            if (node == null) {
-                return null;
-            }
-            
-            if (clazz.isInstance(node)) {
-                return (R)node;
-            }
-            
-            if (node.type().isAdaptableTo(clazz)) {
-                return node.type().materialize(clazz);
-            }
-            
-            if (mapper != null) {
-                return mapper.materialize(node);
-            }
+        LinkedFragment node = fragment(term);
 
-            throw new AdapterError();
+        if (node == null) {
+            return null;
+        }
+
+        if (clazz.isInstance(node)) {
+            return (R) node;
+        }
+
+        if (node.type().isAdaptableTo(clazz)) {
+            return node.type().materialize(clazz);
+        }
+
+        if (mapper != null) {
+            return mapper.materialize(node);
+        }
+
+        throw new NodeAdapterError();
 //        } catch (InvalidSelector e) {
 //            throw e;
 //        } catch (Exception e) {
 //            throw new InvalidSelector(e, term);
 //        }
     }
-    
+
     default <T extends Linkable> T literal(String term, Class<T> clazz) throws InvalidSelector {
         return literal(term, clazz, Function.identity());
     }
-    
+
     default <T extends Linkable, R> R literal(String term, Class<T> clazz, Function<T, R> mapper) throws InvalidSelector {
 
         Objects.requireNonNull(mapper);
@@ -234,7 +234,7 @@ public interface LinkedFragment extends LinkedNode {
             }
             return null;
 
-        } catch (IllegalArgumentException | AdapterError e) {
+        } catch (IllegalArgumentException | NodeAdapterError e) {
             throw new InvalidSelector(e, term);
         }
     }
@@ -257,7 +257,7 @@ public interface LinkedFragment extends LinkedNode {
     default <T> Collection<T> collection(
             String term,
             Class<T> clazz,
-            Adapter<LinkedNode, T> unmapped) throws InvalidSelector {
+            NodeAdapter<LinkedNode, T> unmapped) throws InvalidSelector {
 
         final LinkedContainer container = container(term);
 
@@ -269,10 +269,10 @@ public interface LinkedFragment extends LinkedNode {
             var collection = new ArrayList<T>(container.nodes().size());
 
             for (final LinkedNode node : container) {
-                
+
                 if (clazz.isInstance(node)) {
-                    collection.add((T)node);
-                    
+                    collection.add((T) node);
+
                 } else if (node.isFragment() && node.asFragment().type().isAdaptableTo(clazz)) {
                     collection.add(node.asFragment().type().materialize(clazz));
 
@@ -289,7 +289,7 @@ public interface LinkedFragment extends LinkedNode {
 
             return collection;
 
-        } catch (AdapterError e) {
+        } catch (NodeAdapterError e) {
             throw new InvalidSelector(e, term);
         }
     }

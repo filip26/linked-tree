@@ -4,13 +4,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
-import com.apicatalog.linkedtree.adapter.AdapterError;
+import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 
 public interface LinkedContainer extends LinkedNode, Iterable<LinkedNode> {
-
-    public static LinkedContainer EMPTY = new LinkedContainer() {
-    };
 
     public enum ContainerType {
         OrderedList,
@@ -42,7 +39,7 @@ public interface LinkedContainer extends LinkedNode, Iterable<LinkedNode> {
         }
         return Collections.emptyList();
     }
-
+    
     @Override
     default boolean isContainer() {
         return true;
@@ -69,7 +66,7 @@ public interface LinkedContainer extends LinkedNode, Iterable<LinkedNode> {
     }
 
     @SuppressWarnings("unchecked")
-    default <T> T object(Class<T> clazz) throws AdapterError {
+    default <T> T object(Class<T> clazz) throws NodeAdapterError {
 
         final LinkedNode single = node();
 

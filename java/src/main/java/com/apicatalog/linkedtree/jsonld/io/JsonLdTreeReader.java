@@ -11,8 +11,8 @@ import java.util.Map;
 
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedTree;
-import com.apicatalog.linkedtree.adapter.Adapter;
-import com.apicatalog.linkedtree.adapter.AdapterError;
+import com.apicatalog.linkedtree.adapter.NodeAdapter;
+import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.json.JsonDecimal;
 import com.apicatalog.linkedtree.json.JsonInteger;
@@ -25,6 +25,7 @@ import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 import com.apicatalog.linkedtree.jsonld.JsonLdType;
 import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.link.MutableLink;
+import com.apicatalog.linkedtree.literal.adapter.DatatypeAdapter;
 import com.apicatalog.linkedtree.literal.adapter.LiteralAdapter;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 import com.apicatalog.linkedtree.traversal.NodeSelector;
@@ -214,7 +215,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
                 ops.add(pi);
             }
             pi(ops);
-            literal(JsonLiteral.of(value));
+            literal(JsonLiteral.of(value, root()));
             return;
 
         } else if (value != null &&
@@ -229,7 +230,8 @@ public class JsonLdTreeReader extends JsonTreeReader {
             literal(new JsonScalar(value,
                     datatype != null
                             ? datatype
-                            : XsdConstants.BOOLEAN));
+                            : XsdConstants.BOOLEAN,
+                    root()));
             return;
 
         } else if (value != null && ValueType.NUMBER.equals(value.getValueType())) {
@@ -249,7 +251,8 @@ public class JsonLdTreeReader extends JsonTreeReader {
                 literal(JsonDecimal.of(number,
                         datatype != null
                                 ? datatype
-                                : XsdConstants.DOUBLE));
+                                : XsdConstants.DOUBLE,
+                        root()));
                 return;
 
             } else {
@@ -262,7 +265,8 @@ public class JsonLdTreeReader extends JsonTreeReader {
                         number,
                         datatype != null
                                 ? datatype
-                                : XsdConstants.INTEGER));
+                                : XsdConstants.INTEGER,
+                        root()));
                 return;
             }
 
@@ -289,7 +293,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
                     pi(ops);
                     literal(adapter.materialize(valueString, root()));
                     return;
-                } catch (AdapterError e) {
+                } catch (NodeAdapterError e) {
                     throw new TreeBuilderError(e);
                 }
             }
@@ -386,15 +390,15 @@ public class JsonLdTreeReader extends JsonTreeReader {
             this.typeMap.put(type, adapter);
             return this;
         }
-        
+
         public Builder with(
-                String type, 
+                String type,
                 Class<?> typeInterface,
-                Adapter<LinkedFragment, Object> adapter) {
+                NodeAdapter<LinkedFragment, Object> adapter) {
             return with(type, new GenericTypeAdapter(typeInterface, adapter));
         }
 
-        public Builder with(LiteralAdapter adapter) {
+        public Builder with(DatatypeAdapter adapter) {
             this.literalMap.put(adapter.datatype(), adapter);
             return this;
         }

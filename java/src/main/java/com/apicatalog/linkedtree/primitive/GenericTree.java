@@ -1,15 +1,21 @@
 package com.apicatalog.linkedtree.primitive;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.LinkedTree;
+import com.apicatalog.linkedtree.builder.GenericTreeCloner;
 import com.apicatalog.linkedtree.link.Link;
+import com.apicatalog.linkedtree.link.MutableLink;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
+import com.apicatalog.linkedtree.type.AdaptableType;
 import com.apicatalog.linkedtree.type.Type;
 
 public record GenericTree(
@@ -22,14 +28,6 @@ public record GenericTree(
         LinkedTree root,
         Map<Integer, Collection<ProcessingInstruction>> ops) implements LinkedTree {
 
-//    public static GenericTree of(Collection<LinkedNode> nodes, Map<String, Link> links, Collection<LinkedTree> subtrees, LinkedTree root,Map<Integer, Collection<ProcessingInstruction>> opsMap) {
-//        return new GenericTree(null, Type.empty(), Collections.emptyMap(), nodes, links, subtrees, root, opsMap);
-//    }
-//
-//    public static GenericTree of(LinkedNode node, Map<String, Link> links, Collection<LinkedTree> subtrees, LinkedTree root, Map<Integer, Collection<ProcessingInstruction>> opsMap) {
-//        return new GenericTree(null, Type.empty(), Collections.emptyMap(), List.of(node), links, subtrees, root, opsMap);
-//    }
-    
     @Override
     public Collection<String> terms() {
         return entries.keySet();
@@ -54,24 +52,69 @@ public record GenericTree(
 
     @Override
     public int hashCode() {
-        return Objects.hash(entries, id, nodes, ops, type);
+        return System.identityHashCode(this);
     }
 
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
             return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        GenericTree other = (GenericTree) obj;
-        return Objects.equals(entries, other.entries) && Objects.equals(id, other.id) && Objects.equals(nodes, other.nodes) && Objects.equals(ops, other.ops) && Objects.equals(type, other.type);
+        return (obj != null);
     }
 
     @Override
     public String toString() {
         return "GenericTree [id=" + id + ", type=" + type + ", entries=" + entries.size() + ", nodes=" + nodes.size() + ", ops=" + ops.size() + "]";
     }
-    
+
+    public static GenericTree of(LinkedTree source, Link id, LinkedTree root) {
+        // clone links
+        final Map<String, Link> links = source.asTree().links().isEmpty()
+                ? Collections.emptyMap()
+                : source.asTree().links()
+                        .stream()
+                        .map(Link::uri)
+                        .collect(Collectors.toMap(
+                                Function.identity(),
+                                MutableLink::of));
+
+        var types = source.asTree().type().isEmpty()
+                ? Type.empty()
+                : AdaptableType.of(source.asTree().type().stream().toList());
+
+        final Map<String, LinkedContainer> treeMeta =
+//        source.asFragment().terms().isEmpty()
+//                ? Collections.emptyMap()
+//                : 
+                new LinkedHashMap<>(source.asFragment().terms().size());
+
+        var tree = new GenericTree(
+                id,
+
+                types,
+
+                treeMeta,
+
+//                source.asContainer().nodes().isEmpty()
+//                        ? Collections.emptyList()
+//                        : 
+                new ArrayList<>(source.asContainer().size()),
+
+                links,
+
+//                source.asTree().subtrees().isEmpty()
+//                        ? Collections.emptyList()
+//                        : 
+                new ArrayList<>(source.asTree().subtrees().size()),
+
+                root,
+                GenericTreeCloner.cloneOps(source.asContainer()));
+
+        if (types instanceof AdaptableType adaptableType) {
+            adaptableType.node(tree);
+        }
+
+        return tree;
+    }
+
 }

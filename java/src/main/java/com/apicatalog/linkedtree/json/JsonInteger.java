@@ -1,46 +1,66 @@
 package com.apicatalog.linkedtree.json;
 
+import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.literal.IntegerValue;
 import com.apicatalog.linkedtree.literal.NumericValue;
 import com.apicatalog.linkedtree.xsd.XsdConstants;
 
-public class JsonInteger implements NumericValue, IntegerValue {
+import jakarta.json.JsonValue;
 
-    protected jakarta.json.JsonNumber json;
+public class JsonInteger implements NumericValue, IntegerValue, JsonNode {
+
+    protected jakarta.json.JsonNumber jsonValue;
     protected String datatype;
+    protected LinkedTree root;
 
     protected JsonInteger() {
         // protected
     }
 
-    public static JsonInteger of(jakarta.json.JsonNumber jsonNumber) {
-        return of(jsonNumber, XsdConstants.INTEGER);
+    public static JsonInteger of(jakarta.json.JsonNumber jsonNumber, LinkedTree root) {
+        return of(jsonNumber, XsdConstants.INTEGER, root);
     }
 
-    public static JsonInteger of(jakarta.json.JsonNumber jsonNumber, String datatype) {
+    public static JsonInteger of(jakarta.json.JsonNumber jsonNumber, String datatype, LinkedTree root) {
         final JsonInteger number = new JsonInteger();
-        number.json = jsonNumber;
+        number.jsonValue = jsonNumber;
         number.datatype = datatype;
+        number.root = root;
         return number;
     }
 
     @Override
     public String lexicalValue() {
-        return json.bigIntegerValue().toString();
+        return jsonValue.bigIntegerValue().toString();
     }
 
     @Override
     public Number numberValue() {
-        return json.numberValue();
+        return jsonValue.numberValue();
     }
 
     @Override
     public int integerValue() {
-        return json.intValueExact();
+        return jsonValue.intValueExact();
     }
 
     @Override
     public String datatype() {
         return datatype;
+    }
+
+    @Override
+    public LinkedTree root() {
+        return root;
+    }
+
+    @Override
+    public String toString() {
+        return "JsonInteger [json=" + jsonValue + ", datatype=" + datatype + "]";
+    }
+    
+    @Override
+    public JsonValue jsonValue() {
+        return jsonValue;
     }
 }
