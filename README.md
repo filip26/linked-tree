@@ -24,6 +24,8 @@ Graphs are great to catch ideas, plans, and knowledge. There are many successful
 
 When it comes to software engineering, graphs are hard to work with, graphs are too generic and add unnecessary complexity to a domain limited use-cases.
 
+Think in graphs, work with trees.
+
 ## LTDM
 
 ![Data Model](/doc/ltdm-0.0.1.png)
