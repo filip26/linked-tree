@@ -25,7 +25,7 @@ import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeWriter;
-import com.apicatalog.linkedtree.writer.NodeWriter;
+import com.apicatalog.linkedtree.writer.DictionaryWriter;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -93,7 +93,7 @@ class JsonLdReadWriteTest {
         write(testCase, result, expected, null);
         
         final StringWriter stringWriter = new StringWriter();
-        (new NodeWriter(new PrintWriter(stringWriter))).print(data);
+        (new DictionaryWriter(new PrintWriter(stringWriter))).print(data);
         System.out.print(stringWriter.toString());
         
         

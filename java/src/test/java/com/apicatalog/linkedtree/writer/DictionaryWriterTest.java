@@ -33,7 +33,7 @@ import jakarta.json.JsonWriterFactory;
 import jakarta.json.stream.JsonGenerator;
 
 @TestMethodOrder(OrderAnnotation.class)
-class NodeWriterTest {
+class DictionaryWriterTest {
 
     static JsonLdTreeReader READER = JsonLdTreeReader.generic();
 
@@ -45,7 +45,7 @@ class NodeWriterTest {
         var tree = READER.read(input);
         assertNotNull(tree);
         
-        NodeWriter.writeToStdOut(tree);
+        DictionaryWriter.writeToStdOut(tree);
 
 //        assertTrue(compareJson(name, tree, output, input));
     }
@@ -74,7 +74,7 @@ class NodeWriterTest {
         write(testCase, result, expected, null);
 
         final StringWriter stringWriter = new StringWriter();
-        (new NodeWriter(new PrintWriter(stringWriter))).print(data);
+        (new DictionaryWriter(new PrintWriter(stringWriter))).print(data);
         System.out.print(stringWriter.toString());
 
         fail("Expected " + expected + ", but was" + result);

@@ -10,7 +10,7 @@ cred:credentialSubject:
   ID: did:example:abcdefgh
   ex:alumniOf.en: The School of Examples
 
-cred:issuer: uri=https://vc.example/issuers/5678
+cred:issuer: https://vc.example/issuers/5678
       
 cred:validFrom.dateTime: 2023-01-01T00:00:00Z
           
@@ -35,7 +35,7 @@ cred:credentialStatus:
     ID: https://license.example/credentials/status/84#14278
     TYPE: BitstringStatusListEntry
   
-    statusListCredential: uri=https://license.example/credentials/status/85
+    statusListCredential: https://license.example/credentials/status/85
     statusListIndex.string: 14278
     statusPurpose.string: revocation
     

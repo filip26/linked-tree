@@ -19,7 +19,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
-import com.apicatalog.linkedtree.writer.NodeWriter;
+import com.apicatalog.linkedtree.writer.DictionaryWriter;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
