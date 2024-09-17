@@ -3,7 +3,6 @@ package com.apicatalog.linkedtree.writer;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Collection;
-import java.util.Collections;
 
 import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedFragment;
@@ -11,7 +10,6 @@ import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.lang.LangString;
 import com.apicatalog.linkedtree.link.Link;
-import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 
 public class DictionaryWriter {
 
@@ -68,59 +66,31 @@ public class DictionaryWriter {
     }
 
     public void print(LinkedNode node) {
-        print(node, Collections.emptyList());
-    }
-
-    public void print(LinkedNode node, Collection<ProcessingInstruction> ops) {
-
-//        level++;
-
         if (node.isTree()) {
-//            print("class: ")
-//                    .println(node.asTree().cast().getClass().getSimpleName());
-            print("container: ")
-                    .println(node.asContainer().containerType().toString());
-
-            printFragment(node.asFragment(), node.asContainer().pi(0));
-            printContainer(node.asContainer(), ops);
+            printFragment(node.asFragment());
+            printContainer(node.asContainer());
 
         } else if (node.isContainer()) {
-            print("class: ")
-                    .println(node.getClass().getSimpleName());
-            print("container: ")
-                    .println(node.asContainer().containerType().toString());
-
-            printContainer(node.asContainer(), ops);
+            printContainer(node.asContainer());
 
         } else if (node.isFragment()) {
-//            print("class: ")
-//                    .println(node.asFragment().cast().getClass().getSimpleName());
-
-            printFragment(node.asFragment(), ops);
+            printFragment(node.asFragment());
 
         } else if (node.isLiteral()) {
-            print("class: ")
-                    .println(node.asLiteral().cast().getClass().getSimpleName());
-            printLiteral(node.asLiteral(), ops);
+            printLiteral(node.asLiteral());
         }
     }
 
-    void printContainer(LinkedContainer container, Collection<ProcessingInstruction> ops) {
-//        if (container.size() == 1) {
-//            print(container.single());
-//            return;
-//        }
-        int order = 1;
-
+    void printContainer(LinkedContainer container) {
         for (LinkedNode node : container) {
             print("- ");
             level++;
-            print(node, container.pi(order++));
+            print(node);
             level--;
         }
     }
 
-    void printFragment(LinkedFragment fragment, Collection<ProcessingInstruction> ops) {
+    void printFragment(LinkedFragment fragment) {
 
         if (fragment.id() != null) {
             print("id: ")
@@ -129,10 +99,6 @@ public class DictionaryWriter {
         if (fragment.type() != null && !fragment.type().isEmpty()) {
             print("type: ")
                     .println(fragment.type().stream().toList());
-        }
-        if (ops != null && !ops.isEmpty()) {
-            print("pi: ")
-                    .println(ops.toString());
         }
         for (String term : fragment.terms()) {
             println(term + ": ");
@@ -143,7 +109,7 @@ public class DictionaryWriter {
 
     }
 
-    void printLiteral(LinkedLiteral literal, Collection<ProcessingInstruction> ops) {
+    void printLiteral(LinkedLiteral literal) {
 
         print("datatype: ").println(literal.datatype());
         print("value: ").println(literal.lexicalValue());
@@ -155,11 +121,6 @@ public class DictionaryWriter {
                 print("direction: ").println(langString.direction().toString());
             }
         }
-        if (ops != null && !ops.isEmpty()) {
-            print("pi: ")
-                    .println(ops.toString());
-        }
-
     }
 
     public static void writeToStdOut(LinkedNode node) {
@@ -167,5 +128,5 @@ public class DictionaryWriter {
         new DictionaryWriter(new PrintWriter(s)).print(node);
         System.out.println(s);
     }
-    
+
 }

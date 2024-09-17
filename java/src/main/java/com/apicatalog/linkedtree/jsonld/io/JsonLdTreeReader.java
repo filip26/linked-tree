@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedTree;
@@ -20,6 +21,7 @@ import com.apicatalog.linkedtree.json.JsonLiteral;
 import com.apicatalog.linkedtree.json.JsonScalar;
 import com.apicatalog.linkedtree.json.JsonTreeReader;
 import com.apicatalog.linkedtree.json.pi.JsonObjectWrite;
+import com.apicatalog.linkedtree.jsonld.JsonLdContext;
 import com.apicatalog.linkedtree.jsonld.JsonLdId;
 import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 import com.apicatalog.linkedtree.jsonld.JsonLdType;
@@ -43,6 +45,8 @@ import jakarta.json.JsonValue.ValueType;
 
 public class JsonLdTreeReader extends JsonTreeReader {
 
+    protected Collection<String> context;
+
     protected JsonLdTreeReader(
             Map<String, TypeAdapter> typeAdapters,
             Map<String, LiteralAdapter> literalAdapters) {
@@ -54,12 +58,12 @@ public class JsonLdTreeReader extends JsonTreeReader {
     }
 
     public LinkedTree read(Collection<String> context, JsonStructure source) throws TreeBuilderError {
-        // TODO context
+        this.context = context != null ? context : Collections.emptyList();
         return read(source, ((node, indexOrder, indexTerm, depth) -> TraversalPolicy.Accept));
     }
 
     public LinkedTree read(Collection<String> context, JsonStructure source, NodeSelector<JsonValue> selector) throws TreeBuilderError {
-        // TODO context
+        this.context = context != null ? context : Collections.emptyList();
         return read(source, selector);
     }
 
@@ -99,7 +103,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
         if (ValueType.OBJECT == source.getValueType()) {
             // tree
             if (source.asJsonObject().containsKey(JsonLdKeyword.GRAPH)) {
-                jsonLdTree(source.asJsonObject());
+                jsonLdTree(source.asJsonObject(), Collections.emptyList());
                 return;
 
                 // literal
@@ -131,7 +135,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
         throw new IllegalArgumentException("The input is not an expanded JSON-LD, expected JSON object or an array but got " + source);
     }
 
-    protected void jsonLdTree(final JsonObject source) {
+    protected void jsonLdTree(final JsonObject source, Collection<ProcessingInstruction> ops) {
         tree(
                 JsonLdId.string(source),
                 JsonLdType.strings(source),
@@ -139,15 +143,22 @@ public class JsonLdTreeReader extends JsonTreeReader {
                 source.get(JsonLdKeyword.GRAPH) != null
                         ? source.getJsonArray(JsonLdKeyword.GRAPH).size()
                         : 0,
-                ops(source, List.of(JsonLdKeyword.ID, JsonLdKeyword.TYPE, JsonLdKeyword.GRAPH)));
+                Stream.concat(
+                        ops.stream(),
+                        ops(source, List.of(JsonLdKeyword.ID, JsonLdKeyword.TYPE, JsonLdKeyword.GRAPH)).stream()).toList()
+        );
     }
 
     protected void cloneRoot(final JsonArray source) {
 
+        final Collection<ProcessingInstruction> ops = context == null || context.isEmpty()
+                ? Collections.emptyList()
+                : List.of(new JsonLdContext(context));
+
         if (source.size() == 1
                 && ValueType.OBJECT == source.iterator().next().getValueType()
                 && source.iterator().next().asJsonObject().containsKey(JsonLdKeyword.GRAPH)) {
-            jsonLdTree(source.iterator().next().asJsonObject());
+            jsonLdTree(source.iterator().next().asJsonObject(), ops);
             return;
         }
 
@@ -156,7 +167,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
                 Collections.emptySet(),
                 0,
                 source.size(),
-                Collections.emptyList());
+                ops);
     }
 
     protected void jsonLdFragment(final JsonObject source) {
@@ -377,11 +388,11 @@ public class JsonLdTreeReader extends JsonTreeReader {
     }
 
     protected static final JsonLdTreeReader GENERIC = new JsonLdTreeReader(Collections.emptyMap(), Collections.emptyMap());
-    
+
     /**
      * A generic instance with no adapters attached.
      * 
-     * @return a generic instance 
+     * @return a generic instance
      */
     public static final JsonLdTreeReader generic() {
         return GENERIC;

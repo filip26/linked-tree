@@ -15,20 +15,17 @@ cred:issuer: https://vc.example/issuers/5678
 cred:validFrom.dateTime: 2023-01-01T00:00:00Z
           
 sec:proof: 
-  DICTIONARY: { schema: https://schema.org, xsd: "...", default: "https://sec...",  } 
-  TYPE: DataIntegrityProof
+  # { default.type: DataIntegrityProof, schema: https://schema.org, xsd: "...", created: schema:created, created.datatype: xsd:dateTime , default: "https://sec...",  }
+  DICTIONARY: https://dataintegrity/proof  
   
-  schema:created: 
-    datatype: xsd:dateTime
-    value: 2023-02-24T23:36:38Z
+  created: 2023-02-24T23:36:38Z
+  
   cryptosuite: 
     datatype: cryptosuiteString
     value: eddsa-rdfc-2022
   proofPurpose: assertionMethod
-  proofValue: 
-    datatype: multibase
-    value: "z21EVs3eXERqTn4acNHT9viboqgzUaQ3kTmhPT3eA8qrVPE7CrQq78WkzctnMX5W4CrzcKnHw8V6dvy5pgWYCU5e9"
-  verificationMethod: uri=https://vc.example/issuers/5678#z6MkrJVnaZkeFzdQyMZu1cgjg7k1pZZ6pvBQ7XJPt4swbTQ2
+  proofValue.multibase: "z21EVs3eXERqTn4acNHT9viboqgzUaQ3kTmhPT3eA8qrVPE7CrQq78WkzctnMX5W4CrzcKnHw8V6dvy5pgWYCU5e9"
+  verificationMethod: https://vc.example/issuers/5678#z6MkrJVnaZkeFzdQyMZu1cgjg7k1pZZ6pvBQ7XJPt4swbTQ2
       
 cred:credentialStatus:
   - DICTIONARY: https://www.w3.org/ns/credentials/status#  

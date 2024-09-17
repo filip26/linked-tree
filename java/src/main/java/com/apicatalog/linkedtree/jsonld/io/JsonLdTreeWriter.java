@@ -30,7 +30,7 @@ import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser;
 
 public class JsonLdTreeWriter {
-
+    
     public JsonArray write(LinkedTree tree) {
         if (tree.id() != null
                 || !tree.type().isEmpty()
