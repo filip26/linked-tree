@@ -26,17 +26,21 @@ public record JsonLdContext(
      *                                  strings
      */
     public static Collection<String> strings(final JsonObject object) {
+        return strings(object, Collections.emptyList());
+    }
+    
+    public static Collection<String> strings(final JsonObject object, Collection<String> defaultValue) {
 
         final JsonValue contexts = object.get(JsonLdKeyword.CONTEXT);
 
         if (JsonUtils.isNull(contexts)) {
-            Collections.emptyList();
+            return defaultValue;
         }
 
         final Collection<JsonValue> items = JsonUtils.toCollection(contexts);
 
         if (items.isEmpty()) {
-            Collections.emptyList();
+            return defaultValue;
         }
 
         final List<String> strings = new ArrayList<>(items.size());
@@ -57,7 +61,7 @@ public record JsonLdContext(
 
         return strings;
     }
-
+    
     protected static final boolean isURI(final String value) {
 
         try {

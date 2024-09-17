@@ -14,7 +14,7 @@ public record ImmutableReference(
         Link id,
         LinkedTree root
         ) implements LinkedFragment {
-
+    
     @Override
     public Type type() {
         return Type.empty();

@@ -51,6 +51,7 @@ public class AdaptableType implements Type {
     @SuppressWarnings("unchecked")
     @Override
     public <T> T materialize(Class<T> clazz) throws NodeAdapterError {
+        System.out.println(type);
         return (T) type.values()
                 .stream()
                 .filter(Objects::nonNull)
