@@ -30,24 +30,22 @@ import jakarta.json.JsonValue;
 import jakarta.json.stream.JsonParser;
 
 public class JsonLdTreeWriter {
-    
+
     public JsonArray write(LinkedTree tree) {
         if (tree.id() != null
                 || !tree.type().isEmpty()
-                || !tree.asTree().terms().isEmpty()
-                ) {
+                || !tree.asTree().terms().isEmpty()) {
             return Json.createArrayBuilder()
                     .add(writeTree(tree)).build();
         }
         return writeTreeNodes(tree);
     }
-    
+
     public JsonObject writeFragment(LinkedFragment fragment) {
         return writeFragment(
-                fragment, 
+                fragment,
                 Collections.emptyList(),
-                Json.createObjectBuilder()
-                ).build();
+                Json.createObjectBuilder()).build();
     }
 
     JsonArray writeTreeNodes(LinkedTree tree) {
@@ -231,13 +229,10 @@ public class JsonLdTreeWriter {
                     convertedValue = parser.getValue();
                 }
                 type = JsonLdKeyword.JSON;
-            }
-        }
 
-        if (type == null
-                && !XsdConstants.STRING.equals(literal.datatype())
-                && literal.datatype() != null) {
-            type = literal.datatype();
+            } else {
+                type = literal.datatype();
+            }
         }
 
 //            // 2.6.
