@@ -7,7 +7,7 @@ import com.apicatalog.linkedtree.LinkedTree;
 public record ImmutableLangString(
         String lexicalValue,
         String language,
-        LanguageDirectionType direction,
+        LanguageDirection direction,
         LinkedTree root) implements LangString {
 
     @Override

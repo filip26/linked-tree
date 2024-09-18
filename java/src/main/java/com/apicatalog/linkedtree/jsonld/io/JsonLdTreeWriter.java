@@ -178,9 +178,6 @@ public class JsonLdTreeWriter {
             if (XsdConstants.STRING.equals(literal.datatype())) {
                 convertedValue = Json.createValue(literal.lexicalValue());
 
-            } else if (literal instanceof JsonScalar jsonScalar) {
-                convertedValue = jsonScalar.jsonValue();
-
             } else if (XsdConstants.BOOLEAN.equals(literal.datatype())) {
 
                 if ("true".equalsIgnoreCase(literal.lexicalValue())) {
@@ -196,25 +193,34 @@ public class JsonLdTreeWriter {
                     type = XsdConstants.BOOLEAN;
                 }
 
-            } else if (literal instanceof JsonInteger jsonInteger) {
+            } else if (literal instanceof JsonScalar jsonScalar) {
+                convertedValue = jsonScalar.jsonValue();
+                type = literal.datatype();
 
-                convertedValue = Json.createValue(jsonInteger.integerValue());
-
-            } else if (XsdConstants.INTEGER.equals(literal.datatype()) || XsdConstants.INT.equals(literal.datatype()) || XsdConstants.LONG.equals(literal.datatype())) {
+            } else if (XsdConstants.INTEGER.equals(literal.datatype()) 
+                    || XsdConstants.INT.equals(literal.datatype()) 
+                    || XsdConstants.LONG.equals(literal.datatype())) {
 
                 convertedValue = Json.createValue(Long.parseLong(literal.lexicalValue()));
 
-            } else if (literal instanceof JsonDecimal jsonDecimal) {
+            } else if (literal instanceof JsonInteger jsonInteger) {
 
-                convertedValue = Json.createValue(jsonDecimal.doubleValue());
+                convertedValue = Json.createValue(jsonInteger.integerValue());
+                type = literal.datatype();
 
             } else if (XsdConstants.DOUBLE.equals(literal.datatype()) || XsdConstants.FLOAT.equals(literal.datatype())) {
 
                 convertedValue = Json.createValue(Double.parseDouble(literal.lexicalValue()));
 
+            } else if (literal instanceof JsonDecimal jsonDecimal) {
+
+                convertedValue = Json.createValue(jsonDecimal.doubleValue());
+                type = jsonDecimal.datatype();
+                
             } else if (literal instanceof NumericValue numericValue) {
 
                 convertedValue = Json.createValue(numericValue.numberValue().doubleValue());
+                type = numericValue.datatype();
 
             } else if (literal instanceof JsonLiteral jsonLiteral) {
 
@@ -271,9 +277,13 @@ public class JsonLdTreeWriter {
 //            type = literal.datatype();
 //        }
 
-        if (literal instanceof LangString langString
-                && langString.language() != null) {
-            result.add(JsonLdKeyword.LANGUAGE, Json.createValue(langString.language()));
+        if (literal instanceof LangString langString) {
+            if (langString.language() != null) {
+                result.add(JsonLdKeyword.LANGUAGE, Json.createValue(langString.language()));
+            }
+            if (langString.direction() != null) {
+                result.add(JsonLdKeyword.DIRECTION, Json.createValue(langString.direction().name().toLowerCase()));
+            }
         }
 
         result.add(JsonLdKeyword.VALUE, (convertedValue != null)

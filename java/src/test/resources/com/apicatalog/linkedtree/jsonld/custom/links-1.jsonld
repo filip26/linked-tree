@@ -1,0 +1,84 @@
+[
+  {
+    "https://www.w3.org/2018/credentials#credentialSubject": [
+      {
+        "https://www.w3.org/ns/credentials/examples#alumniOf": [
+          {
+            "@value": "The School of Examples"
+          }
+        ],
+        "@id": "urn:uuid:58172aac-d8ba-11ed-83dd-0b3aef56cc33"
+      }
+    ],
+    "https://schema.org/description": [
+      {
+        "@value": "A minimum viable example of an Alumni Credential."
+      }
+    ],
+    "@id": "urn:uuid:58172aac-d8ba-11ed-83dd-0b3aef56cc33",
+    "https://www.w3.org/2018/credentials#issuer": [
+      {
+    "@id": "urn:uuid:58172aac-d8ba-11ed-83dd-0b3aef56cc33"
+      }
+    ],
+    "https://schema.org/name": [
+      {
+        "@value": "Alumni Credential"
+      }
+    ],
+    "https://www.w3.org/2018/credentials#credentialStatus": [
+      {
+        "@id": "https://license.example/credentials/status/84#14278",
+        "https://www.w3.org/ns/credentials/status#statusListCredential": [
+          {
+            "@id": "https://license.example/credentials/status/85"
+          }
+        ],
+        "https://www.w3.org/ns/credentials/status#statusListIndex": [
+          {
+            "@value": "14278"
+          }
+        ],
+        "https://www.w3.org/ns/credentials/status#statusPurpose": [
+          {
+            "@value": "revocation"
+          }
+        ],
+        "@type": [
+          "https://www.w3.org/ns/credentials/status#BitstringStatusListEntry"
+        ]
+      },
+      {
+        "@id": "https://license.example/credentials/status/84#82938",
+        "https://www.w3.org/ns/credentials/status#statusListCredential": [
+          {
+            "@id": "https://license.example/credentials/status/85"
+          }
+        ],
+        "https://www.w3.org/ns/credentials/status#statusListIndex": [
+          {
+            "@value": "82938"
+          }
+        ],
+        "https://www.w3.org/ns/credentials/status#statusPurpose": [
+          {
+            "@value": "suspension"
+          }
+        ],
+        "@type": [
+          "https://www.w3.org/ns/credentials/status#Unknown"
+        ]
+      }
+    ],
+    "@type": [
+      "https://www.w3.org/2018/credentials#VerifiableCredential",
+      "https://www.w3.org/ns/credentials/examples#AlumniCredential"
+    ],
+    "https://www.w3.org/2018/credentials#validFrom": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
+        "@value": "2023-01-01T00:00:00Z"
+      }
+    ]
+  }
+]

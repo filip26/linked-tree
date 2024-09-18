@@ -25,6 +25,7 @@ import com.apicatalog.linkedtree.jsonld.JsonLdContext;
 import com.apicatalog.linkedtree.jsonld.JsonLdId;
 import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 import com.apicatalog.linkedtree.jsonld.JsonLdType;
+import com.apicatalog.linkedtree.lang.LangString.LanguageDirection;
 import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.link.MutableLink;
 import com.apicatalog.linkedtree.literal.adapter.DatatypeAdapter;
@@ -145,8 +146,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
                         : 0,
                 Stream.concat(
                         ops.stream(),
-                        ops(source, List.of(JsonLdKeyword.ID, JsonLdKeyword.TYPE, JsonLdKeyword.GRAPH)).stream()).toList()
-        );
+                        ops(source, List.of(JsonLdKeyword.ID, JsonLdKeyword.TYPE, JsonLdKeyword.GRAPH)).stream()).toList());
     }
 
     protected void cloneRoot(final JsonArray source) {
@@ -315,8 +315,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
         }
 
         if (XsdConstants.STRING.equals(datatype)) {
-            // TODO direction
-            var pi = getPi(valueJsonObject, JsonLdKeyword.VALUE, JsonLdKeyword.TYPE, JsonLdKeyword.LANGUAGE);
+            var pi = getPi(valueJsonObject, JsonLdKeyword.VALUE, JsonLdKeyword.TYPE, JsonLdKeyword.LANGUAGE, JsonLdKeyword.DIRECTION);
             if (pi != null) {
                 ops.add(pi);
             }
@@ -324,7 +323,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
             immutableLangString(
                     valueString,
                     getLiteralLanguage(valueJsonObject),
-                    null, // FIXME direction
+                    getLiteralDirection(valueJsonObject),
                     ops);
             return;
         }
@@ -381,6 +380,25 @@ public class JsonLdTreeReader extends JsonTreeReader {
         }
 
         return ((JsonString) jsonType).getString();
+    }
+
+    protected static LanguageDirection getLiteralDirection(JsonObject valueObject) {
+
+        final JsonValue jsonType = valueObject.get(JsonLdKeyword.DIRECTION);
+        if (jsonType == null || ValueType.NULL.equals(jsonType.getValueType())) {
+            return null;
+        }
+        if (!ValueType.STRING.equals(jsonType.getValueType())) {
+            throw new IllegalArgumentException();
+        }
+
+        final String value = ((JsonString) jsonType).getString();
+
+        return switch (value.toLowerCase()) {
+        case "ltr" -> LanguageDirection.LTR;
+        case "rtl" -> LanguageDirection.RTL;
+        default -> null;
+        };
     }
 
     public static final Builder create() {

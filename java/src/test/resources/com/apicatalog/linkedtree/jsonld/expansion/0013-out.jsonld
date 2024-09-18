@@ -23,18 +23,15 @@
     ],
     "http://example.com/term4": [
       {
-        "@value": 4.23,
-        "@type": "http://www.w3.org/2001/XMLSchema#double"
+        "@value": 4.23
       }
     ],
     "http://example.com/term5": [
       {
-        "@value": 50,
-        "@type": "http://www.w3.org/2001/XMLSchema#integer"
+        "@value": 50
       },
       {
-        "@value": 51,
-        "@type": "http://www.w3.org/2001/XMLSchema#integer"
+        "@value": 51
       }
     ]
   }

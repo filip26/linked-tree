@@ -19,5 +19,13 @@ public interface LangStringSelector {
         }
         return strings.iterator().next();
     }
+    
+    default LangString first() {
+        final Collection<LangString> strings = strings();
+        if (strings != null && !strings.isEmpty()) {
+            return strings.iterator().next();
+        }
+        return null;
+    }
 
 }

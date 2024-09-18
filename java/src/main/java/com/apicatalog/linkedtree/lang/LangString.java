@@ -5,7 +5,7 @@ import com.apicatalog.linkedtree.xsd.XsdConstants;
 
 public interface LangString extends LinkedLiteral {
 
-    public enum LanguageDirectionType {
+    public enum LanguageDirection {
         LTR,
         RTL,
         NULL
@@ -24,5 +24,5 @@ public interface LangString extends LinkedLiteral {
      */
     String language();
 
-    LanguageDirectionType direction();
+    LanguageDirection direction();
 }
