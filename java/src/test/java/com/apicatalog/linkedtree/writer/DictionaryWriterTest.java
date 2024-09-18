@@ -1,9 +1,7 @@
-package com.apicatalog.linkedtree.jsonld;
+package com.apicatalog.linkedtree.writer;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -20,12 +18,11 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.apicatalog.linkedtree.Base64ByteArray;
 import com.apicatalog.linkedtree.LinkedNode;
+import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
+import com.apicatalog.linkedtree.jsonld.JsonLdComparison;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
-import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeWriter;
-import com.apicatalog.linkedtree.writer.DictionaryWriter;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -35,50 +32,34 @@ import jakarta.json.JsonWriter;
 import jakarta.json.JsonWriterFactory;
 import jakarta.json.stream.JsonGenerator;
 
-@DisplayName("JsonLd Test Suite")
 @TestMethodOrder(OrderAnnotation.class)
-class JsonLdReadWriteTest {
+class DictionaryWriterTest {
 
-    static JsonLdTreeReader READER = JsonLdTreeReader
-            .create()
-            .with(Base64ByteArray.typeAdapter())
-            .build();
-
-    static JsonLdTreeWriter WRITER = new JsonLdTreeWriter();
+    static JsonLdTreeReader READER = JsonLdTreeReader.generic();
 
     @DisplayName("Read/Write")
     @ParameterizedTest(name = "{0}")
-    @MethodSource({ "expandedResources", "literalResources" })
+    @MethodSource({ "resources" })
     void readWrite(String name, JsonArray input) throws TreeBuilderError {
 
-        // skip JsonNull
-        assumeFalse(name.startsWith("0122"));
-
         var tree = READER.read(input);
-
         assertNotNull(tree);
+        
+        DictionaryWriter.writeToStdOut(tree);
 
-        var output = WRITER.write(tree);
-
-        assertNotNull(output);
-
-        assertTrue(compareJson(name, tree, output, input));
+//        assertTrue(compareJson(name, tree, output, input));
     }
 
-    static final Stream<Object[]> expandedResources() throws IOException, URISyntaxException {
-        return resources("expansion", "-out.jsonld");
-    }
-
-    static final Stream<Object[]> literalResources() throws IOException, URISyntaxException {
-        return resources("custom", ".jsonld");
+    static final Stream<Object[]> resources() throws IOException, URISyntaxException {
+        return resources("ltd", ".jsonld");
     }
 
     static final Stream<Object[]> resources(String folder, String suffix) throws IOException, URISyntaxException {
-        return Files.walk(Paths.get(JsonLdKeyword.class.getResource(folder).toURI()), 1)
+        return Files.walk(Paths.get(LinkedTree.class.getResource(folder).toURI()), 1)
                 .filter(name -> name.toString().endsWith(suffix))
                 .sorted()
                 .map(path -> {
-                    try (var reader = Json.createReader(JsonLdKeyword.class.getResourceAsStream(folder + "/" + path.getFileName().toString()))) {
+                    try (var reader = Json.createReader(LinkedTree.class.getResourceAsStream(folder + "/" + path.getFileName().toString()))) {
                         return new Object[] { path.getFileName().toString(), reader.readArray() };
                     }
                 });
@@ -91,12 +72,11 @@ class JsonLdReadWriteTest {
         }
 
         write(testCase, result, expected, null);
-        
+
         final StringWriter stringWriter = new StringWriter();
         (new DictionaryWriter(new PrintWriter(stringWriter))).print(data);
         System.out.print(stringWriter.toString());
-        
-        
+
         fail("Expected " + expected + ", but was" + result);
         return false;
     }

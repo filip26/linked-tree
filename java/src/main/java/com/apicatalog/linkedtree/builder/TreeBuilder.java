@@ -17,7 +17,7 @@ import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.fragment.GenericFragment;
 import com.apicatalog.linkedtree.lang.ImmutableLangString;
-import com.apicatalog.linkedtree.lang.LangString.LanguageDirectionType;
+import com.apicatalog.linkedtree.lang.LangString.LanguageDirection;
 import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.link.MutableLink;
 import com.apicatalog.linkedtree.literal.ImmutableLiteral;
@@ -365,7 +365,7 @@ public class TreeBuilder<T> implements NodeConsumer<T> {
     protected TreeBuilder<T> immutableLangString(
             String value,
             String language,
-            LanguageDirectionType direction,
+            LanguageDirection direction,
             Collection<ProcessingInstruction> ops) {
         pi(ops);
         nodeStack.push(new ImmutableLangString(value, language, direction, root()));

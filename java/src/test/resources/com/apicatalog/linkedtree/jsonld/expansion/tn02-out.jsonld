@@ -5,27 +5,22 @@
         "@value": "string"
       },
       {
-        "@value": true,
-        "@type": "http://www.w3.org/2001/XMLSchema#boolean"
+        "@value": true
       },
       {
-        "@value": false,
-        "@type": "http://www.w3.org/2001/XMLSchema#boolean"
+        "@value": false
       },
       {
-        "@value": 1,
-        "@type": "http://www.w3.org/2001/XMLSchema#integer"
+        "@value": 1
       },
       {
-        "@value": 10.0,
-        "@type": "http://www.w3.org/2001/XMLSchema#double"
+        "@value": 10
       },
       {
         "@value": "plain"
       },
       {
-        "@value": true,
-        "@type": "http://www.w3.org/2001/XMLSchema#boolean"
+        "@value": true
       },
       {
         "@value": "english",

@@ -13,13 +13,13 @@ import com.apicatalog.linkedtree.lang.LangString;
 import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 
-public class NodeDebugWriter {
+public class DebugNodeWriter {
 
     protected PrintWriter writer;
     protected Integer level;
     protected boolean nl;
 
-    public NodeDebugWriter(PrintWriter writer) {
+    public DebugNodeWriter(PrintWriter writer) {
         this.writer = writer;
         this.level = 0;
         this.nl = false;
@@ -34,33 +34,33 @@ public class NodeDebugWriter {
         }
     }
 
-    NodeDebugWriter print(String string) {
+    DebugNodeWriter print(String string) {
         indent();
         writer.print(string);
         return this;
     }
 
-    NodeDebugWriter print(int integer) {
+    DebugNodeWriter print(int integer) {
         indent();
         writer.print(integer);
         return this;
     }
 
-    NodeDebugWriter println(String string) {
+    DebugNodeWriter println(String string) {
         indent();
         writer.println(string);
         nl = true;
         return this;
     }
 
-    NodeDebugWriter println(Link link) {
+    DebugNodeWriter println(Link link) {
         indent();
         writer.println(link);
         nl = true;
         return this;
     }
 
-    NodeDebugWriter println(Collection<String> strings) {
+    DebugNodeWriter println(Collection<String> strings) {
         indent();
         writer.println(strings);
         nl = true;
@@ -164,7 +164,7 @@ public class NodeDebugWriter {
 
     public static void writeToStdOut(LinkedNode node) {
         var s = new StringWriter();
-        new NodeDebugWriter(new PrintWriter(s)).print(node);
+        new DebugNodeWriter(new PrintWriter(s)).print(node);
         System.out.println(s);
     }
     

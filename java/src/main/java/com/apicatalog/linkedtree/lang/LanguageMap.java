@@ -31,19 +31,11 @@ public class LanguageMap implements LangStringSelector {
             }
 
             throw new InvalidSelector("Expected a string or an array of string but got " + node);
-//TODO            
-//            final LinkedLiteral literal = node.asLiteral();
-//                
-//             if (XsdConstants.STRING.equals(literal.datatype())
-//                     || RdfConstants.LANG_STRING.equals(literal.datatype())
-//                     ) {
-//                map.put(null, langString)
-//            }
         }
 
         return new LanguageMap(map);
     }
-
+    
     @Override
     public Collection<LangString> strings() {
         return langMap.values();

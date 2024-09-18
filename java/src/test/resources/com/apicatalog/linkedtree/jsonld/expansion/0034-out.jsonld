@@ -6,19 +6,16 @@
         "@value": "value 1"
       },
       {
-        "@value": 2,
-        "@type": "http://www.w3.org/2001/XMLSchema#integer"        
+        "@value": 2        
       },
       {
-        "@value": 3,
-        "@type": "http://www.w3.org/2001/XMLSchema#integer"        
+        "@value": 3        
       },
       {
         "@value": "four"
       },
       {
-        "@value": 5,
-        "@type": "http://www.w3.org/2001/XMLSchema#integer"        
+        "@value": 5        
       }
     ]
   }

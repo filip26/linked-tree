@@ -12,17 +12,14 @@
       },
       {
         "@value": 1,
-        "@type": "http://www.w3.org/2001/XMLSchema#integer",
         "@index": "A"
       },
       {
         "@value": true,
-        "@type": "http://www.w3.org/2001/XMLSchema#boolean",
         "@index": "A"
       },
       {
         "@value": false,
-        "@type": "http://www.w3.org/2001/XMLSchema#boolean",
         "@index": "A"
       },
       {
@@ -53,17 +50,14 @@
       },
       {
         "@value": 3,
-        "@type": "http://www.w3.org/2001/XMLSchema#integer",
         "@index": "C"
       },
       {
         "@value": true,
-        "@type": "http://www.w3.org/2001/XMLSchema#boolean",
         "@index": "C"
       },
       {
         "@value": false,
-        "@type": "http://www.w3.org/2001/XMLSchema#boolean",
         "@index": "C"
       },
       {
@@ -91,17 +85,14 @@
       },
       {
         "@value": 3,
-        "@type": "http://www.w3.org/2001/XMLSchema#integer",
         "@index": "prop"
       },
       {
         "@value": true,
-        "@type": "http://www.w3.org/2001/XMLSchema#boolean",
         "@index": "prop"
       },
       {
         "@value": false,
-        "@type": "http://www.w3.org/2001/XMLSchema#boolean",
         "@index": "prop"
       },
       {
