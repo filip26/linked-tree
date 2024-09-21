@@ -37,17 +37,17 @@ public class LanguageMap implements LangStringSelector {
     }
     
     @Override
-    public Collection<LangString> strings() {
+    public Collection<LangString> values() {
         return langMap.values();
     }
 
     @Override
-    public Collection<String> langCodes() {
+    public Collection<String> languages() {
         return langMap.keySet();
     }
 
     @Override
-    public LangString get(String langCode) {
+    public LangString locale(String langCode) {
         return langMap.get(langCode);
     }
 

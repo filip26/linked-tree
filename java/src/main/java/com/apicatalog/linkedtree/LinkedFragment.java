@@ -33,7 +33,7 @@ public interface LinkedFragment extends LinkedNode {
     LinkedContainer container(String term);
     
     @SuppressWarnings("unchecked")
-    default <T extends Linkable> T object(String term, Class<T> clazz) throws InvalidSelector, NodeAdapterError {
+    default <T extends Linkable> T materialize(String term, Class<T> clazz) throws InvalidSelector, NodeAdapterError {
 
         Objects.requireNonNull(clazz);
 
@@ -169,7 +169,7 @@ public interface LinkedFragment extends LinkedNode {
         Objects.requireNonNull(mapper);
 
         try {
-            T value = object(term, clazz);
+            T value = materialize(term, clazz);
 
             if (value == null) {
                 return null;
@@ -223,7 +223,7 @@ public interface LinkedFragment extends LinkedNode {
     default URI uri(String term) throws InvalidSelector {
         try {
 
-            LinkedFragment node = object(term, LinkedFragment.class);
+            LinkedFragment node = materialize(term, LinkedFragment.class);
 
             if (node != null) {
 
