@@ -33,5 +33,5 @@ public interface LinkedLiteral extends LinkedNode {
     
     default Linkable cast() {
         return this;
-    }
+    }    
 }

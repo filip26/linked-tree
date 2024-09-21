@@ -13,8 +13,6 @@ public interface Type extends Iterable<String> {
     
     boolean contains(String type);
 
-//    Type get(String type);
-
     boolean isEmpty();
 
     /**
@@ -35,5 +33,4 @@ public interface Type extends Iterable<String> {
     default Stream<String> stream() {
         return StreamSupport.stream(spliterator(), false);
     }
-
 }

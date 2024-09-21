@@ -4,28 +4,19 @@ import java.util.Collection;
 
 public interface LangStringSelector {
 
-    Collection<LangString> strings();
+    Collection<LangString> values();
 
-    Collection<String> langCodes();
+    Collection<String> languages();
 
-    LangString get(String langCode);
+    LangString locale(String langCode);
 
     int size();
 
-    default LangString single() {
-        final Collection<LangString> strings = strings();
-        if (strings == null || strings.size() != 1) {
-            throw new IllegalStateException();
-        }
-        return strings.iterator().next();
-    }
-    
     default LangString first() {
-        final Collection<LangString> strings = strings();
+        final Collection<LangString> strings = values();
         if (strings != null && !strings.isEmpty()) {
             return strings.iterator().next();
         }
         return null;
     }
-
 }

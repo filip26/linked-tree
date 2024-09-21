@@ -78,7 +78,7 @@ class JsonLdAdapterTest {
         ByteArrayValue literal = tree
                 .fragment()
                 .container("http://example.org/test#property4")
-                .object(ByteArrayValue.class);
+                .materialize(ByteArrayValue.class);
 
         assertEquals("RW5jb2RlIHRvIEJhc2U2NCBmb3JtYXQ=", literal.lexicalValue());
         assertArrayEquals("Encode to Base64 format".getBytes(), literal.byteArrayValue());
@@ -105,7 +105,7 @@ class JsonLdAdapterTest {
 
         assertNotNull(tree);
 
-        VerifiableCredential vc = tree.object(VerifiableCredential.class);
+        VerifiableCredential vc = tree.materialize(VerifiableCredential.class);
 
         assertNotNull(vc);
 
@@ -119,11 +119,12 @@ class JsonLdAdapterTest {
         })), vc.type().stream().collect(Collectors.toSet()));
 
         assertEquals(1, vc.name().size());
-        assertEquals("Alumni Credential", vc.name().single().lexicalValue());
-        assertNull(vc.name().single().language());
+        assertEquals("Alumni Credential", vc.name().first().lexicalValue());
+        assertNull(vc.name().locale("en-US"));
+        assertNull(vc.name().first().language());
 
-        assertEquals(1, vc.name().strings().size());
-        assertEquals(1, vc.name().langCodes().size());
+        assertEquals(1, vc.name().values().size());
+        assertEquals(1, vc.name().languages().size());
 
         assertNotNull(vc.description());
 

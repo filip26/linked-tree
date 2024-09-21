@@ -73,8 +73,9 @@ public class AdaptableType implements Type {
         return type.get(name);
     }
 
-    public void adapter(String name, TypeAdapter adapter) {
+    public AdaptableType adapter(String name, TypeAdapter adapter) {
         type.put(name, adapter);
+        return this;
     }
 
     static Type EMPTY = new Type() {

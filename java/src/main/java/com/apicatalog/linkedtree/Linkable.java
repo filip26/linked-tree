@@ -6,8 +6,6 @@ package com.apicatalog.linkedtree;
  */
 public interface Linkable {
 
-    default LinkedNode ld() {
-        return (LinkedNode) this;
-    }
+    LinkedNode ld();
 
 }

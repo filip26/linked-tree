@@ -66,7 +66,7 @@ public interface LinkedContainer extends LinkedNode, Iterable<LinkedNode> {
     }
 
     @SuppressWarnings("unchecked")
-    default <T> T object(Class<T> clazz) throws NodeAdapterError {
+    default <T> T materialize(Class<T> clazz) throws NodeAdapterError {
 
         final LinkedNode single = node();
 

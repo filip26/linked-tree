@@ -49,4 +49,9 @@ public interface LinkedNode extends Linkable {
      * @return an instance or <code>null</code> if the node is a root
      */
     LinkedTree root();
+    
+    @Override
+    default LinkedNode ld() {
+        return this;
+    }
 }
