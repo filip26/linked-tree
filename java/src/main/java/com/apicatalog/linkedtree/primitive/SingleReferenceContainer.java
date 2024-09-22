@@ -14,20 +14,35 @@ import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 import com.apicatalog.linkedtree.type.Type;
 
-public record SingleReferenceContainer(
-        Link id,
-        ContainerType containerType,
-        LinkedTree root,
-        Map<Integer, Collection<ProcessingInstruction>> ops) implements LinkedFragment, LinkedContainer {
+public final class SingleReferenceContainer implements LinkedFragment, LinkedContainer {
 
-    public SingleReferenceContainer {
-        Objects.requireNonNull(id);
-        Objects.requireNonNull(containerType);
+    protected final Link id;
+    protected final Collection<LinkedNode> nodes;
+    protected final LinkedTree root;
+    protected final Map<Integer, Collection<ProcessingInstruction>> ops;
+
+    protected SingleReferenceContainer(
+            Link id,
+            LinkedTree root,
+            Map<Integer, Collection<ProcessingInstruction>> ops) {
+        this.id = id;
+        this.nodes = List.of(this);
+        this.root = root;
+        this.ops = ops;
+    }
+
+    public static final SingleReferenceContainer of(Link id, LinkedTree root, Map<Integer, Collection<ProcessingInstruction>> ops) {
+        return new SingleReferenceContainer(id, root, ops);
+    }
+
+    @Override
+    public LinkedNode node() {
+        return this;
     }
 
     @Override
     public Collection<LinkedNode> nodes() {
-        return List.of(this);
+        return nodes;
     }
 
     @Override
@@ -72,5 +87,15 @@ public record SingleReferenceContainer(
     @Override
     public String toString() {
         return "SingleReferenceContainer [id=" + id + ", ops=" + ops.size() + "]";
+    }
+
+    @Override
+    public LinkedTree root() {
+        return root;
+    }
+
+    @Override
+    public Link id() {
+        return id;
     }
 }

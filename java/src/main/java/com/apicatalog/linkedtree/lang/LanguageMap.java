@@ -35,7 +35,7 @@ public class LanguageMap implements LangStringSelector {
 
         return new LanguageMap(map);
     }
-    
+
     @Override
     public Collection<LangString> values() {
         return langMap.values();
@@ -55,5 +55,4 @@ public class LanguageMap implements LangStringSelector {
     public int size() {
         return langMap.size();
     }
-
 }

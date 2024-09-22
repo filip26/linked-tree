@@ -190,7 +190,7 @@ public interface LinkedFragment extends LinkedNode {
                 XsdDateTime::datetime);
     }
 
-    default String lexeme(String term) throws InvalidSelector {
+    default String lexicalValue(String term) throws InvalidSelector {
         return literal(
                 term,
                 LinkedLiteral.class,
@@ -239,12 +239,12 @@ public interface LinkedFragment extends LinkedNode {
         }
     }
 
-    default LangStringSelector langMap(String term) throws InvalidSelector {
+    default LangStringSelector languageMap(String term) throws InvalidSelector {
         final LinkedContainer container = container(term);
         if (container != null) {
             return LanguageMap.of(container);
         }
-        return null;
+        return LangStringSelector.empty();
     }
 
     default <T> Collection<T> collection(
