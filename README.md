@@ -28,5 +28,5 @@ Think in graphs, work with trees.
 
 ## LTDM
 
-![Data Model](/doc/ltdm-0.0.1.png)
+![Data Model](/doc/linked-tree-data-model-v0.0.10.png)
 
