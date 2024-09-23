@@ -8,9 +8,6 @@ Influenced by JSON-LD expanded and flattened document forms. Linked tree terms a
 
 The project is an experiment, please share feedback.
 
-> [!NOTE]
-> A stargazer gets a free beer. Collect it when you are in Prague! ;)
-
 ## Goals
 
   * easily work with linked data programmatically  
@@ -28,4 +25,6 @@ When it comes to software engineering, graphs are hard to work with, graphs are 
 
 Think in graphs, work with trees.
 
+> [!NOTE]
+> A stargazer gets a free beer. Collect it when you are in Prague!
 
