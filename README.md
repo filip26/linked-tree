@@ -1,3 +1,5 @@
+![Data Model](/doc/linked-tree-data-model-v1.0.4.png)
+
 # Linked Tree
 
 Another abstract data model to process linked data, intended to be used for small datasets processed in real time as tree-like structures. 
@@ -26,7 +28,4 @@ When it comes to software engineering, graphs are hard to work with, graphs are 
 
 Think in graphs, work with trees.
 
-## LTDM
-
-![Data Model](/doc/linked-tree-data-model-v1.0.3.png)
 
