@@ -1,4 +1,4 @@
-![Data Model](/doc/linked-tree-data-model-v1.0.4.png)
+![Data Model](/doc/linked-tree-data-model-v1.0.5.png)
 
 # Linked Tree
 
