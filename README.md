@@ -1,3 +1,5 @@
+![Data Model](/doc/linked-tree-data-model-v1.0.5.png)
+
 # Linked Tree
 
 Another abstract data model to process linked data, intended to be used for small datasets processed in real time as tree-like structures. 
@@ -5,9 +7,6 @@ Another abstract data model to process linked data, intended to be used for smal
 Influenced by JSON-LD expanded and flattened document forms. Linked tree terms and values are fully expanded but only identifiable node fragments are merged and flattened. Nodes with no identifiers are kept embedded.
 
 The project is an experiment, please share feedback.
-
-> [!NOTE]
-> A stargazer gets a free beer. Collect it when you are in Prague! ;)
 
 ## Goals
 
@@ -26,13 +25,6 @@ When it comes to software engineering, graphs are hard to work with, graphs are 
 
 Think in graphs, work with trees.
 
-## LTDM
-
-![Data Model](/doc/ltdm-0.0.1.png)
-
-
-## Status
-
-[![Java 17 CI](https://github.com/filip26/linked-tree/actions/workflows/java17-push.yml/badge.svg)](https://github.com/filip26/linked-tree/actions/workflows/java17-push.yml)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+> [!NOTE]
+> A stargazer gets a free beer. Collect it when you are in Prague!
 
