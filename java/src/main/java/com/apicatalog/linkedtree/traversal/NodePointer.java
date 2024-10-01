@@ -1,8 +1,19 @@
 package com.apicatalog.linkedtree.traversal;
 
+import java.util.Objects;
+
 public record NodePointer(
         int[] indices,
         String[] terms) {
+
+    public NodePointer {
+        Objects.requireNonNull(indices);
+        Objects.requireNonNull(terms);
+
+        if (indices.length < terms.length) {
+            throw new IllegalArgumentException("Terms length [" + terms.length + "] is greater than indices length [" + indices.length + "]");
+        }
+    }
 
     public boolean match(Object[] path) {
         if (path.length != (indices.length + terms.length - 1)) {
@@ -18,7 +29,7 @@ public record NodePointer(
     }
 
     public String term() {
-        return terms[terms.length - 1];
+        return terms.length > 0 ? terms[terms.length - 1] : null;
     }
 
     public int index() {
@@ -41,4 +52,19 @@ public record NodePointer(
         return new NodePointer(indices, terms);
     }
 
+    @Override
+    public final String toString() {
+        var builder = new StringBuilder();
+        for (int i = 0; i < indices.length; i++) {
+            if (i > 0) {
+                builder.append('.');
+            }
+            builder.append(indices[i]);
+            if (i < terms.length) {
+                builder.append('.');
+                builder.append(terms[i]);
+            }
+        }
+        return builder.toString();
+    }
 }

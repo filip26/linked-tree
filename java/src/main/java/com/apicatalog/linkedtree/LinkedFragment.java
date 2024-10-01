@@ -165,6 +165,10 @@ public interface LinkedFragment extends LinkedNode {
     }
 
     default <T extends Linkable, R> R literal(String term, Class<T> clazz, Function<T, R> mapper) throws InvalidSelector {
+        return literal(term, clazz, mapper, null);
+    }
+
+    default <T extends Linkable, R> R literal(String term, Class<T> clazz, Function<T, R> mapper, R defaultValue) throws InvalidSelector {
 
         Objects.requireNonNull(mapper);
 
@@ -172,7 +176,7 @@ public interface LinkedFragment extends LinkedNode {
             T value = materialize(term, clazz);
 
             if (value == null) {
-                return null;
+                return defaultValue;
             }
             return mapper.apply(value);
 
@@ -190,7 +194,7 @@ public interface LinkedFragment extends LinkedNode {
                 XsdDateTime::datetime);
     }
 
-    default String lexeme(String term) throws InvalidSelector {
+    default String lexicalValue(String term) throws InvalidSelector {
         return literal(
                 term,
                 LinkedLiteral.class,
@@ -239,12 +243,12 @@ public interface LinkedFragment extends LinkedNode {
         }
     }
 
-    default LangStringSelector langMap(String term) throws InvalidSelector {
+    default LangStringSelector languageMap(String term) throws InvalidSelector {
         final LinkedContainer container = container(term);
         if (container != null) {
             return LanguageMap.of(container);
         }
-        return null;
+        return LangStringSelector.empty();
     }
 
     default <T> Collection<T> collection(

@@ -45,10 +45,10 @@ public class VerifiableCredential {
         credential.id = source.uri();
         credential.type = source.type();
 
-        credential.name = source.langMap(
+        credential.name = source.languageMap(
                 "https://schema.org/name");
 
-        credential.description = source.langMap(
+        credential.description = source.languageMap(
                 "https://schema.org/description");
 
         credential.validFrom = source.xsdDateTime(
