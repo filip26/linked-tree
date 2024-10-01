@@ -24,7 +24,3 @@ Graphs are great to catch ideas, plans, and knowledge. There are many successful
 When it comes to software engineering, graphs are hard to work with, graphs are too generic and add unnecessary complexity to a domain limited use-cases.
 
 Think in graphs, work with trees.
-
-> [!NOTE]
-> A stargazer gets a free beer. Collect it when you are in Prague!
-

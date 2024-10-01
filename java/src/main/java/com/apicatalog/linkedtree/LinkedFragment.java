@@ -165,6 +165,10 @@ public interface LinkedFragment extends LinkedNode {
     }
 
     default <T extends Linkable, R> R literal(String term, Class<T> clazz, Function<T, R> mapper) throws InvalidSelector {
+        return literal(term, clazz, mapper, null);
+    }
+
+    default <T extends Linkable, R> R literal(String term, Class<T> clazz, Function<T, R> mapper, R defaultValue) throws InvalidSelector {
 
         Objects.requireNonNull(mapper);
 
@@ -172,7 +176,7 @@ public interface LinkedFragment extends LinkedNode {
             T value = materialize(term, clazz);
 
             if (value == null) {
-                return null;
+                return defaultValue;
             }
             return mapper.apply(value);
 

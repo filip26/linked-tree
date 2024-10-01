@@ -11,7 +11,9 @@ public interface Type extends Iterable<String> {
         return AdaptableType.EMPTY;
     }
     
-    boolean contains(String type);
+    default boolean contains(String type) {
+        return stream().anyMatch(type::equals);
+    }
 
     boolean isEmpty();
 
