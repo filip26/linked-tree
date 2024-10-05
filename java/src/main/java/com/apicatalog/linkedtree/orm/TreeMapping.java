@@ -23,6 +23,7 @@ import com.apicatalog.linkedtree.orm.getter.LangMapGetter;
 import com.apicatalog.linkedtree.orm.getter.LiteralGetter;
 import com.apicatalog.linkedtree.orm.getter.NodeGetter;
 import com.apicatalog.linkedtree.orm.getter.RefGetter;
+import com.apicatalog.linkedtree.orm.getter.StringGetter;
 import com.apicatalog.linkedtree.orm.getter.TermGetter;
 import com.apicatalog.linkedtree.orm.getter.TypeGetter;
 import com.apicatalog.linkedtree.type.Type;
@@ -95,6 +96,9 @@ public class TreeMapping {
 
                 } else if (method.getReturnType().isAssignableFrom(LinkedContainer.class)) {
                     getter = new NodeGetter(termUri, LinkedContainer.class);
+                    
+                } else if (method.getReturnType().isAssignableFrom(String.class)) {
+                    getter = new StringGetter(termUri);
                 }
 
 //                System.out.println(method);

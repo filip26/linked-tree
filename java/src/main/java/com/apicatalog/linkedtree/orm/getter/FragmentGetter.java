@@ -1,6 +1,7 @@
 package com.apicatalog.linkedtree.orm.getter;
 
 import com.apicatalog.linkedtree.LinkedFragment;
+import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.orm.adapter.NativeFragmentAdapter;
 
@@ -15,10 +16,17 @@ public class FragmentGetter implements Getter {
     }
     
     public Object materialize(LinkedFragment source) throws NodeAdapterError {
-        if (source.type().isAdaptableTo(adapter.typeInterface())) {
-            return source.type().materialize(adapter.typeInterface());    
+    
+        LinkedNode node = source.node(term);
+        
+        if (node == null) {
+            return null;
         }
-        return adapter.materialize(source);
+        
+        if (node.asFragment().type().isAdaptableTo(adapter.typeInterface())) {
+            return node.asFragment().type().materialize(adapter.typeInterface());    
+        }
+        return adapter.materialize(node.asFragment());
     }
 
 }

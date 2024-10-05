@@ -44,7 +44,7 @@ class AnnotationTest {
 
         JsonLdTreeReader reader = new TreeMapping()
                 .scan(AnnotatedCredential.class)
-//                .scan(ExtendedAnnotatedCredential.class)
+                .scan(ExtendedAnnotatedCredential.class)
                 .newReader();
 
         JsonArray input = resource("custom/signed-vc-1.jsonld");
@@ -59,14 +59,13 @@ class AnnotationTest {
         AnnotatedCredential vc = tree.materialize(AnnotatedCredential.class);
         assertVc(vc);
 
-//        ExtendedAnnotatedCredential eac = vc.type().materialize(ExtendedAnnotatedCredential.class);
-//        assertVc(eac);
+        ExtendedAnnotatedCredential eac = vc.type().materialize(ExtendedAnnotatedCredential.class);
+        assertVc(eac);
 
     }
 
     static void assertVc(AnnotatedCredential vc) {
         assertNotNull(vc);
-        assertTrue(vc instanceof Linkable);
 
         assertEquals(
                 URI.create("urn:uuid:58172aac-d8ba-11ed-83dd-0b3aef56cc33"),
@@ -99,7 +98,13 @@ class AnnotationTest {
         assertNotNull(((Linkable)vc).ld());
         assertTrue(((Linkable)vc).ld() instanceof LinkedFragment);
         
-        assertNotNull(vc.subject());
+        assertEquals(URI.create("did:example:abcdefgh"), vc.subject().id());
+        assertTrue(vc.subject().type().isEmpty());
+        
+        if (vc.subject() instanceof AlumniSubject asub) {
+            assertEquals("The School of Examples", asub.alumniOf());
+        }
+        
     }
 
     static final JsonArray resource(String name) throws IOException, URISyntaxException {

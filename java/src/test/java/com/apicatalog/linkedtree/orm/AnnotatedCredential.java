@@ -27,7 +27,7 @@ public interface AnnotatedCredential {
     LangStringSelector description();
 
     @Term("credentialSubject")
-    GenericSubject subject();
+    AlumniSubject subject();
 
     URI issuer();
 
