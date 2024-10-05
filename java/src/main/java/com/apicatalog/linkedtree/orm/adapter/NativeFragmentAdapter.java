@@ -15,13 +15,14 @@ public class NativeFragmentAdapter implements TypeAdapter {
 
     static final Method LD_METHOD = Linkable.method(); 
     
+    final String typeName;
     final Class<?> typeInterface;
     final Map<Method, Getter> getters;
 
-    public NativeFragmentAdapter(Class<?> type, String typeName, Map<Method, Getter> getters) {
-        this.typeInterface = type;
+    public NativeFragmentAdapter(Class<?> typeInterface, String typeName, Map<Method, Getter> getters) {
+        this.typeInterface = typeInterface;
+        this.typeName = typeName;
         this.getters = getters;
-
     }
 
     @Override
@@ -52,4 +53,8 @@ public class NativeFragmentAdapter implements TypeAdapter {
         return typeInterface;
     }
 
+    public String typeName() {
+        return typeName;
+    }
+    
 }
