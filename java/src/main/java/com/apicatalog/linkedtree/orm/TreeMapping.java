@@ -8,6 +8,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
@@ -24,17 +26,19 @@ import com.apicatalog.linkedtree.orm.getter.TermGetter;
 import com.apicatalog.linkedtree.orm.getter.TypeGetter;
 import com.apicatalog.linkedtree.type.Type;
 
-public class NodeMapping {
+public class TreeMapping {
 
+    private static final Logger LOGGER = Logger.getLogger(TreeMapping.class.getName());
+    
     Map<String, NativeFragmentAdapter> fragmentAdapters;
     Map<Class<? extends NativeLiteralAdapter>, NativeLiteralAdapter> literalAdapters;
 
-    public NodeMapping() {
+    public TreeMapping() {
         this.fragmentAdapters = new LinkedHashMap<>();
         this.literalAdapters = new LinkedHashMap<>();
     }
 
-    public NodeMapping scan(Class<?> clazz) {
+    public TreeMapping scan(Class<?> clazz) {
 
         Vocab vocab = clazz.getAnnotation(Vocab.class);
         Term term = clazz.getAnnotation(Term.class);
@@ -44,19 +48,23 @@ public class NodeMapping {
         Map<Method, Getter> getters = new HashMap<>(clazz.getMethods().length);
 
         for (Method method : clazz.getMethods()) {
+            
+            Vocab declaredVocab = method.getDeclaringClass().getAnnotation(Vocab.class);
+            
+            Getter getter = null;
 
             if (method.isAnnotationPresent(Id.class)) {
-                getters.put(method, IdGetter.instance());
+                getter = IdGetter.instance();
 
             } else if (method.getReturnType().isAssignableFrom(Type.class)) {
-                getters.put(method, TypeGetter.instance());
+                getter = TypeGetter.instance();
 
             } else {
 
                 Vocab methodVocab = method.getAnnotation(Vocab.class);
 
                 if (methodVocab == null) {
-                    methodVocab = vocab;
+                    methodVocab = declaredVocab;
                 }
 
                 Term methodTerm = method.getAnnotation(Term.class);
@@ -65,8 +73,6 @@ public class NodeMapping {
                         methodVocab,
                         methodTerm,
                         method.getName());
-
-                Getter getter = null;
 
                 if (method.getReturnType().isAssignableFrom(LanguageMap.class)) {
                     getter = new LangMapGetter(termUri);
@@ -94,9 +100,14 @@ public class NodeMapping {
                 }
 
                 if (getter == null) {
-                    new TermGetter(termUri);
+                    getter = new TermGetter(termUri);
                 }
                 
+            }
+            
+            if (getter == null) {
+                LOGGER.log(Level.WARNING, "An unknown method {0}", method);
+            } else {
                 getters.put(method, getter);
             }
 

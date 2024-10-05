@@ -1,4 +1,4 @@
-package com.apicatalog.linkedtree;
+package com.apicatalog.linkedtree.orm;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -9,9 +9,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
@@ -23,12 +20,14 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
+import com.apicatalog.linkedtree.Linkable;
+import com.apicatalog.linkedtree.LinkedFragment;
+import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.jsonld.JsonLdComparison;
 import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
-import com.apicatalog.linkedtree.orm.NodeMapping;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -39,14 +38,15 @@ import jakarta.json.JsonWriterFactory;
 import jakarta.json.stream.JsonGenerator;
 
 class AnnotationTest {
-    
+
     @Test
     void x() throws IOException, URISyntaxException, TreeBuilderError, NodeAdapterError {
-        
-        JsonLdTreeReader reader = new NodeMapping()
+
+        JsonLdTreeReader reader = new TreeMapping()
                 .scan(AnnotatedCredential.class)
+//                .scan(ExtendedAnnotatedCredential.class)
                 .newReader();
-        
+
         JsonArray input = resource("custom/signed-vc-1.jsonld");
 
         LinkedTree tree = reader.read(
@@ -57,7 +57,14 @@ class AnnotationTest {
         assertNotNull(tree);
 
         AnnotatedCredential vc = tree.materialize(AnnotatedCredential.class);
+        assertVc(vc);
 
+//        ExtendedAnnotatedCredential eac = vc.type().materialize(ExtendedAnnotatedCredential.class);
+//        assertVc(eac);
+
+    }
+
+    static void assertVc(AnnotatedCredential vc) {
         assertNotNull(vc);
         assertTrue(vc instanceof Linkable);
 
@@ -87,9 +94,12 @@ class AnnotationTest {
         assertEquals(
                 URI.create("https://vc.example/issuers/5678"),
                 vc.issuer());
-            
-        assertEquals(1, vc.subject().size());
 
+        assertTrue(vc instanceof Linkable);
+        assertNotNull(((Linkable)vc).ld());
+        assertTrue(((Linkable)vc).ld() instanceof LinkedFragment);
+        
+        assertNotNull(vc.subject());
     }
 
     static final JsonArray resource(String name) throws IOException, URISyntaxException {

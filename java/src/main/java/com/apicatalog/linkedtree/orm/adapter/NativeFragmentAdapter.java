@@ -13,6 +13,8 @@ import com.apicatalog.linkedtree.type.TypeAdapter;
 
 public class NativeFragmentAdapter implements TypeAdapter {
 
+    static final Method LD_METHOD = Linkable.method(); 
+    
     final Class<?> typeInterface;
     final Map<Method, Getter> getters;
 
@@ -29,18 +31,18 @@ public class NativeFragmentAdapter implements TypeAdapter {
 
                     @Override
                     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                        
-                        if (getters.containsKey(method)) {
-                            return getters.get(method).materialize(source);
+
+                        if (LD_METHOD.equals(method)) {
+                            return source;
                         }
                         
-////                   System.out.println("1:" + proxy);
-//                        System.out.println("2:" + method.getName()
-//                                + ":" + method.getReturnType() + ":"
-//                                + ":" + method.getDeclaringClass() + ":"
-//                                + ":" + proxy.getClass() + ":"
-//                                + Arrays.toString(args));
-                        return method.invoke(this, args);
+                        final Getter getter = getters.get(method);
+
+                        if (getter != null) {
+                            return getters.get(method).materialize(source);
+                        }
+
+                        throw new UnsupportedOperationException();
                     }
                 });
     }
