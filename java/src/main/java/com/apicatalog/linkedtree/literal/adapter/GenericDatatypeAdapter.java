@@ -7,7 +7,7 @@ import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 public record GenericDatatypeAdapter(
         String datatype,
         LiteralAdapter adapter
-        ) implements DatatypeAdapter {
+        ) implements TypedLiteralAdapter {
 
     @Override
     public LinkedLiteral materialize(String source, LinkedTree root) throws NodeAdapterError {

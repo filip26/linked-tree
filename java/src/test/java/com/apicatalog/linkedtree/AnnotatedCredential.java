@@ -4,41 +4,42 @@ import java.net.URI;
 import java.time.Instant;
 import java.util.Collection;
 
-import com.apicatalog.ld.LdId;
-import com.apicatalog.ld.LdType;
-import com.apicatalog.ld.LdVocab;
-import com.apicatalog.ld.LdTerm;
 import com.apicatalog.linkedtree.lang.LangStringSelector;
+import com.apicatalog.linkedtree.orm.Fragment;
+import com.apicatalog.linkedtree.orm.Id;
+import com.apicatalog.linkedtree.orm.Literal;
+import com.apicatalog.linkedtree.orm.Term;
+import com.apicatalog.linkedtree.orm.Vocab;
 import com.apicatalog.linkedtree.type.Type;
+import com.apicatalog.linkedtree.xsd.XsdDateTimeAdapter;
 
-@LdType("VerifiableCredential")
-@LdVocab("https://www.w3.org/2018/credentials#")
+@Fragment
+@Term("VerifiableCredential")
+@Vocab("https://www.w3.org/2018/credentials#")
 public interface AnnotatedCredential {
 
-    @LdId
+    @Id
     URI id();
-    
+
     // implicit type selector, detected by return type
     Type type();
-    
-    @LdVocab("https://schema.org/")
+
+    @Vocab("https://schema.org/")
     LangStringSelector name();
 
-    @LdVocab("https://schema.org/")
+    @Vocab("https://schema.org/")
     LangStringSelector description();
 
-    @LdTerm
+    @Term("credentialSubject")
     LinkedContainer subject();
 
-    @LdTerm
     URI issuer();
 
-    @LdTerm
+    @Literal(adapter = XsdDateTimeAdapter.class)
     Instant validFrom();
 
-    @LdTerm
+    @Literal(adapter = XsdDateTimeAdapter.class)
     Instant validUntil();
 
-    @LdTerm
     Collection<Status> status();
 }

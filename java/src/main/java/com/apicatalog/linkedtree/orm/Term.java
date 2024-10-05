@@ -1,4 +1,4 @@
-package com.apicatalog.ld;
+package com.apicatalog.linkedtree.orm;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -6,8 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface LdType {
+@Target({ ElementType.METHOD, ElementType.TYPE })
+public @interface Term {
 
     /**
      * A <code>@type</code> name that could be a relative or an absolute URI. It is
@@ -18,8 +18,8 @@ public @interface LdType {
     String value();
 
     /**
-     * A vocabulary URI, ignored when {@link LdType#value()} is an absolute URI.
-     * Takes precedence over {@link LdVocab}.
+     * A vocabulary URI, ignored when {@link Term#value()} is an absolute URI.
+     * Takes precedence over {@link Vocab}.
      * 
      * @return a vocabulary URI
      */
