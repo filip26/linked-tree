@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,11 +46,15 @@ public class TreeMapping {
         if (fragmentAdapters.containsKey(clazz)) {
             return this;
         }
-        
-        Vocab vocab = clazz.getAnnotation(Vocab.class);
-        Term term = clazz.getAnnotation(Term.class);
 
-        String typeName = expand(vocab, term, clazz.getSimpleName());
+        Vocab vocab = clazz.getAnnotation(Vocab.class);
+
+        String typeName = null;
+        
+        if (clazz.isAnnotationPresent(Fragment.class)) {
+            Term term = clazz.getAnnotation(Term.class);
+            typeName = expand(vocab, term, clazz.getSimpleName());
+        }
 
         Map<Method, Getter> getters = new HashMap<>(clazz.getMethods().length);
 
@@ -96,7 +101,7 @@ public class TreeMapping {
 
                 } else if (method.getReturnType().isAssignableFrom(LinkedContainer.class)) {
                     getter = new NodeGetter(termUri, LinkedContainer.class);
-                    
+
                 } else if (method.getReturnType().isAssignableFrom(String.class)) {
                     getter = new StringGetter(termUri);
                 }
@@ -131,7 +136,7 @@ public class TreeMapping {
 
         Literal literal = method.getAnnotation(Literal.class);
 
-        Class<? extends NativeLiteralAdapter> adapterType = literal.adapter();
+        Class<? extends NativeLiteralAdapter> adapterType = literal.value();
 
         NativeLiteralAdapter adapter = literalAdapters.get(adapterType);
 
@@ -223,8 +228,12 @@ public class TreeMapping {
 
         final JsonLdTreeReader.Builder builder = JsonLdTreeReader.create();
 
-        fragmentAdapters.values().forEach(e -> builder.with(e.typeName(), e));
-        literalAdapters.values().forEach(builder::with);
+        fragmentAdapters.values().stream()
+                .filter(e -> Objects.nonNull(e.typeName()))
+                .forEach(e -> builder.with(e.typeName(), e));
+        literalAdapters.values().stream()
+                .map(NativeLiteralAdapter::literalAdapter)
+                .forEach(builder::with);
 
         return builder.build();
     }

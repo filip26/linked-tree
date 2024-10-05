@@ -4,8 +4,10 @@ import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.literal.adapter.TypedLiteralAdapter;
 
-public interface NativeLiteralAdapter extends TypedLiteralAdapter {
+public interface NativeLiteralAdapter {
 
+    TypedLiteralAdapter literalAdapter();
+    
     Object materialize(Class<?> type, LinkedLiteral literal) throws NodeAdapterError;
     
 }

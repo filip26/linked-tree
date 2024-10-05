@@ -26,7 +26,7 @@ public class FragmentGetter implements Getter {
         if (node.asFragment().type().isAdaptableTo(adapter.typeInterface())) {
             return node.asFragment().type().materialize(adapter.typeInterface());    
         }
-        return adapter.materialize(node.asFragment());
+        return adapter.materialize(node.asFragment().id().target());
     }
 
 }

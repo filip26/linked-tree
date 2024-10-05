@@ -27,14 +27,14 @@ public interface AnnotatedCredential {
     LangStringSelector description();
 
     @Term("credentialSubject")
-    AlumniSubject subject();
+    GenericSubject subject();
 
     URI issuer();
 
-    @Literal(adapter = XsdDateTimeAdapter.class)
+    @Literal(XsdDateTimeAdapter.class)
     Instant validFrom();
 
-    @Literal(adapter = XsdDateTimeAdapter.class)
+    @Literal(XsdDateTimeAdapter.class)
     Instant validUntil();
 
     Collection<Status> status();
