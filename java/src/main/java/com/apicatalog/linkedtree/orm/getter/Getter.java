@@ -5,6 +5,6 @@ import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 
 public interface Getter {
 
-    Object materialize(LinkedFragment source) throws NodeAdapterError;
+    Object get(LinkedFragment source) throws NodeAdapterError;
 
 }

@@ -21,7 +21,7 @@ public class LiteralGetter implements Getter {
         
     }
     
-    public Object materialize(LinkedFragment source) throws NodeAdapterError {
+    public Object get(LinkedFragment source) throws NodeAdapterError {
         
         
         LinkedLiteral x = source.literal(term, LinkedLiteral.class);

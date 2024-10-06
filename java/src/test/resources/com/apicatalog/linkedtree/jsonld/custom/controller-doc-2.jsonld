@@ -1,0 +1,95 @@
+[
+  {
+    "https://w3id.org/security#assertionMethod": [
+      {
+        "@id": "https://controller.example/123456789abcdefghi#keys-1"
+      },
+      {
+        "https://w3id.org/security#controller": [
+          {
+            "@id": "https://controller.example/123456789abcdefghi"
+          }
+        ],
+        "@id": "https://controller.example/123456789abcdefghi#keys-2",
+        "https://w3id.org/security#publicKeyMultibase": [
+          {
+            "@type": "https://w3id.org/security#multibase",
+            "@value": "z6MkmM42vxfqZQsv4ehtTjFFxQ4sQKS2w6WR7emozFAn5cxu"
+          }
+        ],
+        "@type": [
+          "https://w3id.org/security#Multikey"
+        ]
+      }
+    ],
+    "https://w3id.org/security#authenticationMethod": [
+      {
+        "@id": "https://controller.example/123456789abcdefghi#keys-1"
+      },
+      {
+        "https://w3id.org/security#controller": [
+          {
+            "@id": "https://controller.example"
+          }
+        ],
+        "@id": "https://controller.example#authn-key-123",
+        "https://w3id.org/security#publicKeyMultibase": [
+          {
+            "@type": "https://w3id.org/security#multibase",
+            "@value": "z6MkmM42vxfqZQsv4ehtTjFFxQ4sQKS2w6WR7emozFAn5cxu"
+          }
+        ],
+        "@type": [
+          "https://w3id.org/security#Multikey"
+        ]
+      }
+    ],
+    "https://w3id.org/security#controller": [
+      {
+        "@id": "https://controllerB.example/abc"
+      }
+    ],
+    "@id": "https://controller.example",
+    "https://w3id.org/security#verificationMethod": [
+      {
+        "https://w3id.org/security#controller": [
+          {
+            "@id": "https://controller.example/123456789abcdefghi"
+          }
+        ],
+        "@id": "https://controller.example/123#_Qq0UL2Fq651Q0Fjd6TvnYE-faHiOpRlPVQcY_-tA4A",
+        "https://w3id.org/security#publicKeyJwk": [
+          {
+            "@type": "@json",
+            "@value": {
+              "crv": "Ed25519",
+              "x": "VCpo2LMLhn6iWku8MKvSLg2ZAoC-nlOyPVQaO3FxVeQ",
+              "kty": "OKP",
+              "kid": "_Qq0UL2Fq651Q0Fjd6TvnYE-faHiOpRlPVQcY_-tA4A"
+            }
+          }
+        ],
+        "@type": [
+          "https://w3id.org/security#JsonWebKey"
+        ]
+      },
+      {
+        "https://w3id.org/security#controller": [
+          {
+            "@id": "https://controller.example/123456789abcdefghi"
+          }
+        ],
+        "@id": "https://controller.example/123456789abcdefghi#keys-1",
+        "https://w3id.org/security#publicKeyMultibase": [
+          {
+            "@type": "https://w3id.org/security#multibase",
+            "@value": "z6MkmM42vxfqZQsv4ehtTjFFxQ4sQKS2w6WR7emozFAn5cxu"
+          }
+        ],
+        "@type": [
+          "https://w3id.org/security#Multikey"
+        ]
+      }
+    ]
+  }
+]

@@ -15,7 +15,7 @@ public class FragmentGetter implements Getter {
         this.adapter = adapter;
     }
     
-    public Object materialize(LinkedFragment source) throws NodeAdapterError {
+    public Object get(LinkedFragment source) throws NodeAdapterError {
     
         LinkedNode node = source.node(term);
         

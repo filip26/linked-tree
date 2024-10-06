@@ -1,5 +1,6 @@
-package com.apicatalog.linkedtree.orm;
+package com.apicatalog.linkedtree.orm.mapper;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -13,8 +14,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.apicatalog.linkedtree.LinkedContainer;
+import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.lang.LanguageMap;
+import com.apicatalog.linkedtree.orm.Fragment;
+import com.apicatalog.linkedtree.orm.Id;
+import com.apicatalog.linkedtree.orm.Literal;
+import com.apicatalog.linkedtree.orm.Term;
+import com.apicatalog.linkedtree.orm.Vocab;
 import com.apicatalog.linkedtree.orm.adapter.NativeFragmentAdapter;
 import com.apicatalog.linkedtree.orm.adapter.NativeLiteralAdapter;
 import com.apicatalog.linkedtree.orm.getter.CollectionGetter;
@@ -29,19 +36,19 @@ import com.apicatalog.linkedtree.orm.getter.StringGetter;
 import com.apicatalog.linkedtree.orm.getter.TypeGetter;
 import com.apicatalog.linkedtree.type.Type;
 
-public class TreeMapping {
+public class TreeMapperBuilder {
 
-    private static final Logger LOGGER = Logger.getLogger(TreeMapping.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(TreeMapperBuilder.class.getName());
 
     final Map<Class<?>, NativeFragmentAdapter> fragmentAdapters;
     final Map<Class<? extends NativeLiteralAdapter>, NativeLiteralAdapter> literalAdapters;
 
-    public TreeMapping() {
+    public TreeMapperBuilder() {
         this.fragmentAdapters = new LinkedHashMap<>();
         this.literalAdapters = new LinkedHashMap<>();
     }
 
-    public TreeMapping scan(Class<?> clazz) {
+    public TreeMapperBuilder scan(Class<?> clazz) throws NodeAdapterError {
 
         if (fragmentAdapters.containsKey(clazz)) {
             return this;
@@ -50,7 +57,7 @@ public class TreeMapping {
         Fragment fragment = clazz.getAnnotation(Fragment.class);
 
         if (fragment == null) {
-            LOGGER.log(Level.WARNING, "Class {0} is not annotated as @Fragment", clazz);
+            LOGGER.log(Level.WARNING, "Skipped class {0} - not annotated as @Fragment", clazz);
             return this;
         }
 
@@ -65,6 +72,11 @@ public class TreeMapping {
         Map<Method, Getter> getters = new HashMap<>(clazz.getMethods().length);
 
         for (Method method : clazz.getMethods()) {
+
+            if (method.getParameterCount() > 0) {
+                LOGGER.log(Level.WARNING, "Skipped method {0} - not a getter, has {1} paramters", new Object[] { method.toGenericString(), (Integer) method.getParameterCount() });
+                continue;
+            }
 
             Vocab declaredVocab = method.getDeclaringClass().getAnnotation(Vocab.class);
 
@@ -91,43 +103,26 @@ public class TreeMapping {
                         methodTerm,
                         method.getName());
 
-                if (method.getReturnType().isAssignableFrom(LanguageMap.class)) {
-                    getter = new LangMapGetter(termUri);
-
-                } else if (method.isAnnotationPresent(Reference.class)
-                        || method.getReturnType().isAssignableFrom(URI.class)) {
-                    getter = new RefGetter(termUri);
-
-                } else if (method.isAnnotationPresent(Literal.class)) {
-                    getter = scanLiteral(method, termUri);
-
-                } else if (method.getReturnType().isAnnotationPresent(Fragment.class)) {
-                    scan(method.getReturnType());
-                    getter = new FragmentGetter(termUri, fragmentAdapters.get(method.getReturnType()));
-
-                } else if (method.getReturnType().isAssignableFrom(LinkedContainer.class)) {
-                    getter = new NodeGetter(termUri, LinkedContainer.class);
-
-                } else if (method.getReturnType().isAssignableFrom(String.class)) {
-                    getter = new StringGetter(termUri);
-                }
-
-//                System.out.println(method);
-
                 if (Collection.class.isAssignableFrom(method.getReturnType())) {
                     Class<?> componentClass = (Class<?>) ((ParameterizedType) method.getGenericReturnType()).getActualTypeArguments()[0];
                     if (componentClass.isAnnotationPresent(Fragment.class)) {
                         scan(componentClass);
                         getter = new CollectionGetter(termUri, componentClass, fragmentAdapters.get(componentClass));
+
                     } else {
-                        getter = scanLiteral(method, termUri);
+//                        getter = scanValue(method.getReturnType(), termUri);
                     }
+//                        getter = scanLiteral(method, termUri);
+                    // TODO arrays
+                } else if (method.getReturnType().isArray()) {
+//                    throw new UnsupportedOperationException();
+
+                } else if (method.isAnnotationPresent(Literal.class)) {
+                    getter = scanLiteral(method, termUri);
+
+                } else {
+                    getter = scanValue(method.getReturnType(), termUri);
                 }
-
-//                if (getter == null) {
-//                    getter = new TermGetter(termUri);
-//                }
-
             }
 
             if (getter == null) {
@@ -143,7 +138,27 @@ public class TreeMapping {
         return this;
     }
 
-    Getter scanLiteral(Method method, String termUri) {
+    Getter scanValue(Class<?> type, String termUri) throws NodeAdapterError {
+        if (type.isAssignableFrom(LanguageMap.class)) {
+            return new LangMapGetter(termUri);
+        }
+        if (type.isAssignableFrom(URI.class)) {
+            return new RefGetter(termUri);
+        }
+        if (type.isAnnotationPresent(Fragment.class)) {
+            scan(type);
+            return new FragmentGetter(termUri, fragmentAdapters.get(type));
+        }
+        if (type.isAssignableFrom(LinkedContainer.class)) {
+            return new NodeGetter(termUri, LinkedContainer.class);
+        }
+        if (type.isAssignableFrom(String.class)) {
+            return new StringGetter(termUri);
+        }
+        return null;
+    }
+
+    Getter scanLiteral(Method method, String termUri) throws NodeAdapterError {
 
         Literal literal = method.getAnnotation(Literal.class);
 
@@ -151,15 +166,20 @@ public class TreeMapping {
 
         NativeLiteralAdapter adapter = literalAdapters.get(adapterType);
 
+        
         if (adapter == null) {
-
             try {
-                adapter = adapterType.getDeclaredConstructor().newInstance();
+                Constructor<? extends NativeLiteralAdapter> constructor = adapterType.getDeclaredConstructor();
+                constructor.setAccessible(true);
+
+                adapter = constructor.newInstance();
+
+                adapter.setup(literal.params());
+                
                 literalAdapters.put(adapterType, adapter);
 
             } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                throw new IllegalStateException(e);
             }
         }
 
@@ -235,7 +255,7 @@ public class TreeMapping {
     }
 
     // TODO reverse, JsonLdTreeReader.of(Scanner)
-    public JsonLdTreeReader newReader() {
+    public TreeMapper build() {
 
         final JsonLdTreeReader.Builder builder = JsonLdTreeReader.create();
 
@@ -246,7 +266,9 @@ public class TreeMapping {
                 .map(NativeLiteralAdapter::literalAdapter)
                 .forEach(builder::with);
 
-        return builder.build();
+        JsonLdTreeReader reader = builder.build();
+
+        return new TreeMapper(reader, fragmentAdapters);
     }
 
 }

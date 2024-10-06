@@ -23,12 +23,12 @@ import org.junit.jupiter.api.Test;
 
 import com.apicatalog.linkedtree.Linkable;
 import com.apicatalog.linkedtree.LinkedFragment;
-import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.jsonld.JsonLdComparison;
 import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
-import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
+import com.apicatalog.linkedtree.orm.mapper.TreeMapper;
+import com.apicatalog.linkedtree.orm.mapper.TreeMapperBuilder;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -43,27 +43,25 @@ class AnnotationTest {
     @Test
     void credential() throws IOException, URISyntaxException, TreeBuilderError, NodeAdapterError {
 
-        JsonLdTreeReader reader = new TreeMapping()
+        TreeMapper reader = new TreeMapperBuilder()
                 .scan(AnnotatedCredential.class)
                 .scan(ExtendedAnnotatedCredential.class)
                 .scan(BitstringStatusListEntry.class)
-                .newReader();
+                .build();
 
         JsonArray input = resource("custom/signed-vc-1.jsonld");
 
-        LinkedTree tree = reader.read(
+        AnnotatedCredential vc = reader.get(
+                AnnotatedCredential.class,
                 List.of("https://www.w3.org/2018/credentials/v1",
                         "https://w3id.org/security/data-integrity/v2"),
                 input);
 
-        assertNotNull(tree);
-
-        AnnotatedCredential vc = tree.materialize(AnnotatedCredential.class);
         assertVc(vc);
 
         ExtendedAnnotatedCredential eac = vc.type().materialize(ExtendedAnnotatedCredential.class);
         assertVc(eac);
-        
+
         assertEquals(2, eac.status().size());
 
         var it = eac.status().iterator();
@@ -73,6 +71,27 @@ class AnnotationTest {
 
         assertTrue(status1 instanceof BitstringStatusListEntry);
         assertFalse(status2 instanceof BitstringStatusListEntry);
+
+    }
+
+    @Test
+    void controller() throws IOException, URISyntaxException, TreeBuilderError, NodeAdapterError {
+
+        TreeMapper mapper = new TreeMapperBuilder()
+                .scan(ControllerDocument.class)
+                .build();
+
+        JsonArray input = resource("custom/controller-doc-2.jsonld");
+
+        ControllerDocument controller = mapper.get(
+                ControllerDocument.class,
+                List.of("https://www.w3.org/ns/controller/v1"),
+                input);
+
+        assertNotNull(controller);
+        assertEquals(URI.create("https://controller.example"), controller.id());
+
+        assertEquals(1, controller.controller().size());
 
     }
 
@@ -107,16 +126,16 @@ class AnnotationTest {
                 vc.issuer());
 
         assertTrue(vc instanceof Linkable);
-        assertNotNull(((Linkable)vc).ld());
-        assertTrue(((Linkable)vc).ld() instanceof LinkedFragment);
-        
+        assertNotNull(((Linkable) vc).ld());
+        assertTrue(((Linkable) vc).ld() instanceof LinkedFragment);
+
         assertEquals(URI.create("did:example:abcdefgh"), vc.subject().id());
         assertTrue(vc.subject().type().isEmpty());
-        
+
         if (vc.subject() instanceof AlumniSubject asub) {
             assertEquals("The School of Examples", asub.alumniOf());
         }
-        
+
     }
 
     static final JsonArray resource(String name) throws IOException, URISyntaxException {

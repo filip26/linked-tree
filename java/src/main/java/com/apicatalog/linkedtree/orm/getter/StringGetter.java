@@ -13,7 +13,7 @@ public class StringGetter implements Getter {
         this.term = term;
     }
     
-    public Object materialize(LinkedFragment source) throws NodeAdapterError {
+    public Object get(LinkedFragment source) throws NodeAdapterError {
         LinkedNode node = source.node(term);
 
         if (node == null) {

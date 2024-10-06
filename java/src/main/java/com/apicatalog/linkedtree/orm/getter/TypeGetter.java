@@ -11,7 +11,7 @@ public class TypeGetter implements Getter {
         // protected
     }
     
-    public Object materialize(LinkedFragment source) throws NodeAdapterError {
+    public Object get(LinkedFragment source) throws NodeAdapterError {
         return source.type();
     }
     

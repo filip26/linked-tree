@@ -5,7 +5,7 @@ import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 
 public record TermGetter(String term) implements Getter {
 
-    public Object materialize(LinkedFragment source) throws NodeAdapterError {
+    public Object get(LinkedFragment source) throws NodeAdapterError {
         // TODO Auto-generated method stub
         return null;
     }
