@@ -20,6 +20,7 @@ public class CollectionGetter implements Getter {
         this.adapter = adapter;
     }
     
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public Object materialize(LinkedFragment source) throws NodeAdapterError {
         return source.collection(term, componentType, (NodeAdapter)adapter);        
     }

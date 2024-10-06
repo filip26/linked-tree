@@ -4,7 +4,7 @@ import java.net.URI;
 
 import com.apicatalog.linkedtree.type.Type;
 
-@Fragment
+@Fragment(generic = true)
 public interface GenericSubject {
 
     @Id

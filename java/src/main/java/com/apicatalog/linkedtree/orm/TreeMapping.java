@@ -47,13 +47,19 @@ public class TreeMapping {
             return this;
         }
 
+        Fragment fragment = clazz.getAnnotation(Fragment.class);
+
+        if (fragment == null) {
+            LOGGER.log(Level.WARNING, "Class {0} is not annotated as @Fragment", clazz);
+            return this;
+        }
+
         Vocab vocab = clazz.getAnnotation(Vocab.class);
 
         String typeName = null;
-        
-        if (clazz.isAnnotationPresent(Fragment.class)) {
-            Term term = clazz.getAnnotation(Term.class);
-            typeName = expand(vocab, term, clazz.getSimpleName());
+
+        if (!fragment.generic()) {
+            typeName = expand(vocab, clazz.getAnnotation(Term.class), clazz.getSimpleName());
         }
 
         Map<Method, Getter> getters = new HashMap<>(clazz.getMethods().length);
@@ -113,6 +119,8 @@ public class TreeMapping {
                     if (componentClass.isAnnotationPresent(Fragment.class)) {
                         scan(componentClass);
                         getter = new CollectionGetter(termUri, componentClass, fragmentAdapters.get(componentClass));
+                    } else {
+                        getter = scanLiteral(method, termUri);
                     }
                 }
 

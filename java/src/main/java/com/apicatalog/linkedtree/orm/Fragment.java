@@ -8,4 +8,11 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Fragment {
+    
+    /**
+     * A generic fragment, i.e. untyped super type
+     *   
+     * @return <code>true</code> if the fragment is typed
+     */
+    boolean generic() default false;
 }
