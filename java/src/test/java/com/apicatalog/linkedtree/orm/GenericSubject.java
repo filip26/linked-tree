@@ -9,7 +9,7 @@ public interface GenericSubject {
 
     @Id
     URI id();
-    
+
     Type type();
     
 }

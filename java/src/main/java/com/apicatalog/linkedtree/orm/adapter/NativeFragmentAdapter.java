@@ -42,6 +42,9 @@ public class NativeFragmentAdapter implements TypeAdapter {
                         if (getter != null) {
                             return getters.get(method).materialize(source);
                         }
+                        if (Object.class.getMethod("toString").equals(method)) {
+                            return typeInterface + "#" + source;
+                        }
 
                         throw new UnsupportedOperationException();
                     }

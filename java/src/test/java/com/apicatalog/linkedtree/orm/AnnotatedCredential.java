@@ -37,5 +37,6 @@ public interface AnnotatedCredential {
     @Literal(XsdDateTimeAdapter.class)
     Instant validUntil();
 
+    @Term("credentialStatus")
     Collection<Status> status();
 }

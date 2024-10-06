@@ -1,6 +1,7 @@
 package com.apicatalog.linkedtree.orm;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -40,11 +41,12 @@ import jakarta.json.stream.JsonGenerator;
 class AnnotationTest {
 
     @Test
-    void x() throws IOException, URISyntaxException, TreeBuilderError, NodeAdapterError {
+    void credential() throws IOException, URISyntaxException, TreeBuilderError, NodeAdapterError {
 
         JsonLdTreeReader reader = new TreeMapping()
                 .scan(AnnotatedCredential.class)
                 .scan(ExtendedAnnotatedCredential.class)
+                .scan(BitstringStatusListEntry.class)
                 .newReader();
 
         JsonArray input = resource("custom/signed-vc-1.jsonld");
@@ -61,6 +63,16 @@ class AnnotationTest {
 
         ExtendedAnnotatedCredential eac = vc.type().materialize(ExtendedAnnotatedCredential.class);
         assertVc(eac);
+        
+        assertEquals(2, eac.status().size());
+
+        var it = eac.status().iterator();
+
+        var status1 = it.next();
+        var status2 = it.next();
+
+        assertTrue(status1 instanceof BitstringStatusListEntry);
+        assertFalse(status2 instanceof BitstringStatusListEntry);
 
     }
 

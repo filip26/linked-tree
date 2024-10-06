@@ -17,6 +17,7 @@ import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.lang.LanguageMap;
 import com.apicatalog.linkedtree.orm.adapter.NativeFragmentAdapter;
 import com.apicatalog.linkedtree.orm.adapter.NativeLiteralAdapter;
+import com.apicatalog.linkedtree.orm.getter.CollectionGetter;
 import com.apicatalog.linkedtree.orm.getter.FragmentGetter;
 import com.apicatalog.linkedtree.orm.getter.Getter;
 import com.apicatalog.linkedtree.orm.getter.IdGetter;
@@ -25,7 +26,6 @@ import com.apicatalog.linkedtree.orm.getter.LiteralGetter;
 import com.apicatalog.linkedtree.orm.getter.NodeGetter;
 import com.apicatalog.linkedtree.orm.getter.RefGetter;
 import com.apicatalog.linkedtree.orm.getter.StringGetter;
-import com.apicatalog.linkedtree.orm.getter.TermGetter;
 import com.apicatalog.linkedtree.orm.getter.TypeGetter;
 import com.apicatalog.linkedtree.type.Type;
 
@@ -110,12 +110,15 @@ public class TreeMapping {
 
                 if (Collection.class.isAssignableFrom(method.getReturnType())) {
                     Class<?> componentClass = (Class<?>) ((ParameterizedType) method.getGenericReturnType()).getActualTypeArguments()[0];
-//                    System.out.println(componentClass);
+                    if (componentClass.isAnnotationPresent(Fragment.class)) {
+                        scan(componentClass);
+                        getter = new CollectionGetter(termUri, componentClass, fragmentAdapters.get(componentClass));
+                    }
                 }
 
-                if (getter == null) {
-                    getter = new TermGetter(termUri);
-                }
+//                if (getter == null) {
+//                    getter = new TermGetter(termUri);
+//                }
 
             }
 
