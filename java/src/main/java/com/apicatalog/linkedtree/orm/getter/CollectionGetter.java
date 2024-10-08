@@ -44,6 +44,7 @@ public class CollectionGetter implements Getter {
 
     @Override
     public Object get(LinkedFragment source) throws NodeAdapterError {
+        
         Collection<Object> coll = source.collection(term, componentType, adapter);
         
         if (collectionType.isInstance(coll)) {

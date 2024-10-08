@@ -78,6 +78,7 @@ class AnnotationTest {
     void controller() throws IOException, URISyntaxException, TreeBuilderError, NodeAdapterError {
 
         TreeMapper mapper = new TreeMapperBuilder()
+                .scan(Multikey.class)
                 .scan(ControllerDocument.class)
                 .build();
 
@@ -91,8 +92,37 @@ class AnnotationTest {
         assertNotNull(doc);
         assertEquals(URI.create("https://controller.example"), doc.id());
 
-        assertEquals(1, doc.controller().size());
+        assertTrue(doc.type().isEmpty());
 
+        assertEquals(1, doc.controller().size());
+        assertEquals(URI.create("https://controllerB.example/abc"), doc.controller().iterator().next());
+        
+        assertEquals(2, doc.authentication().size());
+        var ait = doc.authentication().iterator();
+        assertMethodK1(ait.next());
+
+        assertEquals(2, doc.verificationMethod().size());
+        var vmit = doc.verificationMethod().iterator();
+        vmit.next();
+        assertMethodK1(vmit.next());
+        
+        assertEquals(2, doc.assertionMethod().size());
+        var amit = doc.assertionMethod().iterator();
+        assertMethodK1(amit.next());
+        
+        assertEquals(0, doc.alsoKnownAs().size());
+        assertEquals(0, doc.keyAgreement().size());
+        assertEquals(0, doc.capabilityDelegation().size());
+        assertEquals(0, doc.capabilityInvocation().size());
+    }
+
+    static void assertMethodK1(VerificationMethod method) throws NodeAdapterError {
+        assertNotNull(method);
+        assertEquals(URI.create("https://controller.example/123456789abcdefghi#keys-1"), method.id());
+        assertTrue(method.type().contains("https://w3id.org/security#Multikey"));
+        assertTrue(method instanceof Multikey);
+        assertEquals("z6MkmM42vxfqZQsv4ehtTjFFxQ4sQKS2w6WR7emozFAn5cxu", ((Multikey)method).publicKey().encodedKey());
+        assertNull(((Multikey)method).privateKey());
     }
 
     static void assertVc(AnnotatedCredential vc) {

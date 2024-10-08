@@ -25,6 +25,7 @@ public interface ControllerDocument {
 
     Set<URI> alsoKnownAs();
 
+    @Term("authenticationMethod")
     Set<VerificationMethod> authentication();
 
     Set<VerificationMethod> assertionMethod();

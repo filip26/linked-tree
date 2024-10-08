@@ -44,6 +44,9 @@ public class FragmentProxyInvocation implements InvocationHandler {
         if (fragmentProxy.typeInterface.equals(method.getDeclaringClass())) {
             return cache(method, method.invoke(source, args));
         }
+        if (Object.class.equals(method.getDeclaringClass())) {
+            return method.invoke(source, args);
+        }
 
         throw new UnsupportedOperationException(method.toGenericString());
     }

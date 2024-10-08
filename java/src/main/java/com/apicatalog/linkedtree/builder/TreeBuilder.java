@@ -349,6 +349,14 @@ public class TreeBuilder<T> implements NodeConsumer<T> {
                 root());
 
         if (types instanceof AdaptableType adaptableType) {
+
+            types.forEach(x -> {
+                final TypeAdapter typeAdapter = typeAdapters.get(x);
+                if (typeAdapter != null) {
+                    adaptableType.adapter(x, typeAdapter);
+                }
+            });
+
             adaptableType.node(fragment);
         }
 
