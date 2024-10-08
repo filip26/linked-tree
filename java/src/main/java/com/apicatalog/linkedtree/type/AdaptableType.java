@@ -57,7 +57,9 @@ public class AdaptableType implements Type {
                 .filter(t -> clazz.isAssignableFrom(t.typeInterface()))
                 .findFirst()
                 .orElseThrow(NodeAdapterError::new)
-                .materialize(fragment);
+                .materialize(fragment.id() != null
+                        ? fragment.id().target()
+                        : fragment);
     }
 
     @Override

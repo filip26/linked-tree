@@ -31,7 +31,7 @@ public interface LinkedFragment extends LinkedNode {
     Collection<String> terms();
 
     LinkedContainer container(String term);
-    
+
     @SuppressWarnings("unchecked")
     default <T extends Linkable> T materialize(String term, Class<T> clazz) throws InvalidSelector, NodeAdapterError {
 
@@ -276,16 +276,25 @@ public interface LinkedFragment extends LinkedNode {
 
                 if (clazz.isInstance(node)) {
                     collection.add((T) node);
+                    
+                } else if (node.isFragment() 
+                        && node.asFragment().id() != null
+                        && node.asFragment().id().target().type().isAdaptableTo(clazz)) {                    
+                    collection.add(node.asFragment().id().target().type().materialize(clazz));
 
                 } else if (node.isFragment() && node.asFragment().type().isAdaptableTo(clazz)) {
                     collection.add(node.asFragment().type().materialize(clazz));
-
+                                        
                 } else if (node.isLiteral() && clazz.isInstance(node.asLiteral().cast())) {
                     collection.add(node.asLiteral().cast(clazz));
 
                 } else if (unmapped != null) {
-                    collection.add(unmapped.materialize(node));
-
+                    if (node.isFragment()
+                            && node.asFragment().id() != null) {
+                        collection.add(unmapped.materialize(node.asFragment().id().target()));
+                    } else {
+                        collection.add(unmapped.materialize(node));
+                    }
                 } else {
                     throw new InvalidSelector(term);
                 }

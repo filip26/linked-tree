@@ -8,5 +8,4 @@ import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 public interface LiteralAdapter {
 
     LinkedLiteral materialize(String source, LinkedTree root) throws NodeAdapterError;
-    
 }
