@@ -22,8 +22,8 @@ import com.apicatalog.linkedtree.orm.Id;
 import com.apicatalog.linkedtree.orm.Literal;
 import com.apicatalog.linkedtree.orm.Term;
 import com.apicatalog.linkedtree.orm.Vocab;
-import com.apicatalog.linkedtree.orm.adapter.NativeFragmentAdapter;
-import com.apicatalog.linkedtree.orm.adapter.NativeLiteralAdapter;
+import com.apicatalog.linkedtree.orm.adapter.FragmentProxy;
+import com.apicatalog.linkedtree.orm.adapter.LiteralMapper;
 import com.apicatalog.linkedtree.orm.getter.CollectionGetter;
 import com.apicatalog.linkedtree.orm.getter.FragmentGetter;
 import com.apicatalog.linkedtree.orm.getter.Getter;
@@ -32,7 +32,6 @@ import com.apicatalog.linkedtree.orm.getter.LangMapGetter;
 import com.apicatalog.linkedtree.orm.getter.LiteralGetter;
 import com.apicatalog.linkedtree.orm.getter.NodeGetter;
 import com.apicatalog.linkedtree.orm.getter.RefGetter;
-import com.apicatalog.linkedtree.orm.getter.StringGetter;
 import com.apicatalog.linkedtree.orm.getter.TypeGetter;
 import com.apicatalog.linkedtree.type.Type;
 
@@ -40,28 +39,28 @@ public class TreeMapperBuilder {
 
     private static final Logger LOGGER = Logger.getLogger(TreeMapperBuilder.class.getName());
 
-    final Map<Class<?>, NativeFragmentAdapter> fragmentAdapters;
-    final Map<Class<? extends NativeLiteralAdapter>, NativeLiteralAdapter> literalAdapters;
+    final Map<Class<?>, FragmentProxy> fragmentAdapters;
+    final Map<Class<? extends LiteralMapper>, LiteralMapper> literalAdapters;
 
     public TreeMapperBuilder() {
         this.fragmentAdapters = new LinkedHashMap<>();
         this.literalAdapters = new LinkedHashMap<>();
     }
 
-    public TreeMapperBuilder scan(Class<?> clazz) throws NodeAdapterError {
+    public TreeMapperBuilder scan(final Class<?> clazz) throws NodeAdapterError {
 
         if (fragmentAdapters.containsKey(clazz)) {
             return this;
         }
 
-        Fragment fragment = clazz.getAnnotation(Fragment.class);
+        final Fragment fragment = clazz.getAnnotation(Fragment.class);
 
         if (fragment == null) {
             LOGGER.log(Level.WARNING, "Skipped class {0} - not annotated as @Fragment", clazz);
             return this;
         }
 
-        Vocab vocab = clazz.getAnnotation(Vocab.class);
+        final Vocab vocab = clazz.getAnnotation(Vocab.class);
 
         String typeName = null;
 
@@ -69,22 +68,25 @@ public class TreeMapperBuilder {
             typeName = expand(vocab, clazz.getAnnotation(Term.class), clazz.getSimpleName());
         }
 
-        Map<Method, Getter> getters = new HashMap<>(clazz.getMethods().length);
+        final Map<Method, Getter> getters = new HashMap<>(clazz.getMethods().length);
 
-        for (Method method : clazz.getMethods()) {
+        // scan methods
+        for (final Method method : clazz.getMethods()) {
 
             if (method.getParameterCount() > 0) {
                 LOGGER.log(Level.WARNING, "Skipped method {0} - not a getter, has {1} paramters", new Object[] { method.toGenericString(), (Integer) method.getParameterCount() });
                 continue;
             }
 
-            Vocab declaredVocab = method.getDeclaringClass().getAnnotation(Vocab.class);
+            final Vocab declaredVocab = method.getDeclaringClass().getAnnotation(Vocab.class);
 
             Getter getter = null;
 
+            // @id
             if (method.isAnnotationPresent(Id.class)) {
                 getter = IdGetter.instance();
 
+                // @type
             } else if (method.getReturnType().isAssignableFrom(Type.class)) {
                 getter = TypeGetter.instance();
 
@@ -96,9 +98,9 @@ public class TreeMapperBuilder {
                     methodVocab = declaredVocab;
                 }
 
-                Term methodTerm = method.getAnnotation(Term.class);
+                final Term methodTerm = method.getAnnotation(Term.class);
 
-                String termUri = expand(
+                final String termUri = expand(
                         methodVocab,
                         methodTerm,
                         method.getName());
@@ -107,21 +109,53 @@ public class TreeMapperBuilder {
                     Class<?> componentClass = (Class<?>) ((ParameterizedType) method.getGenericReturnType()).getActualTypeArguments()[0];
                     if (componentClass.isAnnotationPresent(Fragment.class)) {
                         scan(componentClass);
-                        getter = new CollectionGetter(termUri, componentClass, fragmentAdapters.get(componentClass));
+                        getter = CollectionGetter.of(
+                                termUri,
+                                method.getReturnType(),
+                                componentClass,
+                                fragmentAdapters.get(componentClass));
+
+                    } else if (componentClass.isAssignableFrom(URI.class)) {
+                        getter = CollectionGetter.of(
+                                termUri,
+                                method.getReturnType(),
+                                componentClass,
+                                source -> source.asFragment().uri());
 
                     } else {
-//                        getter = scanValue(method.getReturnType(), termUri);
+                        LiteralMapper mapper = mapper(method);
+                        getter = CollectionGetter.of(
+                                termUri,
+                                method.getReturnType(),
+                                componentClass,
+                                source -> mapper.map(method.getReturnType(), source.asLiteral()));
                     }
-//                        getter = scanLiteral(method, termUri);
+
                     // TODO arrays
                 } else if (method.getReturnType().isArray()) {
 //                    throw new UnsupportedOperationException();
 
-                } else if (method.isAnnotationPresent(Literal.class)) {
-                    getter = scanLiteral(method, termUri);
+                } else if (method.getReturnType().isAnnotationPresent(Fragment.class)) {
+                    scan(method.getReturnType());
+                    getter = new FragmentGetter(termUri, fragmentAdapters.get(method.getReturnType()));
+
+                } else if (method.getReturnType().isAssignableFrom(LanguageMap.class)) {
+                    getter = new LangMapGetter(termUri);
+
+                } else if (method.getReturnType().isAssignableFrom(URI.class)) {
+                    getter = new RefGetter(termUri);
+
+                } else if (method.getReturnType().isAssignableFrom(LinkedContainer.class)) {
+                    getter = new NodeGetter(termUri, LinkedContainer.class);
 
                 } else {
-                    getter = scanValue(method.getReturnType(), termUri);
+
+                    LiteralMapper mapper = mapper(method);
+
+                    getter = new LiteralGetter(
+                            termUri,
+                            method.getReturnType(),
+                            mapper);
                 }
             }
 
@@ -133,61 +167,46 @@ public class TreeMapperBuilder {
 
         }
 
-        fragmentAdapters.put(clazz, new NativeFragmentAdapter(clazz, typeName, getters));
-
+        fragmentAdapters.put(clazz, new FragmentProxy(clazz, typeName, getters));
         return this;
     }
 
-    Getter scanValue(Class<?> type, String termUri) throws NodeAdapterError {
-        if (type.isAssignableFrom(LanguageMap.class)) {
-            return new LangMapGetter(termUri);
-        }
-        if (type.isAssignableFrom(URI.class)) {
-            return new RefGetter(termUri);
-        }
-        if (type.isAnnotationPresent(Fragment.class)) {
-            scan(type);
-            return new FragmentGetter(termUri, fragmentAdapters.get(type));
-        }
-        if (type.isAssignableFrom(LinkedContainer.class)) {
-            return new NodeGetter(termUri, LinkedContainer.class);
-        }
-        if (type.isAssignableFrom(String.class)) {
-            return new StringGetter(termUri);
-        }
-        return null;
-    }
-
-    Getter scanLiteral(Method method, String termUri) throws NodeAdapterError {
+    LiteralMapper mapper(Method method) throws NodeAdapterError {
 
         Literal literal = method.getAnnotation(Literal.class);
 
-        Class<? extends NativeLiteralAdapter> adapterType = literal.value();
+        if (literal != null) {
 
-        NativeLiteralAdapter adapter = literalAdapters.get(adapterType);
+            Class<? extends LiteralMapper> adapterType = literal.value();
 
-        
-        if (adapter == null) {
-            try {
-                Constructor<? extends NativeLiteralAdapter> constructor = adapterType.getDeclaredConstructor();
-                constructor.setAccessible(true);
+            LiteralMapper adapter = literalAdapters.get(adapterType);
 
-                adapter = constructor.newInstance();
+            if (adapter == null) {
+                try {
+                    Constructor<? extends LiteralMapper> constructor = adapterType.getDeclaredConstructor();
+                    constructor.setAccessible(true);
 
-                adapter.setup(literal.params());
-                
-                literalAdapters.put(adapterType, adapter);
+                    adapter = constructor.newInstance();
 
-            } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-                throw new IllegalStateException(e);
+                    adapter.setup(literal.params());
+
+                    literalAdapters.put(adapterType, adapter);
+
+                } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+                    throw new IllegalStateException(e);
+                }
             }
+            return adapter;
         }
 
-        return new LiteralGetter(
-                termUri,
-                method.getReturnType(),
-                adapter);
+        Class<?> type = method.getReturnType();
 
+        if (type.isAssignableFrom(String.class)) {
+            return (clazz, source) -> source.lexicalValue();
+        }
+
+        // TODO generic adapters,
+        throw new ClassCastException();
     }
 
     static final boolean isAbsoluteUri(final String uri, final boolean validate) {
@@ -263,7 +282,8 @@ public class TreeMapperBuilder {
                 .filter(e -> Objects.nonNull(e.typeName()))
                 .forEach(e -> builder.with(e.typeName(), e));
         literalAdapters.values().stream()
-                .map(NativeLiteralAdapter::literalAdapter)
+                .map(LiteralMapper::adapter)
+                .filter(Objects::nonNull)
                 .forEach(builder::with);
 
         JsonLdTreeReader reader = builder.build();

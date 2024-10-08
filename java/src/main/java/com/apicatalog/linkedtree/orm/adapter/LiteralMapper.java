@@ -4,12 +4,16 @@ import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.literal.adapter.TypedLiteralAdapter;
 
-public interface NativeLiteralAdapter {
+@FunctionalInterface
+public interface LiteralMapper {
 
     default void setup(String[] params) throws NodeAdapterError {
         /* empty */ }
 
-    TypedLiteralAdapter literalAdapter();
+    default TypedLiteralAdapter adapter() {
+        return null;
+    }
 
-    Object materialize(Class<?> type, LinkedLiteral literal) throws NodeAdapterError;
+    Object map(Class<?> type, LinkedLiteral literal) throws NodeAdapterError;
+
 }

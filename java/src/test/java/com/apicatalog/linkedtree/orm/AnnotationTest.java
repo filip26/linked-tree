@@ -83,15 +83,15 @@ class AnnotationTest {
 
         JsonArray input = resource("custom/controller-doc-2.jsonld");
 
-        ControllerDocument controller = mapper.get(
+        ControllerDocument doc = mapper.get(
                 ControllerDocument.class,
                 List.of("https://www.w3.org/ns/controller/v1"),
                 input);
 
-        assertNotNull(controller);
-        assertEquals(URI.create("https://controller.example"), controller.id());
+        assertNotNull(doc);
+        assertEquals(URI.create("https://controller.example"), doc.id());
 
-        assertEquals(1, controller.controller().size());
+        assertEquals(1, doc.controller().size());
 
     }
 
