@@ -1,4 +1,4 @@
-package com.apicatalog.linkedtree.orm.adapter;
+package com.apicatalog.linkedtree.orm.proxy;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;

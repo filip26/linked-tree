@@ -5,25 +5,31 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.net.URI;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.apicatalog.linkedtree.LinkedContainer;
+import com.apicatalog.linkedtree.LinkedFragment;
+import com.apicatalog.linkedtree.LinkedLiteral;
+import com.apicatalog.linkedtree.LinkedNode;
+import com.apicatalog.linkedtree.adapter.NodeAdapter;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.lang.LanguageMap;
+import com.apicatalog.linkedtree.literal.DateTimeValue;
+import com.apicatalog.linkedtree.literal.adapter.TypedLiteralAdapter;
 import com.apicatalog.linkedtree.orm.Fragment;
 import com.apicatalog.linkedtree.orm.Id;
 import com.apicatalog.linkedtree.orm.Literal;
 import com.apicatalog.linkedtree.orm.Term;
 import com.apicatalog.linkedtree.orm.Vocab;
-import com.apicatalog.linkedtree.orm.adapter.FragmentProxy;
-import com.apicatalog.linkedtree.orm.adapter.LiteralMapper;
 import com.apicatalog.linkedtree.orm.getter.CollectionGetter;
 import com.apicatalog.linkedtree.orm.getter.FragmentGetter;
 import com.apicatalog.linkedtree.orm.getter.Getter;
@@ -33,18 +39,43 @@ import com.apicatalog.linkedtree.orm.getter.LiteralGetter;
 import com.apicatalog.linkedtree.orm.getter.NodeGetter;
 import com.apicatalog.linkedtree.orm.getter.RefGetter;
 import com.apicatalog.linkedtree.orm.getter.TypeGetter;
+import com.apicatalog.linkedtree.orm.proxy.FragmentProxy;
+import com.apicatalog.linkedtree.type.GenericTypeAdapter;
 import com.apicatalog.linkedtree.type.Type;
+import com.apicatalog.linkedtree.type.TypeAdapter;
 
 public class TreeMapperBuilder {
 
     private static final Logger LOGGER = Logger.getLogger(TreeMapperBuilder.class.getName());
 
     final Map<Class<?>, FragmentProxy> fragmentAdapters;
-    final Map<Class<? extends LiteralMapper>, LiteralMapper> literalAdapters;
+    final Map<Class<? extends TypedLiteralAdapter>, TypedLiteralAdapter> literalAdapters;
+    final LiteralMapping literalMapping;
 
     public TreeMapperBuilder() {
         this.fragmentAdapters = new LinkedHashMap<>();
         this.literalAdapters = new LinkedHashMap<>();
+        this.literalMapping = new LiteralMapping()
+                .add(DateTimeValue.class,
+                        Instant.class,
+                        literal -> literal.datetime());
+    }
+
+    public TreeMapperBuilder with(String type, TypeAdapter adapter) {
+//        this.typeMap.put(type, adapter);
+        return this;
+    }
+
+    public TreeMapperBuilder with(
+            String type,
+            Class<?> typeInterface,
+            NodeAdapter<LinkedFragment, Object> adapter) {
+        return with(type, new GenericTypeAdapter(typeInterface, adapter));
+    }
+
+    public TreeMapperBuilder with(TypedLiteralAdapter adapter) {
+        this.literalAdapters.put(adapter.getClass(), adapter);
+        return this;
     }
 
     public TreeMapperBuilder scan(final Class<?> clazz) throws NodeAdapterError {
@@ -123,12 +154,12 @@ public class TreeMapperBuilder {
                                 source -> source.asFragment().uri());
 
                     } else {
-                        LiteralMapper mapper = mapper(method);
+                        LiteralMapper<LinkedLiteral, ?> mapper = mapper(method);
                         getter = CollectionGetter.of(
                                 termUri,
                                 method.getReturnType(),
                                 componentClass,
-                                source -> mapper.map(method.getReturnType(), source.asLiteral()));
+                                source -> mapper.map(source.asLiteral()));
                     }
 
                     // TODO arrays
@@ -171,19 +202,19 @@ public class TreeMapperBuilder {
         return this;
     }
 
-    LiteralMapper mapper(Method method) throws NodeAdapterError {
+    LiteralMapper<LinkedLiteral, ?> mapper(Method method) throws NodeAdapterError {
 
         Literal literal = method.getAnnotation(Literal.class);
 
         if (literal != null) {
 
-            Class<? extends LiteralMapper> adapterType = literal.value();
+            Class<? extends TypedLiteralAdapter> adapterType = literal.value();
 
-            LiteralMapper adapter = literalAdapters.get(adapterType);
+            TypedLiteralAdapter adapter = literalAdapters.get(adapterType);
 
             if (adapter == null) {
                 try {
-                    Constructor<? extends LiteralMapper> constructor = adapterType.getDeclaredConstructor();
+                    Constructor<? extends TypedLiteralAdapter> constructor = adapterType.getDeclaredConstructor();
                     constructor.setAccessible(true);
 
                     adapter = constructor.newInstance();
@@ -196,13 +227,26 @@ public class TreeMapperBuilder {
                     throw new IllegalStateException(e);
                 }
             }
-            return adapter;
+
+            final LiteralMapper mapper = literalMapping.find(adapter.typeInterface(), method.getReturnType());
+
+            if (mapper == null) {
+                throw new IllegalArgumentException("Cannot find literal mapper from " + adapter.typeInterface() + " to " + method.getReturnType());
+            }
+
+            return mapper;
         }
 
         Class<?> type = method.getReturnType();
 
+        if (type.isAssignableFrom(LinkedLiteral.class)
+                || type.isAssignableFrom(LinkedNode.class)
+                ) {
+            return source -> source;
+        }
+
         if (type.isAssignableFrom(String.class)) {
-            return (clazz, source) -> source.lexicalValue();
+            return source -> source.lexicalValue();
         }
 
         // TODO generic adapters,
@@ -282,7 +326,7 @@ public class TreeMapperBuilder {
                 .filter(e -> Objects.nonNull(e.typeName()))
                 .forEach(e -> builder.with(e.typeName(), e));
         literalAdapters.values().stream()
-                .map(LiteralMapper::adapter)
+//                .map(LiteralMapper::adapter)
                 .filter(Objects::nonNull)
                 .forEach(builder::with);
 

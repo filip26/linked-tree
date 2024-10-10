@@ -7,12 +7,8 @@ import java.time.format.DateTimeParseException;
 import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.literal.DateTimeValue;
-import com.apicatalog.linkedtree.literal.adapter.TypedLiteralAdapter;
-import com.apicatalog.linkedtree.literal.adapter.GenericDatatypeAdapter;
 
 public class XsdDateTime implements LinkedLiteral, DateTimeValue {
-
-    public static final String TYPE = XsdConstants.DATE_TIME;
 
     protected Instant datetime;
     protected String value;
@@ -58,7 +54,7 @@ public class XsdDateTime implements LinkedLiteral, DateTimeValue {
 
     @Override
     public String datatype() {
-        return TYPE;
+        return XsdVocab.DATE_TIME;
     }
 
     public void value(String value) {
@@ -71,14 +67,6 @@ public class XsdDateTime implements LinkedLiteral, DateTimeValue {
         this.value = null;
     }
 
-    protected static TypedLiteralAdapter ADAPTER = new GenericDatatypeAdapter(
-            TYPE,
-            XsdDateTime::of);
-
-    public static TypedLiteralAdapter typeAdapter() {
-        return ADAPTER;
-    }
-
     @Override
     public String toString() {
         return "XsdDateTime [datetime=" + datetime + ", value=" + value + "]";
@@ -87,5 +75,9 @@ public class XsdDateTime implements LinkedLiteral, DateTimeValue {
     @Override
     public LinkedTree root() {
         return root;
+    }
+    
+    public static XsdDateTimeAdapter typeAdapter() {
+        return XsdDateTimeAdapter.INSTANCE;
     }
 }

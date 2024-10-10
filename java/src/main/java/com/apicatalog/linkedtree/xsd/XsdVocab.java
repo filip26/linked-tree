@@ -1,8 +1,8 @@
 package com.apicatalog.linkedtree.xsd;
 
-public class XsdConstants {
+public class XsdVocab {
 
-    protected XsdConstants() {
+    protected XsdVocab() {
         // protected
     }
     
@@ -21,5 +21,7 @@ public class XsdConstants {
     public static final String LONG = "http://www.w3.org/2001/XMLSchema#long";
 
     public static final String DATE_TIME = "http://www.w3.org/2001/XMLSchema#dateTime";
+    
+    public static final String DATE = "http://www.w3.org/2001/XMLSchema#date";
 
 }

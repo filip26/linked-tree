@@ -5,11 +5,11 @@ package com.apicatalog.linkedtree.orm;
 public interface Multikey extends VerificationMethod {
 
     @Term("publicKeyMultibase")
-    @Literal(EncodedKeyMapper.class)
+//    @Literal(EncodedKeyMapper.class)
     EncodedKey publicKey();
 
     @Term("secretKeyMultibase")
-    @Literal(EncodedKeyMapper.class)
+//    @Literal(EncodedKeyMapper.class)
     EncodedKey privateKey();
 
 }

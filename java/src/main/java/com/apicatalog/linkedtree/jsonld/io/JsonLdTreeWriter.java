@@ -18,8 +18,8 @@ import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 import com.apicatalog.linkedtree.lang.LangString;
 import com.apicatalog.linkedtree.literal.NumericValue;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
-import com.apicatalog.linkedtree.rdf.RdfConstants;
-import com.apicatalog.linkedtree.xsd.XsdConstants;
+import com.apicatalog.linkedtree.rdf.RdfVocab;
+import com.apicatalog.linkedtree.xsd.XsdVocab;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -175,10 +175,10 @@ public class JsonLdTreeWriter {
         if (literal.datatype() != null) {
 
             // 2.4.1.
-            if (XsdConstants.STRING.equals(literal.datatype())) {
+            if (XsdVocab.STRING.equals(literal.datatype())) {
                 convertedValue = Json.createValue(literal.lexicalValue());
 
-            } else if (XsdConstants.BOOLEAN.equals(literal.datatype())) {
+            } else if (XsdVocab.BOOLEAN.equals(literal.datatype())) {
 
                 if ("true".equalsIgnoreCase(literal.lexicalValue())) {
 
@@ -190,16 +190,16 @@ public class JsonLdTreeWriter {
 
                 } else {
 
-                    type = XsdConstants.BOOLEAN;
+                    type = XsdVocab.BOOLEAN;
                 }
 
             } else if (literal instanceof JsonScalar jsonScalar) {
                 convertedValue = jsonScalar.jsonValue();
                 type = literal.datatype();
 
-            } else if (XsdConstants.INTEGER.equals(literal.datatype()) 
-                    || XsdConstants.INT.equals(literal.datatype()) 
-                    || XsdConstants.LONG.equals(literal.datatype())) {
+            } else if (XsdVocab.INTEGER.equals(literal.datatype()) 
+                    || XsdVocab.INT.equals(literal.datatype()) 
+                    || XsdVocab.LONG.equals(literal.datatype())) {
 
                 convertedValue = Json.createValue(Long.parseLong(literal.lexicalValue()));
 
@@ -208,7 +208,7 @@ public class JsonLdTreeWriter {
                 convertedValue = Json.createValue(jsonInteger.integerValue());
                 type = literal.datatype();
 
-            } else if (XsdConstants.DOUBLE.equals(literal.datatype()) || XsdConstants.FLOAT.equals(literal.datatype())) {
+            } else if (XsdVocab.DOUBLE.equals(literal.datatype()) || XsdVocab.FLOAT.equals(literal.datatype())) {
 
                 convertedValue = Json.createValue(Double.parseDouble(literal.lexicalValue()));
 
@@ -227,7 +227,7 @@ public class JsonLdTreeWriter {
                 convertedValue = jsonLiteral.jsonValue();
                 type = JsonLdKeyword.JSON;
 
-            } else if (RdfConstants.JSON.equals(literal.datatype())) {
+            } else if (RdfVocab.JSON.equals(literal.datatype())) {
                 try (JsonParser parser = Json.createParser(new StringReader(literal.lexicalValue()))) {
 
                     parser.next();

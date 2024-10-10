@@ -34,7 +34,7 @@ import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 import com.apicatalog.linkedtree.traversal.NodeSelector;
 import com.apicatalog.linkedtree.type.GenericTypeAdapter;
 import com.apicatalog.linkedtree.type.TypeAdapter;
-import com.apicatalog.linkedtree.xsd.XsdConstants;
+import com.apicatalog.linkedtree.xsd.XsdVocab;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonNumber;
@@ -241,7 +241,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
             literal(new JsonScalar(value,
                     datatype != null
                             ? datatype
-                            : XsdConstants.BOOLEAN,
+                            : XsdVocab.BOOLEAN,
                     root()));
             return;
 
@@ -250,8 +250,8 @@ public class JsonLdTreeReader extends JsonTreeReader {
             JsonNumber number = ((JsonNumber) value);
 
             if ((!number.isIntegral() && number.doubleValue() % -1 != 0)
-                    || XsdConstants.DOUBLE.equals(datatype)
-                    || XsdConstants.FLOAT.equals(datatype)
+                    || XsdVocab.DOUBLE.equals(datatype)
+                    || XsdVocab.FLOAT.equals(datatype)
                     || number.bigDecimalValue().compareTo(BigDecimal.ONE.movePointRight(21)) >= 0) {
 
                 var pi = getPi(valueJsonObject, JsonLdKeyword.TYPE, JsonLdKeyword.VALUE);
@@ -262,7 +262,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
                 literal(JsonDecimal.of(number,
                         datatype != null
                                 ? datatype
-                                : XsdConstants.DOUBLE,
+                                : XsdVocab.DOUBLE,
                         root()));
                 return;
 
@@ -276,7 +276,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
                         number,
                         datatype != null
                                 ? datatype
-                                : XsdConstants.INTEGER,
+                                : XsdVocab.INTEGER,
                         root()));
                 return;
             }
@@ -311,10 +311,10 @@ public class JsonLdTreeReader extends JsonTreeReader {
         }
 
         if (datatype == null) {
-            datatype = XsdConstants.STRING;
+            datatype = XsdVocab.STRING;
         }
 
-        if (XsdConstants.STRING.equals(datatype)) {
+        if (XsdVocab.STRING.equals(datatype)) {
             var pi = getPi(valueJsonObject, JsonLdKeyword.VALUE, JsonLdKeyword.TYPE, JsonLdKeyword.LANGUAGE, JsonLdKeyword.DIRECTION);
             if (pi != null) {
                 ops.add(pi);
@@ -416,6 +416,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
         return GENERIC;
     }
 
+    @Deprecated
     public static class Builder {
 
         protected Map<String, TypeAdapter> typeMap;

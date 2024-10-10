@@ -2,7 +2,7 @@ package com.apicatalog.linkedtree.json;
 
 import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.LinkedTree;
-import com.apicatalog.linkedtree.rdf.RdfConstants;
+import com.apicatalog.linkedtree.rdf.RdfVocab;
 
 import jakarta.json.JsonValue;
 
@@ -41,7 +41,7 @@ public class JsonLiteral implements LinkedLiteral, JsonNode {
 
     @Override
     public String datatype() {
-        return RdfConstants.JSON;
+        return RdfVocab.JSON;
     }
 
     @Override

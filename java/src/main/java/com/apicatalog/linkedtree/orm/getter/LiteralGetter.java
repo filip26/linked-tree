@@ -3,7 +3,7 @@ package com.apicatalog.linkedtree.orm.getter;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
-import com.apicatalog.linkedtree.orm.adapter.LiteralMapper;
+import com.apicatalog.linkedtree.orm.mapper.LiteralMapper;
 
 public class LiteralGetter implements Getter {
 
@@ -27,7 +27,7 @@ public class LiteralGetter implements Getter {
             return null;
         }
 
-        return adapter.map(returnType, x);
+        return adapter.map(x);
     }
 
 }

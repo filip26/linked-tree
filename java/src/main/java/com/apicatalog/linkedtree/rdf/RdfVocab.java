@@ -1,6 +1,10 @@
 package com.apicatalog.linkedtree.rdf;
 
-public final class RdfConstants {
+public class RdfVocab {
+    
+    protected RdfVocab() {
+        // protected
+    }
 
     public static final String DIRECTION = "http://www.w3.org/1999/02/22-rdf-syntax-ns#direction";
 

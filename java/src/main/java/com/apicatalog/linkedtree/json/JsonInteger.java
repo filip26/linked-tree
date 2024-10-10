@@ -3,7 +3,7 @@ package com.apicatalog.linkedtree.json;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.literal.IntegerValue;
 import com.apicatalog.linkedtree.literal.NumericValue;
-import com.apicatalog.linkedtree.xsd.XsdConstants;
+import com.apicatalog.linkedtree.xsd.XsdVocab;
 
 import jakarta.json.JsonValue;
 
@@ -18,7 +18,7 @@ public class JsonInteger implements NumericValue, IntegerValue, JsonNode {
     }
 
     public static JsonInteger of(jakarta.json.JsonNumber jsonNumber, LinkedTree root) {
-        return of(jsonNumber, XsdConstants.INTEGER, root);
+        return of(jsonNumber, XsdVocab.INTEGER, root);
     }
 
     public static JsonInteger of(jakarta.json.JsonNumber jsonNumber, String datatype, LinkedTree root) {

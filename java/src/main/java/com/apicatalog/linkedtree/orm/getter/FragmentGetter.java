@@ -3,7 +3,7 @@ package com.apicatalog.linkedtree.orm.getter;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
-import com.apicatalog.linkedtree.orm.adapter.FragmentProxy;
+import com.apicatalog.linkedtree.orm.proxy.FragmentProxy;
 
 public class FragmentGetter implements Getter {
 

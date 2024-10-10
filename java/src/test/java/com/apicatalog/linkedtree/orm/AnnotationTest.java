@@ -21,14 +21,19 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
+import com.apicatalog.linkedtree.AlumniCredential;
+import com.apicatalog.linkedtree.Base64ByteArray;
+import com.apicatalog.linkedtree.BitstringStatusListEntry;
 import com.apicatalog.linkedtree.Linkable;
 import com.apicatalog.linkedtree.LinkedFragment;
+import com.apicatalog.linkedtree.VerifiableCredential;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.jsonld.JsonLdComparison;
 import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 import com.apicatalog.linkedtree.orm.mapper.TreeMapper;
 import com.apicatalog.linkedtree.orm.mapper.TreeMapperBuilder;
+import com.apicatalog.linkedtree.xsd.XsdDateTime;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -44,9 +49,17 @@ class AnnotationTest {
     void credential() throws IOException, URISyntaxException, TreeBuilderError, NodeAdapterError {
 
         TreeMapper reader = new TreeMapperBuilder()
+                .with(VerifiableCredential.TYPE, VerifiableCredential.typeAdapter())
+                .with(AlumniCredential.TYPE, AlumniCredential.typeAdapter())
+
+                // literals
+                .with(Base64ByteArray.typeAdapter())
+                .with(XsdDateTime.typeAdapter())
+
                 .scan(AnnotatedCredential.class)
                 .scan(ExtendedAnnotatedCredential.class)
                 .scan(BitstringStatusListEntry.class)
+                
                 .build();
 
         JsonArray input = resource("custom/signed-vc-1.jsonld");

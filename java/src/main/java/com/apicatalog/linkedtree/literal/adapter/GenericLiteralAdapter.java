@@ -4,10 +4,10 @@ import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 
-public record GenericDatatypeAdapter(
+public record GenericLiteralAdapter(
         String datatype,
-        LiteralAdapter adapter
-        ) implements TypedLiteralAdapter {
+        Class<? extends LinkedLiteral> typeInterface,
+        LiteralAdapter adapter) implements TypedLiteralAdapter {
 
     @Override
     public LinkedLiteral materialize(String source, LinkedTree root) throws NodeAdapterError {

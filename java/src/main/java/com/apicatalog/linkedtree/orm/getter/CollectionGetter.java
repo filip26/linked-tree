@@ -11,7 +11,7 @@ import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.adapter.NodeAdapter;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
-import com.apicatalog.linkedtree.orm.adapter.FragmentProxy;
+import com.apicatalog.linkedtree.orm.proxy.FragmentProxy;
 
 public class CollectionGetter implements Getter {
 

@@ -7,7 +7,7 @@ import java.util.Locale;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.literal.DoubleValue;
 import com.apicatalog.linkedtree.literal.NumericValue;
-import com.apicatalog.linkedtree.xsd.XsdConstants;
+import com.apicatalog.linkedtree.xsd.XsdVocab;
 
 public class JsonDecimal implements NumericValue, DoubleValue, JsonNode {
 
@@ -26,7 +26,7 @@ public class JsonDecimal implements NumericValue, DoubleValue, JsonNode {
     }
 
     public static JsonDecimal of(jakarta.json.JsonNumber jsonNumber, LinkedTree root) {
-        return of(jsonNumber, XsdConstants.DOUBLE, root);
+        return of(jsonNumber, XsdVocab.DOUBLE, root);
     }
 
     public static JsonDecimal of(jakarta.json.JsonNumber jsonNumber, String datatype, LinkedTree root) {

@@ -3,8 +3,8 @@ package com.apicatalog.linkedtree;
 import java.util.Base64;
 
 import com.apicatalog.linkedtree.literal.ByteArrayValue;
+import com.apicatalog.linkedtree.literal.adapter.GenericLiteralAdapter;
 import com.apicatalog.linkedtree.literal.adapter.TypedLiteralAdapter;
-import com.apicatalog.linkedtree.literal.adapter.GenericDatatypeAdapter;
 
 public class Base64ByteArray implements ByteArrayValue {
 
@@ -56,7 +56,7 @@ public class Base64ByteArray implements ByteArrayValue {
     }
 
     public static TypedLiteralAdapter typeAdapter() {
-        return new GenericDatatypeAdapter(TYPE, Base64ByteArray::of);
+        return new GenericLiteralAdapter(TYPE, Base64ByteArray.class, Base64ByteArray::of);
     }
     
     @Override

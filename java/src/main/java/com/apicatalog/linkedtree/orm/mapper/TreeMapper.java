@@ -7,7 +7,7 @@ import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
-import com.apicatalog.linkedtree.orm.adapter.FragmentProxy;
+import com.apicatalog.linkedtree.orm.proxy.FragmentProxy;
 
 import jakarta.json.JsonArray;
 
