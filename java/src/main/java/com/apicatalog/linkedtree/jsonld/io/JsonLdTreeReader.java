@@ -48,7 +48,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
 
     protected Collection<String> context;
 
-    protected JsonLdTreeReader(
+    public JsonLdTreeReader(
             Map<String, TypeAdapter> typeAdapters,
             Map<String, LiteralAdapter> literalAdapters) {
         super(typeAdapters, literalAdapters);
@@ -401,7 +401,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
         };
     }
 
-    public static final Builder create() {
+    public static final Builder createBuilder() {
         return new Builder();
     }
 

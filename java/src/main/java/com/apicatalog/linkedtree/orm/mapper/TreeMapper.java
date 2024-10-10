@@ -40,4 +40,8 @@ public class TreeMapper {
         throw new ClassCastException();
     }
 
+    public static TreeMapperBuilder createBuilder() {
+        return new TreeMapperBuilder();
+    }
+
 }

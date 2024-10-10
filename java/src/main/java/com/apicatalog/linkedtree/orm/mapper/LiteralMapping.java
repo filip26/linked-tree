@@ -7,33 +7,43 @@ import com.apicatalog.linkedtree.LinkedLiteral;
 
 public class LiteralMapping {
 
-    final Map<MappingKey, LiteralMapper<?, ?>> mapping;
+    final Map<MappingKey, LiteralMapper<? extends LinkedLiteral, ?>> mapping;
 
     public LiteralMapping() {
         this.mapping = new LinkedHashMap<>();
     }
 
-    public <T extends LinkedLiteral, R>  LiteralMapping add(
-            Class<T> typeInterface, 
+    public <T extends LinkedLiteral, R> LiteralMapping add(
+            Class<T> typeInterface,
             Class<R> targetType,
             LiteralMapper<T, R> mapper) {
         mapping.put(new MappingKey(typeInterface, targetType), mapper);
-        
+
         return this;
     }
-    
-    public LiteralMapper find(Class<? extends LinkedLiteral> typeInterface, Class<?> returnType) {
-        // TODO Auto-generated method stub
-        return null;
+
+    @SuppressWarnings("unchecked")
+    public <T extends LinkedLiteral, R> LiteralMapper<LinkedLiteral, ?> find(Class<T> typeInterface, Class<R> targetType) {
+        return (LiteralMapper<LinkedLiteral, ?>) mapping.entrySet().stream()
+                .filter(e -> e.getKey().match(typeInterface, targetType))
+                .findFirst()
+                .map(Map.Entry::getValue)
+                .orElse(null);
+
     }
 
     static class MappingKey {
-        Class<? extends LinkedLiteral> literalType;
-        Class<?> targetType;
+
+        Class<? extends LinkedLiteral> literal;
+        Class<?> target;
 
         public MappingKey(Class<? extends LinkedLiteral> literalType, Class<?> targetType) {
-            this.literalType = literalType;
-            this.targetType = targetType;
+            this.literal = literalType;
+            this.target = targetType;
+        }
+
+        public boolean match(Class<? extends LinkedLiteral> typeInterface, Class<?> targetType) {
+            return literal.isAssignableFrom(typeInterface) && targetType.isAssignableFrom(target);
         }
     }
 

@@ -9,12 +9,12 @@ public class LiteralGetter implements Getter {
 
     String term;
     Class<?> returnType;
-    LiteralMapper adapter;
+    LiteralMapper<LinkedLiteral, ?> adapter;
 
     public LiteralGetter(
             String term,
             Class<?> returnType,
-            LiteralMapper adapter) {
+            LiteralMapper<LinkedLiteral, ?> adapter) {
         this.term = term;
         this.returnType = returnType;
         this.adapter = adapter;

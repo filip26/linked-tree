@@ -21,18 +21,16 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
-import com.apicatalog.linkedtree.AlumniCredential;
 import com.apicatalog.linkedtree.Base64ByteArray;
 import com.apicatalog.linkedtree.BitstringStatusListEntry;
 import com.apicatalog.linkedtree.Linkable;
 import com.apicatalog.linkedtree.LinkedFragment;
-import com.apicatalog.linkedtree.VerifiableCredential;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.jsonld.JsonLdComparison;
 import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
+import com.apicatalog.linkedtree.literal.ImmutableLiteral;
 import com.apicatalog.linkedtree.orm.mapper.TreeMapper;
-import com.apicatalog.linkedtree.orm.mapper.TreeMapperBuilder;
 import com.apicatalog.linkedtree.xsd.XsdDateTime;
 
 import jakarta.json.Json;
@@ -48,9 +46,10 @@ class AnnotationTest {
     @Test
     void credential() throws IOException, URISyntaxException, TreeBuilderError, NodeAdapterError {
 
-        TreeMapper reader = new TreeMapperBuilder()
-                .with(VerifiableCredential.TYPE, VerifiableCredential.typeAdapter())
-                .with(AlumniCredential.TYPE, AlumniCredential.typeAdapter())
+        TreeMapper reader = TreeMapper.createBuilder()
+                .with(BitstringStatusListEntry.TYPE,
+                        BitstringStatusListEntry.class,
+                        BitstringStatusListEntry::of)
 
                 // literals
                 .with(Base64ByteArray.typeAdapter())
@@ -58,8 +57,7 @@ class AnnotationTest {
 
                 .scan(AnnotatedCredential.class)
                 .scan(ExtendedAnnotatedCredential.class)
-                .scan(BitstringStatusListEntry.class)
-                
+
                 .build();
 
         JsonArray input = resource("custom/signed-vc-1.jsonld");
@@ -90,7 +88,10 @@ class AnnotationTest {
     @Test
     void controller() throws IOException, URISyntaxException, TreeBuilderError, NodeAdapterError {
 
-        TreeMapper mapper = new TreeMapperBuilder()
+        TreeMapper mapper = TreeMapper.createBuilder()
+                .map(ImmutableLiteral.class,
+                        EncodedKey.class,
+                        EncodedKeyAdapter::map)
                 .scan(Multikey.class)
                 .scan(ControllerDocument.class)
                 .build();
@@ -109,7 +110,7 @@ class AnnotationTest {
 
         assertEquals(1, doc.controller().size());
         assertEquals(URI.create("https://controllerB.example/abc"), doc.controller().iterator().next());
-        
+
         assertEquals(2, doc.authentication().size());
         var ait = doc.authentication().iterator();
         assertMethodK1(ait.next());
@@ -118,11 +119,11 @@ class AnnotationTest {
         var vmit = doc.verificationMethod().iterator();
         vmit.next();
         assertMethodK1(vmit.next());
-        
+
         assertEquals(2, doc.assertionMethod().size());
         var amit = doc.assertionMethod().iterator();
         assertMethodK1(amit.next());
-        
+
         assertEquals(0, doc.alsoKnownAs().size());
         assertEquals(0, doc.keyAgreement().size());
         assertEquals(0, doc.capabilityDelegation().size());
@@ -134,8 +135,8 @@ class AnnotationTest {
         assertEquals(URI.create("https://controller.example/123456789abcdefghi#keys-1"), method.id());
         assertTrue(method.type().contains("https://w3id.org/security#Multikey"));
         assertTrue(method instanceof Multikey);
-        assertEquals("z6MkmM42vxfqZQsv4ehtTjFFxQ4sQKS2w6WR7emozFAn5cxu", ((Multikey)method).publicKey().encodedKey());
-        assertNull(((Multikey)method).privateKey());
+        assertEquals("z6MkmM42vxfqZQsv4ehtTjFFxQ4sQKS2w6WR7emozFAn5cxu", ((Multikey) method).publicKey().encodedKey());
+        assertNull(((Multikey) method).privateKey());
     }
 
     static void assertVc(AnnotatedCredential vc) {

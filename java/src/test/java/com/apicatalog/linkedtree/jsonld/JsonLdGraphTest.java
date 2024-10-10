@@ -33,7 +33,7 @@ import jakarta.json.stream.JsonGenerator;
 class JsonLdGraphTest {
 
     static JsonLdTreeReader READER = JsonLdTreeReader
-            .create()
+            .createBuilder()
             .build();
 
     @Test

@@ -1,6 +1,7 @@
 package com.apicatalog.linkedtree.orm;
 
-public interface EncodedKey {
+@FunctionalInterface
+public interface EncodedKey  {
 
     String encodedKey();
     

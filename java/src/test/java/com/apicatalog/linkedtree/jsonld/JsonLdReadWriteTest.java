@@ -40,7 +40,7 @@ import jakarta.json.stream.JsonGenerator;
 class JsonLdReadWriteTest {
 
     static JsonLdTreeReader READER = JsonLdTreeReader
-            .create()
+            .createBuilder()
             .with(Base64ByteArray.typeAdapter())
             .build();
 

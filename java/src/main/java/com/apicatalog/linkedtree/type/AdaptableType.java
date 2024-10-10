@@ -101,5 +101,10 @@ public class AdaptableType implements Type {
         public <T> T materialize(Class<T> clazz) throws ClassCastException {
             throw new ClassCastException("A type set is empty. It cannot be cast to an unknown interface/class " + clazz);
         }
+        
+        @Override
+        public String toString() {
+            return "Type.empty()";
+        }
     };
 }
