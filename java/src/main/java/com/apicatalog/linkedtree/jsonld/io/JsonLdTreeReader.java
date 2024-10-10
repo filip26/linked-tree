@@ -28,7 +28,7 @@ import com.apicatalog.linkedtree.jsonld.JsonLdType;
 import com.apicatalog.linkedtree.lang.LangString.LanguageDirection;
 import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.link.MutableLink;
-import com.apicatalog.linkedtree.literal.adapter.TypedLiteralAdapter;
+import com.apicatalog.linkedtree.literal.adapter.DataTypeAdapter;
 import com.apicatalog.linkedtree.literal.adapter.LiteralAdapter;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 import com.apicatalog.linkedtree.traversal.NodeSelector;
@@ -436,10 +436,10 @@ public class JsonLdTreeReader extends JsonTreeReader {
                 String type,
                 Class<?> typeInterface,
                 NodeAdapter<LinkedFragment, Object> adapter) {
-            return with(type, new GenericTypeAdapter(typeInterface, adapter));
+            return with(type, new GenericTypeAdapter(type, typeInterface, adapter));
         }
 
-        public Builder with(TypedLiteralAdapter adapter) {
+        public Builder with(DataTypeAdapter adapter) {
             this.literalMap.put(adapter.datatype(), adapter);
             return this;
         }

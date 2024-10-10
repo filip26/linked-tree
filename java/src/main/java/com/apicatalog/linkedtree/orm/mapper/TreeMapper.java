@@ -7,16 +7,16 @@ import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
-import com.apicatalog.linkedtree.orm.proxy.FragmentProxy;
+import com.apicatalog.linkedtree.type.TypeAdapter;
 
 import jakarta.json.JsonArray;
 
 public class TreeMapper {
 
-    Map<Class<?>, FragmentProxy> fragmentAdapters;
+    Map<Class<?>, TypeAdapter> fragmentAdapters;
     JsonLdTreeReader reader;
 
-    TreeMapper(JsonLdTreeReader reader, Map<Class<?>, FragmentProxy> fragmentAdapters) {
+    TreeMapper(JsonLdTreeReader reader, Map<Class<?>, TypeAdapter> fragmentAdapters) {
         this.reader = reader;
         this.fragmentAdapters = fragmentAdapters;
     }

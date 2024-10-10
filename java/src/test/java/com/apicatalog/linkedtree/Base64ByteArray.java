@@ -4,7 +4,7 @@ import java.util.Base64;
 
 import com.apicatalog.linkedtree.literal.ByteArrayValue;
 import com.apicatalog.linkedtree.literal.adapter.GenericLiteralAdapter;
-import com.apicatalog.linkedtree.literal.adapter.TypedLiteralAdapter;
+import com.apicatalog.linkedtree.literal.adapter.DataTypeAdapter;
 
 public class Base64ByteArray implements ByteArrayValue {
 
@@ -55,7 +55,7 @@ public class Base64ByteArray implements ByteArrayValue {
         this.value = null;
     }
 
-    public static TypedLiteralAdapter typeAdapter() {
+    public static DataTypeAdapter typeAdapter() {
         return new GenericLiteralAdapter(TYPE, Base64ByteArray.class, Base64ByteArray::of);
     }
     

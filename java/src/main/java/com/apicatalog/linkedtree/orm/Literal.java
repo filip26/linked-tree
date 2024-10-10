@@ -5,13 +5,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.apicatalog.linkedtree.literal.adapter.TypedLiteralAdapter;
+import com.apicatalog.linkedtree.literal.adapter.DataTypeAdapter;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Literal {
 
-    Class<? extends TypedLiteralAdapter> value();
+    Class<? extends DataTypeAdapter> value();
 
     String[] params() default {};
 }

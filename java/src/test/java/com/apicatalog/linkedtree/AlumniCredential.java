@@ -22,6 +22,7 @@ public class AlumniCredential extends VerifiableCredential {
     }
 
     static final TypeAdapter ADAPTER = new GenericTypeAdapter(
+            TYPE,
             AlumniCredential.class,
             AlumniCredential::of);
 

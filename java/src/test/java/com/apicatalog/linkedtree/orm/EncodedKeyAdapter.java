@@ -4,9 +4,9 @@ import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.literal.ImmutableLiteral;
-import com.apicatalog.linkedtree.literal.adapter.TypedLiteralAdapter;
+import com.apicatalog.linkedtree.literal.adapter.DataTypeAdapter;
 
-public class EncodedKeyAdapter implements TypedLiteralAdapter {
+public class EncodedKeyAdapter implements DataTypeAdapter {
 
     @Override
     public LinkedLiteral materialize(String source, LinkedTree root) throws NodeAdapterError {

@@ -3,9 +3,9 @@ package com.apicatalog.linkedtree.xsd;
 import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
-import com.apicatalog.linkedtree.literal.adapter.TypedLiteralAdapter;
+import com.apicatalog.linkedtree.literal.adapter.DataTypeAdapter;
 
-public class XsdDateTimeAdapter implements TypedLiteralAdapter {
+public class XsdDateTimeAdapter implements DataTypeAdapter {
 
     static XsdDateTimeAdapter INSTANCE = new XsdDateTimeAdapter(); 
     

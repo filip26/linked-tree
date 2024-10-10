@@ -40,7 +40,8 @@ public class FragmentProxy implements TypeAdapter {
         return typeInterface;
     }
 
-    public String typeName() {
+    @Override
+    public String type() {
         return typeName;
     }
 }

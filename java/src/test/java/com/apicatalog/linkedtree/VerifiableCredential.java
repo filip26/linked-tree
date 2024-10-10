@@ -108,6 +108,7 @@ public class VerifiableCredential {
     }
 
     static final TypeAdapter ADAPTER = new GenericTypeAdapter(
+            TYPE,
             VerifiableCredential.class,
             VerifiableCredential::of);
 
