@@ -33,7 +33,7 @@ import jakarta.json.stream.JsonGenerator;
 @TestMethodOrder(OrderAnnotation.class)
 class GenericTreeClonerTest {
 
-    static JsonLdTreeReader READER = JsonLdTreeReader.createBuilder().build();
+    static JsonLdTreeReader READER = JsonLdTreeReader.generic();
 
     static JsonLdTreeWriter WRITER = new JsonLdTreeWriter();
 

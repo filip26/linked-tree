@@ -25,6 +25,7 @@ import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeWriter;
+import com.apicatalog.linkedtree.orm.mapper.TreeMapping;
 import com.apicatalog.linkedtree.writer.DictionaryWriter;
 
 import jakarta.json.Json;
@@ -39,10 +40,10 @@ import jakarta.json.stream.JsonGenerator;
 @TestMethodOrder(OrderAnnotation.class)
 class JsonLdReadWriteTest {
 
-    static JsonLdTreeReader READER = JsonLdTreeReader
-            .createBuilder()
-            .with(Base64ByteArray.typeAdapter())
-            .build();
+    static JsonLdTreeReader READER = JsonLdTreeReader.of(
+            TreeMapping.createBuilder()
+                    .with(Base64ByteArray.typeAdapter())
+                    .build());
 
     static JsonLdTreeWriter WRITER = new JsonLdTreeWriter();
 
@@ -91,12 +92,11 @@ class JsonLdReadWriteTest {
         }
 
         write(testCase, result, expected, null);
-        
+
         final StringWriter stringWriter = new StringWriter();
         (new DictionaryWriter(new PrintWriter(stringWriter))).print(data);
         System.out.print(stringWriter.toString());
-        
-        
+
         fail("Expected " + expected + ", but was" + result);
         return false;
     }

@@ -32,9 +32,7 @@ import jakarta.json.stream.JsonGenerator;
 @TestMethodOrder(OrderAnnotation.class)
 class JsonLdGraphTest {
 
-    static JsonLdTreeReader READER = JsonLdTreeReader
-            .createBuilder()
-            .build();
+    static JsonLdTreeReader READER = JsonLdTreeReader.generic();
 
     @Test
     void level1Graph() throws IOException, URISyntaxException, TreeBuilderError {

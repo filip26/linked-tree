@@ -35,6 +35,7 @@ import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeWriter;
 import com.apicatalog.linkedtree.literal.ByteArrayValue;
+import com.apicatalog.linkedtree.orm.mapper.TreeMapping;
 import com.apicatalog.linkedtree.xsd.XsdDateTime;
 
 import jakarta.json.Json;
@@ -49,10 +50,10 @@ import jakarta.json.stream.JsonGenerator;
 @TestMethodOrder(OrderAnnotation.class)
 class JsonLdAdapterTest {
 
-    static JsonLdTreeReader READER = JsonLdTreeReader.createBuilder()
+    static JsonLdTreeReader READER = JsonLdTreeReader.of(TreeMapping.createBuilder()
             // types
-            .with(VerifiableCredential.TYPE, VerifiableCredential.typeAdapter())
-            .with(AlumniCredential.TYPE, AlumniCredential.typeAdapter())
+            .with(VerifiableCredential.typeAdapter())
+            .with(AlumniCredential.typeAdapter())
             .with(BitstringStatusListEntry.TYPE,
                     BitstringStatusListEntry.class,
                     BitstringStatusListEntry::of)
@@ -60,8 +61,7 @@ class JsonLdAdapterTest {
             // literals
             .with(Base64ByteArray.typeAdapter())
             .with(XsdDateTime.typeAdapter())
-
-            .build();
+            .build());
 
     static JsonLdTreeWriter WRITER = new JsonLdTreeWriter();
 

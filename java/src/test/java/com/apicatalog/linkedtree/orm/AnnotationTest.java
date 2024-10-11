@@ -29,8 +29,9 @@ import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.jsonld.JsonLdComparison;
 import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
+import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.literal.ImmutableLiteral;
-import com.apicatalog.linkedtree.orm.mapper.TreeMapper;
+import com.apicatalog.linkedtree.orm.mapper.TreeMapping;
 import com.apicatalog.linkedtree.xsd.XsdDateTime;
 
 import jakarta.json.Json;
@@ -46,7 +47,7 @@ class AnnotationTest {
     @Test
     void credential() throws IOException, URISyntaxException, TreeBuilderError, NodeAdapterError {
 
-        TreeMapper reader = TreeMapper.createBuilder()
+        TreeMapping mapping = TreeMapping.createBuilder()
                 .with(BitstringStatusListEntry.TYPE,
                         BitstringStatusListEntry.class,
                         BitstringStatusListEntry::of)
@@ -62,7 +63,9 @@ class AnnotationTest {
 
         JsonArray input = resource("custom/signed-vc-1.jsonld");
 
-        AnnotatedCredential vc = reader.get(
+        JsonLdTreeReader reader = JsonLdTreeReader.of(mapping);
+        
+        AnnotatedCredential vc = reader.read(
                 AnnotatedCredential.class,
                 List.of("https://www.w3.org/2018/credentials/v1",
                         "https://w3id.org/security/data-integrity/v2"),
@@ -88,7 +91,7 @@ class AnnotationTest {
     @Test
     void controller() throws IOException, URISyntaxException, TreeBuilderError, NodeAdapterError {
 
-        TreeMapper mapper = TreeMapper.createBuilder()
+        TreeMapping mapping = TreeMapping.createBuilder()
                 .map(ImmutableLiteral.class,
                         EncodedKey.class,
                         EncodedKeyAdapter::map)
@@ -96,9 +99,11 @@ class AnnotationTest {
                 .scan(ControllerDocument.class)
                 .build();
 
+        JsonLdTreeReader reader = JsonLdTreeReader.of(mapping);
+        
         JsonArray input = resource("custom/controller-doc-2.jsonld");
 
-        ControllerDocument doc = mapper.get(
+        ControllerDocument doc = reader.read(
                 ControllerDocument.class,
                 List.of("https://www.w3.org/ns/controller/v1"),
                 input);

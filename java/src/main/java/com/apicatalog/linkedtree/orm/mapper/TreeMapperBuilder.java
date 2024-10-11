@@ -7,6 +7,7 @@ import java.lang.reflect.ParameterizedType;
 import java.net.URI;
 import java.time.Instant;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -22,7 +23,6 @@ import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.adapter.NodeAdapter;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
-import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.lang.LanguageMap;
 import com.apicatalog.linkedtree.literal.ByteArrayValue;
 import com.apicatalog.linkedtree.literal.DateTimeValue;
@@ -61,9 +61,12 @@ public class TreeMapperBuilder {
         this.typeAdapters = new LinkedHashMap<>();
         this.literalAdapters = new LinkedHashMap<>();
 
-        this.literalMapping = new LiteralMapping()
-                .add(LinkedLiteral.class, String.class,
-                        LinkedLiteral::lexicalValue)
+        this.literalMapping = new LiteralMapping();
+    }
+
+    public TreeMapperBuilder defaults() {
+        literalMapping.add(LinkedLiteral.class, String.class,
+                LinkedLiteral::lexicalValue)
                 .add(ByteArrayValue.class, byte[].class,
                         ByteArrayValue::byteArrayValue)
                 .add(IntegerValue.class, int.class,
@@ -74,10 +77,11 @@ public class TreeMapperBuilder {
                         DateTimeValue::datetime)
                 .add(DateTimeValue.class, Date.class,
                         DateTimeValue::toDate);
+        return this;
     }
 
     public TreeMapperBuilder with(TypeAdapter adapter) {
-        this.typeAdapters.put(adapter.getClass(), adapter);
+        this.typeAdapters.put(adapter.typeInterface(), adapter);
         return this;
     }
 
@@ -339,9 +343,9 @@ public class TreeMapperBuilder {
                 : prefix + uri;
     }
 
-    // TODO reverse, JsonLdTreeReader.of(Scanner)
-    public TreeMapper build() {
-        return new TreeMapper(new JsonLdTreeReader(
+    public TreeMapping build() {
+        return new TreeMapping(
+                Collections.unmodifiableMap(typeAdapters),
                 typeAdapters.values().stream()
                         .filter(adapter -> adapter.type() != null)
                         .collect(Collectors.toUnmodifiableMap(
@@ -350,8 +354,6 @@ public class TreeMapperBuilder {
                 literalAdapters.values().stream()
                         .collect(Collectors.toUnmodifiableMap(
                                 DataTypeAdapter::datatype,
-                                Function.identity()))),
-                typeAdapters);
+                                Function.identity())));
     }
-
 }

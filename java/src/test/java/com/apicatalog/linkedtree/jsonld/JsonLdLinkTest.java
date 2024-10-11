@@ -30,9 +30,7 @@ import jakarta.json.stream.JsonGenerator;
 @TestMethodOrder(OrderAnnotation.class)
 class JsonLdLinkTest {
 
-    static JsonLdTreeReader READER = JsonLdTreeReader
-            .createBuilder()
-            .build();
+    static JsonLdTreeReader READER = JsonLdTreeReader.generic();
 
     @Test
     void singleRootLink() throws IOException, URISyntaxException, TreeBuilderError {

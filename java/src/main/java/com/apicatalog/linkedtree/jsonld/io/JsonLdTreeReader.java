@@ -10,9 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedTree;
-import com.apicatalog.linkedtree.adapter.NodeAdapter;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.json.JsonDecimal;
@@ -28,11 +26,10 @@ import com.apicatalog.linkedtree.jsonld.JsonLdType;
 import com.apicatalog.linkedtree.lang.LangString.LanguageDirection;
 import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.link.MutableLink;
-import com.apicatalog.linkedtree.literal.adapter.DataTypeAdapter;
 import com.apicatalog.linkedtree.literal.adapter.LiteralAdapter;
+import com.apicatalog.linkedtree.orm.mapper.TreeMapping;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 import com.apicatalog.linkedtree.traversal.NodeSelector;
-import com.apicatalog.linkedtree.type.GenericTypeAdapter;
 import com.apicatalog.linkedtree.type.TypeAdapter;
 import com.apicatalog.linkedtree.xsd.XsdVocab;
 
@@ -46,12 +43,49 @@ import jakarta.json.JsonValue.ValueType;
 
 public class JsonLdTreeReader extends JsonTreeReader {
 
-    protected Collection<String> context;
+    static final JsonLdTreeReader GENERIC = new JsonLdTreeReader(Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
 
-    public JsonLdTreeReader(
-            Map<String, TypeAdapter> typeAdapters,
+    Collection<String> context;
+    Map<Class<?>, TypeAdapter> typeAdapters;
+
+    JsonLdTreeReader(
+            Map<Class<?>, TypeAdapter> typeAdapters,
+            Map<String, TypeAdapter> typeMap,
             Map<String, LiteralAdapter> literalAdapters) {
-        super(typeAdapters, literalAdapters);
+        super(typeMap, literalAdapters);
+        this.typeAdapters = typeAdapters;
+    }
+
+    /**
+     * A generic instance with no adapters attached.
+     * 
+     * @return a generic instance
+     */
+    public static final JsonLdTreeReader generic() {
+        return GENERIC;
+    }
+
+    public static final JsonLdTreeReader of(TreeMapping mapper) {
+        return new JsonLdTreeReader(mapper.typeAdapters(), mapper.fragmentAdapters(), mapper.literalAdapters());
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T read(Class<T> clazz, List<String> context, JsonArray expanded) throws TreeBuilderError, NodeAdapterError {
+
+        LinkedTree tree = read(context, expanded);
+        if (tree == null) {
+            return null;
+        }
+
+        if (tree.type().isAdaptableTo(clazz)) {
+            return tree.materialize(clazz);
+        }
+
+        if (typeAdapters.containsKey(clazz)) {
+            return (T) typeAdapters.get(clazz).materialize(tree.fragment());
+        }
+
+        throw new ClassCastException();
     }
 
     public LinkedTree read(JsonStructure source) throws TreeBuilderError {
@@ -401,56 +435,4 @@ public class JsonLdTreeReader extends JsonTreeReader {
         };
     }
 
-    public static final Builder createBuilder() {
-        return new Builder();
-    }
-
-    protected static final JsonLdTreeReader GENERIC = new JsonLdTreeReader(Collections.emptyMap(), Collections.emptyMap());
-
-    /**
-     * A generic instance with no adapters attached.
-     * 
-     * @return a generic instance
-     */
-    public static final JsonLdTreeReader generic() {
-        return GENERIC;
-    }
-
-    @Deprecated
-    public static class Builder {
-
-        protected Map<String, TypeAdapter> typeMap;
-        protected Map<String, LiteralAdapter> literalMap;
-
-        public Builder() {
-            this.typeMap = new LinkedHashMap<>();
-            this.literalMap = new LinkedHashMap<>();
-        }
-
-        public Builder with(String type, TypeAdapter adapter) {
-            this.typeMap.put(type, adapter);
-            return this;
-        }
-
-        public Builder with(
-                String type,
-                Class<?> typeInterface,
-                NodeAdapter<LinkedFragment, Object> adapter) {
-            return with(type, new GenericTypeAdapter(type, typeInterface, adapter));
-        }
-
-        public Builder with(DataTypeAdapter adapter) {
-            this.literalMap.put(adapter.datatype(), adapter);
-            return this;
-        }
-
-        public Builder with(String datatype, LiteralAdapter adapter) {
-            this.literalMap.put(datatype, adapter);
-            return this;
-        }
-
-        public JsonLdTreeReader build() {
-            return new JsonLdTreeReader(typeMap, literalMap);
-        }
-    }
 }

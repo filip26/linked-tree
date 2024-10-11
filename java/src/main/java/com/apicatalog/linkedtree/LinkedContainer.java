@@ -39,7 +39,7 @@ public interface LinkedContainer extends LinkedNode, Iterable<LinkedNode> {
         }
         return Collections.emptyList();
     }
-    
+
     @Override
     default boolean isContainer() {
         return true;
@@ -75,14 +75,13 @@ public interface LinkedContainer extends LinkedNode, Iterable<LinkedNode> {
         }
 
         if (single.isFragment()) {
-//FIXME            if (single.asFragment().id() != null
-//                    && single.asFragment().id().target() != null
-//                    ) {
-//                return single.ld().asFragment().id().target().type().materialize(clazz);
-//            }
+            if (single.asFragment().id() != null
+                    && single.asFragment().id().target() != null) {
+                return single.ld().asFragment().id().target().type().materialize(clazz);
+            }
             return single.asFragment().type().materialize(clazz);
         }
-        
+
         return (T) single;
     }
 
