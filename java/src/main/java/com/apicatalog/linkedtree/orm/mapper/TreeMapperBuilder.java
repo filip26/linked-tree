@@ -24,6 +24,7 @@ import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.adapter.NodeAdapter;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
+import com.apicatalog.linkedtree.json.JsonLiteral;
 import com.apicatalog.linkedtree.lang.LanguageMap;
 import com.apicatalog.linkedtree.literal.ByteArrayValue;
 import com.apicatalog.linkedtree.literal.DateTimeValue;
@@ -50,6 +51,8 @@ import com.apicatalog.linkedtree.type.GenericTypeAdapter;
 import com.apicatalog.linkedtree.type.Type;
 import com.apicatalog.linkedtree.type.TypeAdapter;
 
+import jakarta.json.JsonValue;
+
 public class TreeMapperBuilder {
 
     private static final Logger LOGGER = Logger.getLogger(TreeMapperBuilder.class.getName());
@@ -67,8 +70,9 @@ public class TreeMapperBuilder {
     }
 
     public TreeMapperBuilder defaults() {
-        literalMapping.add(LinkedLiteral.class, String.class,
-                LinkedLiteral::lexicalValue)
+        literalMapping
+                .add(LinkedLiteral.class, String.class,
+                        LinkedLiteral::lexicalValue)
                 .add(ByteArrayValue.class, byte[].class,
                         ByteArrayValue::byteArrayValue)
                 .add(IntegerValue.class, int.class,
@@ -78,7 +82,10 @@ public class TreeMapperBuilder {
                 .add(DateTimeValue.class, Instant.class,
                         DateTimeValue::datetime)
                 .add(DateTimeValue.class, Date.class,
-                        DateTimeValue::toDate);
+                        DateTimeValue::toDate)
+                .add(JsonLiteral.class, JsonValue.class,
+                        JsonLiteral::jsonValue)
+                ;
         return this;
     }
 
@@ -144,10 +151,9 @@ public class TreeMapperBuilder {
                 try {
                     Method mapMethod = Arrays.stream(mapper.value().getDeclaredMethods())
                             .filter(m -> !m.isDefault() && !m.isSynthetic())
-                            .filter(m -> "map".equals(m.getName()) 
+                            .filter(m -> "map".equals(m.getName())
                                     && m.getParameterCount() == 1
-                                    && LinkedLiteral.class.isAssignableFrom(m.getParameters()[0].getType())
-                                    )
+                                    && LinkedLiteral.class.isAssignableFrom(m.getParameters()[0].getType()))
                             .findFirst()
                             .orElseThrow(() -> new IllegalStateException("LiteralMapper.map(LinkedLiteral) method is invalid."));
 
@@ -305,6 +311,10 @@ public class TreeMapperBuilder {
             return source -> source.lexicalValue();
         }
 
+        if (type.isAssignableFrom(JsonValue.class)) {
+            return source -> ((JsonLiteral)source).jsonValue();
+        }
+
         final LiteralMapper<LinkedLiteral, ?> mapping = literalMapping.find(LinkedLiteral.class, method.getReturnType());
 
         if (mapping == null) {
@@ -378,7 +388,7 @@ public class TreeMapperBuilder {
                 : prefix + uri;
     }
 
-    public TreeMapping build() {        
+    public TreeMapping build() {
         return new TreeMapping(
                 Collections.unmodifiableMap(typeAdapters),
                 typeAdapters.values().stream()

@@ -77,7 +77,9 @@ public class JsonLdTreeReader extends JsonTreeReader {
             return null;
         }
 
-        if (tree.type().isAdaptableTo(clazz)) {
+        if (tree.type().isAdaptableTo(clazz)
+                || (tree.size() == 1 && tree.node().isFragment()
+                        && tree.node().asFragment().type().isAdaptableTo(clazz))) {
             return tree.materialize(clazz);
         }
 
@@ -85,7 +87,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
             return (T) typeAdapters.get(clazz).materialize(tree.fragment());
         }
 
-        throw new ClassCastException();
+        throw new ClassCastException("Cannot cast " + tree.type().stream().toList() + " to " + clazz);
     }
 
     public LinkedTree read(JsonStructure source) throws TreeBuilderError {
