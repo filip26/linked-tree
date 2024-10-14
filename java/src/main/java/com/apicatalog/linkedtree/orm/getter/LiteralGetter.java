@@ -22,12 +22,11 @@ public class LiteralGetter implements Getter {
 
     public Object get(LinkedFragment source) throws NodeAdapterError {
 
-        LinkedLiteral x = source.literal(term, LinkedLiteral.class);
-        if (x == null) {
+        LinkedLiteral literal = source.literal(term, LinkedLiteral.class);
+        if (literal == null) {
             return null;
         }
-
-        return adapter.map(x);
+        return adapter.map(literal);
     }
 
 }

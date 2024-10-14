@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.net.URI;
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -32,6 +33,7 @@ import com.apicatalog.linkedtree.literal.adapter.DataTypeAdapter;
 import com.apicatalog.linkedtree.orm.Fragment;
 import com.apicatalog.linkedtree.orm.Id;
 import com.apicatalog.linkedtree.orm.Literal;
+import com.apicatalog.linkedtree.orm.Mapper;
 import com.apicatalog.linkedtree.orm.Term;
 import com.apicatalog.linkedtree.orm.Vocab;
 import com.apicatalog.linkedtree.orm.getter.CollectionGetter;
@@ -128,9 +130,41 @@ public class TreeMapperBuilder {
         // scan methods
         for (final Method method : clazz.getMethods()) {
 
+            if (method.isDefault()) {
+                continue;
+            }
+
             if (method.getParameterCount() > 0) {
                 LOGGER.log(Level.WARNING, "Skipped method {0} - not a getter, has {1} paramters", new Object[] { method.toGenericString(), (Integer) method.getParameterCount() });
                 continue;
+            }
+
+            Mapper mapper = method.getAnnotation(Mapper.class);
+            if (mapper != null) {
+                try {
+                    Method mapMethod = Arrays.stream(mapper.value().getDeclaredMethods())
+                            .filter(m -> !m.isDefault() && !m.isSynthetic())
+                            .filter(m -> "map".equals(m.getName()) 
+                                    && m.getParameterCount() == 1
+                                    && LinkedLiteral.class.isAssignableFrom(m.getParameters()[0].getType())
+                                    )
+                            .findFirst()
+                            .orElseThrow(() -> new IllegalStateException("LiteralMapper.map(LinkedLiteral) method is invalid."));
+
+                    Class<?> mapperReturnType = mapMethod.getReturnType();
+
+                    if (!method.getReturnType().isAssignableFrom(mapperReturnType)) {
+                        throw new IllegalArgumentException("Provider mapper return type [" + mapperReturnType + "] does not match method return type [" + method.getReturnType() + "].");
+                    }
+
+                    literalMapping.add(
+                            (Class) mapMethod.getParameterTypes()[0],
+                            method.getReturnType(),
+                            (LiteralMapper) mapper.value().getDeclaredConstructor().newInstance());
+                } catch (InvocationTargetException | IllegalAccessException
+                        | InstantiationException | NoSuchMethodException e) {
+                    throw new NodeAdapterError(e);
+                }
             }
 
             final Vocab declaredVocab = method.getDeclaringClass().getAnnotation(Vocab.class);
@@ -178,12 +212,11 @@ public class TreeMapperBuilder {
                                 source -> source.asFragment().uri());
 
                     } else {
-                        LiteralMapper<LinkedLiteral, ?> mapper = mapper(method);
                         getter = CollectionGetter.of(
                                 termUri,
                                 method.getReturnType(),
                                 componentClass,
-                                source -> mapper.map(source.asLiteral()));
+                                source -> mapper(method).map(source.asLiteral()));
                     }
 
                     // TODO arrays
@@ -204,13 +237,10 @@ public class TreeMapperBuilder {
                     getter = new NodeGetter(termUri, LinkedContainer.class);
 
                 } else {
-
-                    LiteralMapper<LinkedLiteral, ?> mapper = mapper(method);
-
                     getter = new LiteralGetter(
                             termUri,
                             method.getReturnType(),
-                            mapper);
+                            mapper(method));
                 }
             }
 
@@ -255,13 +285,13 @@ public class TreeMapperBuilder {
                 }
             }
 
-            final LiteralMapper<LinkedLiteral, ?> mapper = literalMapping.find(adapter.typeInterface(), method.getReturnType());
+            final LiteralMapper<LinkedLiteral, ?> mapping = literalMapping.find(adapter.typeInterface(), method.getReturnType());
 
-            if (mapper == null) {
+            if (mapping == null) {
                 throw new IllegalArgumentException("Cannot find literal mapper from " + adapter.typeInterface() + " to " + method.getReturnType());
             }
 
-            return mapper;
+            return mapping;
         }
 
         Class<?> type = method.getReturnType();
@@ -275,8 +305,13 @@ public class TreeMapperBuilder {
             return source -> source.lexicalValue();
         }
 
-        // TODO generic adapters,
-        throw new ClassCastException();
+        final LiteralMapper<LinkedLiteral, ?> mapping = literalMapping.find(LinkedLiteral.class, method.getReturnType());
+
+        if (mapping == null) {
+            throw new IllegalArgumentException("Cannot find literal mapper from " + LinkedLiteral.class + " to " + method.getReturnType());
+        }
+
+        return mapping;
     }
 
     static final boolean isAbsoluteUri(final String uri, final boolean validate) {
@@ -343,7 +378,7 @@ public class TreeMapperBuilder {
                 : prefix + uri;
     }
 
-    public TreeMapping build() {
+    public TreeMapping build() {        
         return new TreeMapping(
                 Collections.unmodifiableMap(typeAdapters),
                 typeAdapters.values().stream()

@@ -50,7 +50,7 @@ import jakarta.json.stream.JsonGenerator;
 @TestMethodOrder(OrderAnnotation.class)
 class JsonLdAdapterTest {
 
-    static JsonLdTreeReader READER = JsonLdTreeReader.of(TreeMapping.createBuilder()
+    static JsonLdTreeReader READER = JsonLdTreeReader.of(TreeMapping.createGenericBuilder()
             // types
             .with(VerifiableCredential.typeAdapter())
             .with(AlumniCredential.typeAdapter())

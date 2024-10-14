@@ -13,7 +13,7 @@ public class InvalidSelector extends NodeAdapterError {
     }
 
     public InvalidSelector(String term) {
-        super();
+        super("Invalid selector term = " + term);
         this.term = term;
     }
     
