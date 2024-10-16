@@ -11,11 +11,11 @@ public record TreeMapping(
         Map<String, LiteralAdapter> literalAdapters
         ) {
 
-    public static TreeMapperBuilder createBuilder() {
-        return new TreeMapperBuilder().defaults();
+    public static TreeMappingBuilder createBuilder() {
+        return new TreeMappingBuilder().defaults();
     }
     
-    public static TreeMapperBuilder createGenericBuilder() {
-        return new TreeMapperBuilder();
+    public static TreeMappingBuilder createGenericBuilder() {
+        return new TreeMappingBuilder();
     }
 }

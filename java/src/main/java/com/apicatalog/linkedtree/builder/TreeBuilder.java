@@ -387,7 +387,7 @@ public class TreeBuilder<T> implements NodeConsumer<T> {
             String datatype,
             Collection<ProcessingInstruction> ops) {
         pi(ops);
-        nodeStack.push(new ImmutableLiteral(value, datatype, root()));
+        nodeStack.push(new ImmutableLiteral(value, datatype));
         return this;
     }
 

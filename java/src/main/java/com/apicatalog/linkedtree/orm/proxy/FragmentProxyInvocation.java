@@ -17,6 +17,8 @@ public class FragmentProxyInvocation implements InvocationHandler {
 
     static final Method LD_METHOD = Linkable.method();
 
+    final float javaVersion ;
+    
     final FragmentProxy fragmentProxy;
     final LinkedFragment source;
 
@@ -26,6 +28,7 @@ public class FragmentProxyInvocation implements InvocationHandler {
         this.fragmentProxy = fragmentProxy;
         this.source = source;
 
+        this.javaVersion = Float.parseFloat(System.getProperty("java.class.version"));
         this.cache = new HashMap<>(); // TODO LRU cache
     }
 
@@ -33,27 +36,25 @@ public class FragmentProxyInvocation implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
         if (method.isDefault()) {
-//            final float version = Float.parseFloat(System.getProperty("java.class.version"));
-//            if (version <= 52) {
-//                final Constructor<Lookup> constructor = Lookup.class.getDeclaredConstructor(Class.class);
-//                constructor.setAccessible(true);
-//
-//                final Class<?> clazz = method.getDeclaringClass();
-//                return constructor.newInstance(clazz)
-//                        .in(clazz)
-//                        .unreflectSpecial(method, clazz)
-//                        .bindTo(proxy)
-//                        .invokeWithArguments(args);
-//            } else {
-                return MethodHandles.lookup()
-                        .findSpecial(
-                                method.getDeclaringClass(),
-                                method.getName(),
-                                MethodType.methodType(method.getReturnType(), new Class[0]),
-                                method.getDeclaringClass())
+            if (javaVersion <= 52) {
+                final Constructor<Lookup> constructor = Lookup.class.getDeclaredConstructor(Class.class);
+                constructor.setAccessible(true);
+
+                final Class<?> clazz = method.getDeclaringClass();
+                return constructor.newInstance(clazz)
+                        .in(clazz)
+                        .unreflectSpecial(method, clazz)
                         .bindTo(proxy)
                         .invokeWithArguments(args);
-//            }
+            }
+            return MethodHandles.lookup()
+                    .findSpecial(
+                            method.getDeclaringClass(),
+                            method.getName(),
+                            MethodType.methodType(method.getReturnType(), new Class[0]),
+                            method.getDeclaringClass())
+                    .bindTo(proxy)
+                    .invokeWithArguments(args);
         }
 
         if (LD_METHOD.equals(method)) {
@@ -67,7 +68,7 @@ public class FragmentProxyInvocation implements InvocationHandler {
         final Getter getter = fragmentProxy.getters.get(method);
 
         if (getter != null) {
-            return cache(method, fragmentProxy.getters.get(method).get(source));
+            return cache(method, getter.get(source));
         }
         if (fragmentProxy.typeInterface.equals(method.getDeclaringClass())) {
             return cache(method, method.invoke(source, args));

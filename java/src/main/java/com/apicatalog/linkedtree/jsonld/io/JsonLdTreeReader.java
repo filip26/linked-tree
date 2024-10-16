@@ -65,8 +65,12 @@ public class JsonLdTreeReader extends JsonTreeReader {
         return GENERIC;
     }
 
-    public static final JsonLdTreeReader of(TreeMapping mapper) {
-        return new JsonLdTreeReader(mapper.typeAdapters(), mapper.fragmentAdapters(), mapper.literalAdapters());
+    public static final JsonLdTreeReader of(TreeMapping mapping) {
+        return new JsonLdTreeReader(mapping.typeAdapters(), mapping.fragmentAdapters(), mapping.literalAdapters());
+    }
+
+    public <T> T read(Class<T> clazz, JsonArray expanded) throws TreeBuilderError, NodeAdapterError {
+        return read(clazz, Collections.emptyList(), expanded);
     }
 
     @SuppressWarnings("unchecked")
@@ -262,7 +266,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
                 ops.add(pi);
             }
             pi(ops);
-            literal(JsonLiteral.of(value, root()));
+            literal(JsonLiteral.of(value));
             return;
 
         } else if (value != null &&
@@ -298,8 +302,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
                 literal(JsonDecimal.of(number,
                         datatype != null
                                 ? datatype
-                                : XsdVocab.DOUBLE,
-                        root()));
+                                : XsdVocab.DOUBLE));
                 return;
 
             } else {
@@ -312,8 +315,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
                         number,
                         datatype != null
                                 ? datatype
-                                : XsdVocab.INTEGER,
-                        root()));
+                                : XsdVocab.INTEGER));
                 return;
             }
 

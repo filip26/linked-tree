@@ -16,7 +16,6 @@ import com.apicatalog.linkedtree.lang.LanguageMap;
 import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.selector.InvalidSelector;
 import com.apicatalog.linkedtree.type.Type;
-import com.apicatalog.linkedtree.writer.DebugNodeWriter;
 import com.apicatalog.linkedtree.xsd.XsdDateTime;
 
 public interface LinkedFragment extends LinkedNode {
@@ -70,7 +69,6 @@ public interface LinkedFragment extends LinkedNode {
                 return node.asLiteral().cast(clazz);
             }
             
-            DebugNodeWriter.writeToStdOut(node.root());
             throw new InvalidSelector(term);
 
         } catch (ClassCastException e) {
@@ -90,6 +88,17 @@ public interface LinkedFragment extends LinkedNode {
         }
         return container.node();
     }
+    
+    /**
+     * A {@link LinkedTree} instance to which the {@link LinkedNode} belongs to.
+     * 
+     * Please note a tree instance can have a root if is a child node of another
+     * tree instance.
+     * 
+     * @return an instance or <code>null</code> if the node is a root
+     */
+    LinkedTree root();
+
 
 //    default <R> R single(String term, LinkableMapper<R> mapper) throws DocumentError {
 //

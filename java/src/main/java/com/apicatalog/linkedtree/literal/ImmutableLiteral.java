@@ -3,12 +3,10 @@ package com.apicatalog.linkedtree.literal;
 import java.util.Objects;
 
 import com.apicatalog.linkedtree.LinkedLiteral;
-import com.apicatalog.linkedtree.LinkedTree;
 
 public record ImmutableLiteral(
         String lexicalValue,
-        String datatype,
-        LinkedTree root) implements LinkedLiteral {
+        String datatype) implements LinkedLiteral {
 
     @Override
     public int hashCode() {

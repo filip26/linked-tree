@@ -16,6 +16,7 @@ import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
+import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
@@ -48,7 +49,8 @@ class JsonLdGraphTest {
         
         assertTrue(tree.nodes()
                 .stream()
-                .map(LinkedNode::root)
+                .map(LinkedNode::asFragment)
+                .map(LinkedFragment::root)
                 .allMatch(tree::equals));
 
         var proof = tree.fragment()
@@ -59,7 +61,8 @@ class JsonLdGraphTest {
 
         assertTrue(proof.nodes()
                 .stream()
-                .map(LinkedNode::root)
+                .map(LinkedNode::asFragment)
+                .map(LinkedFragment::root)
                 .allMatch(proof::equals));
     }
 

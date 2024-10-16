@@ -53,23 +53,23 @@ import com.apicatalog.linkedtree.type.TypeAdapter;
 
 import jakarta.json.JsonValue;
 
-public class TreeMapperBuilder {
+public class TreeMappingBuilder {
 
-    private static final Logger LOGGER = Logger.getLogger(TreeMapperBuilder.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(TreeMappingBuilder.class.getName());
 
     final Map<Class<?>, TypeAdapter> typeAdapters;
     final Map<Class<? extends DataTypeAdapter>, DataTypeAdapter> literalAdapters;
 
     final LiteralMapping literalMapping;
 
-    protected TreeMapperBuilder() {
+    protected TreeMappingBuilder() {
         this.typeAdapters = new LinkedHashMap<>();
         this.literalAdapters = new LinkedHashMap<>();
 
         this.literalMapping = new LiteralMapping();
     }
 
-    public TreeMapperBuilder defaults() {
+    public TreeMappingBuilder defaults() {
         literalMapping
                 .add(LinkedLiteral.class, String.class,
                         LinkedLiteral::lexicalValue)
@@ -89,29 +89,29 @@ public class TreeMapperBuilder {
         return this;
     }
 
-    public TreeMapperBuilder with(TypeAdapter adapter) {
+    public TreeMappingBuilder with(TypeAdapter adapter) {
         this.typeAdapters.put(adapter.typeInterface(), adapter);
         return this;
     }
 
-    public TreeMapperBuilder with(
+    public TreeMappingBuilder with(
             String type,
             Class<?> typeInterface,
             NodeAdapter<LinkedFragment, Object> adapter) {
         return with(new GenericTypeAdapter(type, typeInterface, adapter));
     }
 
-    public TreeMapperBuilder with(DataTypeAdapter adapter) {
+    public TreeMappingBuilder with(DataTypeAdapter adapter) {
         this.literalAdapters.put(adapter.getClass(), adapter);
         return this;
     }
 
-    public <T extends LinkedLiteral, R> TreeMapperBuilder map(Class<T> source, Class<R> target, LiteralMapper<T, R> mapper) {
+    public <T extends LinkedLiteral, R> TreeMappingBuilder map(Class<T> source, Class<R> target, LiteralMapper<T, R> mapper) {
         literalMapping.add(source, target, mapper);
         return this;
     }
 
-    public TreeMapperBuilder scan(final Class<?> clazz) throws NodeAdapterError {
+    public TreeMappingBuilder scan(final Class<?> clazz) throws NodeAdapterError {
 
         if (typeAdapters.containsKey(clazz)) {
             return this;
@@ -137,7 +137,7 @@ public class TreeMapperBuilder {
         // scan methods
         for (final Method method : clazz.getMethods()) {
 
-            if (method.isDefault()) {
+            if (method.isDefault() || void.class.equals(method.getReturnType())) {
                 continue;
             }
 
@@ -318,7 +318,7 @@ public class TreeMapperBuilder {
         final LiteralMapper<LinkedLiteral, ?> mapping = literalMapping.find(LinkedLiteral.class, method.getReturnType());
 
         if (mapping == null) {
-            throw new IllegalArgumentException("Cannot find literal mapper from " + LinkedLiteral.class + " to " + method.getReturnType());
+            throw new IllegalArgumentException("Cannot find literal mapper from " + LinkedLiteral.class + " to " + method.getReturnType() + ". Method " + method.getName());
         }
 
         return mapping;
@@ -400,5 +400,10 @@ public class TreeMapperBuilder {
                         .collect(Collectors.toUnmodifiableMap(
                                 DataTypeAdapter::datatype,
                                 Function.identity())));
+    }
+
+    public Collection<String> contexts(Class<?> clazz) {
+        // TODO Auto-generated method stub
+        return null;
     }
 }

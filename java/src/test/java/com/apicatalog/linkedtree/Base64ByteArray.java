@@ -12,15 +12,13 @@ public class Base64ByteArray implements ByteArrayValue {
 
     String value;
     byte[] byteArray;
-    LinkedTree root;
 
-    Base64ByteArray(String value, LinkedTree root) {
+    Base64ByteArray(String value) {
         this.value = value;
-        this.root = root;
     }
 
-    public static Base64ByteArray of(String value, LinkedTree root) {
-        return new Base64ByteArray(value, root);
+    public static Base64ByteArray of(String value, LinkedNode parent) {
+        return new Base64ByteArray(value);
     }
 
     @Override
@@ -57,10 +55,5 @@ public class Base64ByteArray implements ByteArrayValue {
 
     public static DataTypeAdapter typeAdapter() {
         return new GenericLiteralAdapter(TYPE, Base64ByteArray.class, Base64ByteArray::of);
-    }
-    
-    @Override
-    public LinkedTree root() {
-        return root;
     }
 }

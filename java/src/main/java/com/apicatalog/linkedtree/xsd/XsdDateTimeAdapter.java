@@ -1,17 +1,17 @@
 package com.apicatalog.linkedtree.xsd;
 
 import com.apicatalog.linkedtree.LinkedLiteral;
-import com.apicatalog.linkedtree.LinkedTree;
+import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.literal.adapter.DataTypeAdapter;
 
 public class XsdDateTimeAdapter implements DataTypeAdapter {
 
-    static XsdDateTimeAdapter INSTANCE = new XsdDateTimeAdapter(); 
-    
+    static XsdDateTimeAdapter INSTANCE = new XsdDateTimeAdapter();
+
     @Override
-    public LinkedLiteral materialize(String source, LinkedTree root) throws NodeAdapterError {
-        return XsdDateTime.of(source, root);
+    public LinkedLiteral materialize(String source, LinkedNode parent) throws NodeAdapterError {
+        return XsdDateTime.of(source);
     }
 
     @Override
