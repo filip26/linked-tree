@@ -1,8 +1,6 @@
 package com.apicatalog.linkedtree.orm;
 
 import com.apicatalog.linkedtree.LinkedLiteral;
-import com.apicatalog.linkedtree.LinkedNode;
-import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.literal.ImmutableLiteral;
 import com.apicatalog.linkedtree.literal.adapter.DataTypeAdapter;
@@ -10,7 +8,7 @@ import com.apicatalog.linkedtree.literal.adapter.DataTypeAdapter;
 public class EncodedKeyAdapter implements DataTypeAdapter {
 
     @Override
-    public LinkedLiteral materialize(String source, LinkedNode parent) throws NodeAdapterError {
+    public LinkedLiteral materialize(String source) throws NodeAdapterError {
         return new ImmutableLiteral(source, datatype());
     }
 

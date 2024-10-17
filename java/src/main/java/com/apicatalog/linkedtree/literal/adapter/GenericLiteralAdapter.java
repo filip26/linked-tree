@@ -1,7 +1,6 @@
 package com.apicatalog.linkedtree.literal.adapter;
 
 import com.apicatalog.linkedtree.LinkedLiteral;
-import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 
 public record GenericLiteralAdapter(
@@ -10,7 +9,7 @@ public record GenericLiteralAdapter(
         LiteralAdapter adapter) implements DataTypeAdapter {
 
     @Override
-    public LinkedLiteral materialize(String source, LinkedNode parent) throws NodeAdapterError {
-        return adapter().materialize(source, parent);
+    public LinkedLiteral materialize(String source) throws NodeAdapterError {
+        return adapter().materialize(source);
     }
 }

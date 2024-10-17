@@ -24,6 +24,11 @@ public class LiteralMapping {
 
     @SuppressWarnings("unchecked")
     public <T extends LinkedLiteral, R> LiteralMapper<LinkedLiteral, ?> find(Class<T> typeInterface, Class<R> targetType) {
+        
+        if (targetType.isAssignableFrom(typeInterface)) {
+            return literal -> literal;
+        }
+        
         return (LiteralMapper<LinkedLiteral, ?>) mapping.entrySet().stream()
                 .filter(e -> e.getKey().match(typeInterface, targetType))
                 .findFirst()

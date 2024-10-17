@@ -16,5 +16,4 @@ public interface DateTimeValue extends LinkedLiteral {
         }
         return null;
     }
-
 }

@@ -340,7 +340,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
                         ops.add(pi);
                     }
                     pi(ops);
-                    literal(adapter.materialize(valueString, root()));
+                    literal(adapter.materialize(valueString));
                     return;
                 } catch (NodeAdapterError e) {
                     throw new TreeBuilderError(e);
