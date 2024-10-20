@@ -10,9 +10,10 @@ import com.apicatalog.linkedtree.orm.mapper.LiteralMapper;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(value = { ElementType.METHOD, ElementType.ANNOTATION_TYPE })
+@Deprecated
 public @interface Mapper {
 
-     Class<? extends LiteralMapper<? extends LinkedLiteral, ?>> value();
+    Class<? extends LiteralMapper<? extends LinkedLiteral, ?>> value();
 
     String[] params() default {};
 }
