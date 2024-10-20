@@ -1,16 +1,18 @@
-package com.apicatalog.linkedtree.jsonld.io;
+package com.apicatalog.linkedtree.def;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-public class JsonLdProperty {
+public class PropertyDefinition {
 
+    protected String vocab;
     protected String name;
     protected Method method;
     
-    public JsonLdProperty(String name, Method method) {
+    public PropertyDefinition(String name, String vocab, Method method) {
         this.name = name;
         this.method = method;
+        this.vocab = vocab;
     }
     
     public Object invoke(Object object) {
@@ -30,4 +32,7 @@ public class JsonLdProperty {
         return name;
     }
 
+    public String vocab() {
+        return vocab;
+    }
 }

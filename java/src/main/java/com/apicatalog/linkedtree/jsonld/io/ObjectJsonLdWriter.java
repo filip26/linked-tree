@@ -12,19 +12,23 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import com.apicatalog.linkedtree.def.PropertyDefinition;
+import com.apicatalog.linkedtree.def.TypeDefinition;
 import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 import com.apicatalog.linkedtree.literal.adapter.DataTypeNormalizer;
 import com.apicatalog.linkedtree.orm.Context;
 import com.apicatalog.linkedtree.orm.Fragment;
+import com.apicatalog.linkedtree.orm.Id;
+import com.apicatalog.linkedtree.orm.Term;
+import com.apicatalog.linkedtree.orm.Vocab;
 
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
-import jakarta.json.JsonValue;
 
 public class ObjectJsonLdWriter {
 
-    Map<Class<?>, JsonLdFragmentType> fragments;
+    Map<Class<?>, TypeDefinition> fragments;
     Map<Class<?>, DataTypeNormalizer> datatypes;
 
     public ObjectJsonLdWriter() {
@@ -41,7 +45,7 @@ public class ObjectJsonLdWriter {
         }
 
         scanInterface(type);
-        
+
 //        for (Class<?> typeInterface : type.getInterfaces()) {
 //            scanInterface(typeInterface);
 //
@@ -56,7 +60,7 @@ public class ObjectJsonLdWriter {
             return;
         }
 
-        Context fragmentContext = typeInterface.getDeclaredAnnotation(Context.class);
+        Context fragmentContext = typeInterface.getAnnotation(Context.class);
 
         Collection<String> context = Collections.emptySet();
 
@@ -69,17 +73,43 @@ public class ObjectJsonLdWriter {
 
         }
 
-        Collection<JsonLdProperty> properties = new ArrayList<>(7);
-
-        for (Method method : typeInterface.getMethods()) {
-
-            properties.add(new JsonLdProperty(method.getName(), method));
-
+        String vocab = null;
+        Vocab fragmentVocab = typeInterface.getAnnotation(Vocab.class);
+        if (fragmentVocab != null) {
+            vocab = fragmentVocab.value();
         }
 
-        fragments.put(typeInterface, new JsonLdFragmentType(context, properties));
+        PropertyDefinition id = null;
+        Collection<PropertyDefinition> properties = new ArrayList<>(7);
+
+        for (final Method method : typeInterface.getMethods()) {
+
+            String propertyName = method.getName();
+            Term methodTerm = method.getAnnotation(Term.class);
+            if (methodTerm != null) {
+                propertyName = methodTerm.value();
+            }
+
+            String propertyVocab = vocab;
+            Vocab methodVocab = method.getAnnotation(Vocab.class);
+            if (methodVocab != null) {
+                propertyVocab = methodVocab.value();
+            }
+
+            Arrays.stream(method.getAnnotations())
+                    .forEach(System.out::println);
+
+            if (method.isAnnotationPresent(Id.class)) {
+                id = new PropertyDefinition(propertyName, propertyVocab, method);
+                
+            } else {
+                properties.add(new PropertyDefinition(propertyName, propertyVocab, method));
+            }
+        }
+
+        fragments.put(typeInterface, new TypeDefinition(context, id, properties));
     }
-    
+
     public JsonObject writeCompact(Object object) {
 
         Objects.requireNonNull(object);
@@ -92,17 +122,17 @@ public class ObjectJsonLdWriter {
 //        builder.add(JsonLdKeyword.CONTEXT, context);
 
         for (final Class<?> type : object.getClass().getInterfaces()) {
-System.out.println("X " + type);
-            JsonLdFragmentType fragmentType = fragments.get(type);
+            System.out.println("X " + type);
+            TypeDefinition fragmentType = fragments.get(type);
 
             if (fragmentType == null) {
-                //TODO log?!
+                // TODO log?!
                 continue;
             }
-            
+
             fragmentType.context().forEach(context::add);
 
-            for (final JsonLdProperty property : fragmentType.methods()) {
+            for (final PropertyDefinition property : fragmentType.methods()) {
 
                 Object value = property.invoke(object);
 
@@ -127,9 +157,26 @@ System.out.println("X " + type);
 
         }
 
-        return Json.createObjectBuilder(fragment).add(JsonLdKeyword.CONTEXT,
-                Json.createArrayBuilder(context)).build();
+        return materialize(context, fragment);
 
+    }
+    
+    JsonObject materialize(Collection<String> context, Map<String, Object> fragment) {
+        
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+
+        if (context.size() == 1) {
+            builder.add(JsonLdKeyword.CONTEXT, context.iterator().next());
+            
+        } else if (context.size() > 0) {
+            builder.add(JsonLdKeyword.CONTEXT, Json.createArrayBuilder(context));
+        }
+        
+        for (Map.Entry<String, Object> entries : fragment.entrySet()) {
+            builder.add(entries.getKey(), entries.getKey());
+        }
+        
+        return builder.build();        
     }
 
 }
