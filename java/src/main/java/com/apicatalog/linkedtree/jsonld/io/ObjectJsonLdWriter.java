@@ -137,7 +137,11 @@ public class ObjectJsonLdWriter {
                 Object value = property.invoke(object);
 
                 if (value != null) {
-                    fragment.put(property.name(), value.toString());
+//                    if (property.isTargetFragment())
+                        fragment.put(property.name(), value.toString());
+//                    } else {
+                        // get datatype adapter?
+//                    }
                 }
 //
 //                

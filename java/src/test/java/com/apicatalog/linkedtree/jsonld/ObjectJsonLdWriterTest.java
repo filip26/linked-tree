@@ -7,6 +7,7 @@ import java.time.Instant;
 
 import org.junit.jupiter.api.Test;
 
+import com.apicatalog.linkedtree.TestUtils;
 import com.apicatalog.linkedtree.jsonld.io.ObjectJsonLdWriter;
 import com.apicatalog.linkedtree.orm.GenericMultikey;
 import com.apicatalog.linkedtree.orm.Multikey;
@@ -34,7 +35,7 @@ class ObjectJsonLdWriterTest {
         
         assertNotNull(jsonld);
         
-        System.out.println(jsonld);
+        TestUtils.prettyPrint(jsonld);
     }
 
 }
