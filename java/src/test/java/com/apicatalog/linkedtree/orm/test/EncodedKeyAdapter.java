@@ -10,7 +10,7 @@ public class EncodedKeyAdapter implements DataTypeAdapter, DataTypeNormalizer<En
 
     @Override
     public LinkedLiteral materialize(String source) throws NodeAdapterError {
-        return new ImmutableLiteral(source, datatype());
+        return new GenericEncodedKey(source);
     }
 
     @Override

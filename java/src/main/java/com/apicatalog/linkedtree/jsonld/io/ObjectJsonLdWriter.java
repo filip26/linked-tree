@@ -151,7 +151,7 @@ public class ObjectJsonLdWriter {
         fragments.put(typeInterface, new TypeDefinition(name, context, id, type, properties, normalizers));
     }
 
-    public JsonObject writeCompact(Object object) {
+    public JsonObject compacted(Object object) {
 
         Objects.requireNonNull(object);
 

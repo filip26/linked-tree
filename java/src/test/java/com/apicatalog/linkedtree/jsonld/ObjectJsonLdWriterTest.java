@@ -20,10 +20,10 @@ import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.jsonld.io.ObjectJsonLdWriter;
 import com.apicatalog.linkedtree.orm.mapper.TreeMapping;
+import com.apicatalog.linkedtree.orm.test.ControllerDocument;
 import com.apicatalog.linkedtree.orm.test.GenericMultikey;
 import com.apicatalog.linkedtree.orm.test.JsonWebKey;
 import com.apicatalog.linkedtree.orm.test.Multikey;
-import com.apicatalog.linkedtree.orm.test.VerificationMethod;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
@@ -32,12 +32,14 @@ class ObjectJsonLdWriterTest {
 
     static JsonLdTreeReader READER = JsonLdTreeReader.of(
             TreeMapping.createBuilder()
+                    .scan(ControllerDocument.class)
                     .scan(JsonWebKey.class)
                     .scan(Multikey.class)
                     .build());
 
 
     static ObjectJsonLdWriter WRITER = new ObjectJsonLdWriter()
+            .scan(ControllerDocument.class)
             .scan(Multikey.class)
             .scan(JsonWebKey.class)
             ;
@@ -57,7 +59,7 @@ class ObjectJsonLdWriterTest {
                 () -> "publicKeyValue",
                 () -> "privateKeyValue");
 
-        JsonObject jsonld = writer.writeCompact(multikey);
+        JsonObject jsonld = writer.compacted(multikey);
 
         assertNotNull(jsonld);
 
@@ -68,17 +70,17 @@ class ObjectJsonLdWriterTest {
     @DisplayName("Read/Write")
     @ParameterizedTest(name = "{0}")
     @MethodSource("resources")
-    void readWrite(String name, JsonArray input, JsonObject expected) throws TreeBuilderError, NodeAdapterError {
+    void compacted(String name, JsonArray input, JsonObject expected) throws TreeBuilderError, NodeAdapterError {
 
         var tree = READER.read(input);
 
         assertNotNull(tree);
 
-        var output = WRITER.writeCompact(tree.materialize(VerificationMethod.class));
+        var output = WRITER.compacted(tree.materialize(Object.class));
 
         assertNotNull(output);
 
-        assertTrue(TestUtils.compareJson(name, tree, expected, output));
+        assertTrue(TestUtils.compareJson(name, tree, output, expected));
     }
     
     static final Stream<Object[]> resources() throws IOException, URISyntaxException {

@@ -12,7 +12,7 @@ public class PropertyDefinition {
     protected Method method;
     protected boolean targetFragment;
     protected DataTypeNormalizer<?> normalizer;
-    
+
     public PropertyDefinition(String name, String vocab, Method method, boolean targetFragment, DataTypeNormalizer<?> normalizer) {
         this.name = name;
         this.method = method;
@@ -20,18 +20,13 @@ public class PropertyDefinition {
         this.targetFragment = targetFragment;
         this.normalizer = normalizer;
     }
-    
-    public Object invoke(Object object) {
 
+    public Object invoke(Object object) {
         try {
             return method.invoke(object);
-
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new IllegalStateException(e);
         }
-
-        return null;
     }
 
     public String name() {
@@ -45,7 +40,7 @@ public class PropertyDefinition {
     public boolean isTargetFragment() {
         return targetFragment;
     }
-    
+
     public DataTypeNormalizer<?> normalizer() {
         return normalizer;
     }
