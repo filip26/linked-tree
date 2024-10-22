@@ -7,14 +7,14 @@
 
     <groupId>com.apicatalog</groupId>
     <artifactId>linked-tree</artifactId>
-    <version>0.0.13-SNAPSHOT</version>
+    <version>0.0.68-SNAPSHOT</version>
 
     <packaging>jar</packaging>
 
     <name>Linked Tree</name>
 
     <description>
-        An abstract data model to process Linked Data
+        An abstract data model to process Linked Data powered by annotations to enable seamless object mapping and processing.
     </description>
 
     <licenses>
