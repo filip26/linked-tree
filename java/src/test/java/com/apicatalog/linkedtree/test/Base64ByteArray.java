@@ -1,4 +1,4 @@
-package com.apicatalog.linkedtree;
+package com.apicatalog.linkedtree.test;
 
 import java.util.Base64;
 

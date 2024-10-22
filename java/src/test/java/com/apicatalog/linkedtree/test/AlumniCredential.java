@@ -1,5 +1,6 @@
-package com.apicatalog.linkedtree;
+package com.apicatalog.linkedtree.test;
 
+import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.selector.InvalidSelector;
 import com.apicatalog.linkedtree.type.GenericTypeAdapter;

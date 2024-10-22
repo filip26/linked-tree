@@ -4,14 +4,20 @@ import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.literal.ImmutableLiteral;
 import com.apicatalog.linkedtree.literal.adapter.DataTypeAdapter;
+import com.apicatalog.linkedtree.literal.adapter.DataTypeNormalizer;
 
-public class EncodedKeyAdapter implements DataTypeAdapter {
+public class EncodedKeyAdapter implements DataTypeAdapter, DataTypeNormalizer<EncodedKey> {
 
     @Override
     public LinkedLiteral materialize(String source) throws NodeAdapterError {
         return new ImmutableLiteral(source, datatype());
     }
 
+    @Override
+    public String normalize(EncodedKey value) {
+        return value.encodedKey();
+    }
+    
     @Override
     public String datatype() {
         return "https://w3id.org/security#multibase";

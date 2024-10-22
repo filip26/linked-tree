@@ -17,8 +17,6 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
-import com.apicatalog.linkedtree.Base64ByteArray;
-import com.apicatalog.linkedtree.BitstringStatusListEntry;
 import com.apicatalog.linkedtree.Linkable;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.TestUtils;
@@ -35,6 +33,8 @@ import com.apicatalog.linkedtree.orm.test.EncodedKeyAdapter;
 import com.apicatalog.linkedtree.orm.test.ExtendedAnnotatedCredential;
 import com.apicatalog.linkedtree.orm.test.Multikey;
 import com.apicatalog.linkedtree.orm.test.VerificationMethod;
+import com.apicatalog.linkedtree.test.Base64ByteArray;
+import com.apicatalog.linkedtree.test.BitstringStatusListEntry;
 import com.apicatalog.linkedtree.xsd.XsdDateTime;
 
 import jakarta.json.JsonArray;

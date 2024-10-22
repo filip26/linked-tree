@@ -19,22 +19,22 @@ class ObjectJsonLdWriterTest {
     @Test
     void testWriteMultikey() {
 
-        ObjectJsonLdWriter writer = new ObjectJsonLdWriter();
-        writer.scan(Multikey.class);
+        ObjectJsonLdWriter writer = new ObjectJsonLdWriter()
+                .scan(Multikey.class);
 
         Multikey multikey = new GenericMultikey(
-                URI.create("urn:example:1234"), 
-                null, 
-                URI.create("https://example.org/controller/1"), 
-                Instant.now(), 
-                Instant.now(), 
-                () -> "publicKeyValue", 
+                URI.create("urn:example:1234"),
+                null,
+                URI.create("https://example.org/controller/1"),
+                Instant.parse("2024-01-01T00:00:00Z"),
+                Instant.now(),
+                () -> "publicKeyValue",
                 () -> "privateKeyValue");
 
         JsonObject jsonld = writer.writeCompact(multikey);
-        
+
         assertNotNull(jsonld);
-        
+
         TestUtils.prettyPrint(jsonld);
     }
 

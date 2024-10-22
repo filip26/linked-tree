@@ -24,4 +24,6 @@ public @interface Term {
      * @return a vocabulary URI
      */
     String vocab() default "";
+    
+    boolean compact() default true;
 }

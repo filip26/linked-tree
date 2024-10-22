@@ -1,9 +1,11 @@
-package com.apicatalog.linkedtree;
+package com.apicatalog.linkedtree.test;
 
 import java.net.URI;
 import java.time.Instant;
 import java.util.Collection;
 
+import com.apicatalog.linkedtree.LinkedContainer;
+import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.lang.LangStringSelector;
 import com.apicatalog.linkedtree.selector.InvalidSelector;
@@ -14,6 +16,11 @@ import com.apicatalog.linkedtree.type.TypeAdapter;
 public class VerifiableCredential {
 
     public static final String TYPE = "https://www.w3.org/2018/credentials#VerifiableCredential";
+
+    static final TypeAdapter ADAPTER = new GenericTypeAdapter(
+            TYPE,
+            VerifiableCredential.class,
+            VerifiableCredential::of);
 
     protected URI id;
     protected Type type;
@@ -106,11 +113,6 @@ public class VerifiableCredential {
     public Collection<Status> status() {
         return status;
     }
-
-    static final TypeAdapter ADAPTER = new GenericTypeAdapter(
-            TYPE,
-            VerifiableCredential.class,
-            VerifiableCredential::of);
 
     public static TypeAdapter typeAdapter() {
         return ADAPTER;

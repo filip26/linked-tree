@@ -1,4 +1,4 @@
-package com.apicatalog.linkedtree;
+package com.apicatalog.linkedtree.test;
 
 import com.apicatalog.linkedtree.orm.Fragment;
 

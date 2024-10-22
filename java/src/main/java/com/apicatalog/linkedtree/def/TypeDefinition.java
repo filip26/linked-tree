@@ -1,6 +1,9 @@
 package com.apicatalog.linkedtree.def;
 
 import java.util.Collection;
+import java.util.Map;
+
+import com.apicatalog.linkedtree.literal.adapter.DataTypeNormalizer;
 
 public class TypeDefinition {
 
@@ -14,15 +17,20 @@ public class TypeDefinition {
     
     Collection<PropertyDefinition> methods;
     
+    Map<Class<?>, DataTypeNormalizer<?>> normalizers;
+    
     public TypeDefinition(
+            String name,
             Collection<String> context,
             PropertyDefinition id,
-            Collection<PropertyDefinition> methods
-            
+            Collection<PropertyDefinition> methods,
+            Map<Class<?>, DataTypeNormalizer<?>> normalizers        
             ) {
+        this.name = name;
         this.context = context;
         this.id = id;
         this.methods = methods;
+        this.normalizers = normalizers;
     }
 
     public Collection<String> context() {
@@ -43,5 +51,9 @@ public class TypeDefinition {
     
     public String vocab() {
         return vocab;
+    }
+
+    public DataTypeNormalizer normalizer(Class<?> clazz) {
+        return normalizers.get(clazz);
     }
 }

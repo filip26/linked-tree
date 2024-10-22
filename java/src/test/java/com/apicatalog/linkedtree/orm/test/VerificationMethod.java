@@ -31,7 +31,7 @@ public interface VerificationMethod {
     Instant revoked();
 
     @Literal(XsdDateTimeAdapter.class)
-    @Term("expiration")
+    @Term(value = "expiration", compact = false)
     Instant expires();
 
 }

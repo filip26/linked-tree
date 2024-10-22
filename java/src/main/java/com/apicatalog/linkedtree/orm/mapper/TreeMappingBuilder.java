@@ -84,8 +84,7 @@ public class TreeMappingBuilder {
                 .add(DateTimeValue.class, Date.class,
                         DateTimeValue::toDate)
                 .add(JsonLiteral.class, JsonValue.class,
-                        JsonLiteral::jsonValue)
-                ;
+                        JsonLiteral::jsonValue);
         return this;
     }
 
@@ -111,7 +110,7 @@ public class TreeMappingBuilder {
         return this;
     }
 
-    public TreeMappingBuilder scan(final Class<?> clazz) throws NodeAdapterError {
+    public TreeMappingBuilder scan(final Class<?> clazz) {
 
         if (typeAdapters.containsKey(clazz)) {
             return this;
@@ -167,9 +166,10 @@ public class TreeMappingBuilder {
                             (Class) mapMethod.getParameterTypes()[0],
                             method.getReturnType(),
                             (LiteralMapper) mapper.value().getDeclaredConstructor().newInstance());
+                    
                 } catch (InvocationTargetException | IllegalAccessException
                         | InstantiationException | NoSuchMethodException e) {
-                    throw new NodeAdapterError(e);
+                    throw new IllegalStateException(e);
                 }
             }
 
@@ -264,7 +264,7 @@ public class TreeMappingBuilder {
         return this;
     }
 
-    LiteralMapper<LinkedLiteral, ?> mapper(Method method) throws NodeAdapterError {
+    LiteralMapper<LinkedLiteral, ?> mapper(Method method) {
 
         Literal literal = method.getAnnotation(Literal.class);
 
@@ -286,7 +286,7 @@ public class TreeMappingBuilder {
 
                     literalAdapters.put(adapterType, adapter);
 
-                } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+                } catch (NodeAdapterError | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
                     throw new IllegalStateException(e);
                 }
             }
@@ -312,7 +312,7 @@ public class TreeMappingBuilder {
         }
 
         if (type.isAssignableFrom(JsonValue.class)) {
-            return source -> ((JsonLiteral)source).jsonValue();
+            return source -> ((JsonLiteral) source).jsonValue();
         }
 
         final LiteralMapper<LinkedLiteral, ?> mapping = literalMapping.find(LinkedLiteral.class, method.getReturnType());

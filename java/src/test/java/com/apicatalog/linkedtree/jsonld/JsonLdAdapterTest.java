@@ -20,19 +20,19 @@ import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import com.apicatalog.linkedtree.AlumniCredential;
-import com.apicatalog.linkedtree.Base64ByteArray;
-import com.apicatalog.linkedtree.BitstringStatusListEntry;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.TestUtils;
-import com.apicatalog.linkedtree.UnknownStatus;
-import com.apicatalog.linkedtree.VerifiableCredential;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeWriter;
 import com.apicatalog.linkedtree.literal.ByteArrayValue;
 import com.apicatalog.linkedtree.orm.mapper.TreeMapping;
+import com.apicatalog.linkedtree.test.AlumniCredential;
+import com.apicatalog.linkedtree.test.Base64ByteArray;
+import com.apicatalog.linkedtree.test.BitstringStatusListEntry;
+import com.apicatalog.linkedtree.test.UnknownStatus;
+import com.apicatalog.linkedtree.test.VerifiableCredential;
 import com.apicatalog.linkedtree.xsd.XsdDateTime;
 
 import jakarta.json.JsonArray;
