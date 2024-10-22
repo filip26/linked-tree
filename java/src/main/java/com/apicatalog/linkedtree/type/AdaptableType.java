@@ -50,13 +50,13 @@ public class AdaptableType implements Type {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T materialize(Class<T> clazz) throws NodeAdapterError {
+    public <T> T materialize(Class<T> clazz) throws ClassCastException, NodeAdapterError {
         return (T) type.values()
                 .stream()
                 .filter(Objects::nonNull)
                 .filter(t -> clazz.isAssignableFrom(t.typeInterface()))
                 .findFirst()
-                .orElseThrow(NodeAdapterError::new)
+                .orElseThrow(() -> new ClassCastException("Cannot find type adapter for " + clazz))
                 .materialize(fragment.id() != null
                         ? fragment.id().target()
                         : fragment);

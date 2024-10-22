@@ -25,7 +25,7 @@ public class EncodedKeyAdapter implements DataTypeAdapter, DataTypeNormalizer<En
 
     @Override
     public Class<? extends LinkedLiteral> typeInterface() {
-        return ImmutableLiteral.class;
+        return GenericEncodedKey.class;
     }
 
     public static EncodedKey map(ImmutableLiteral literal) throws NodeAdapterError {

@@ -14,6 +14,7 @@ public class TypeDefinition {
     Collection<String> context;
     
     PropertyDefinition id;
+    PropertyDefinition type;
     
     Collection<PropertyDefinition> methods;
     
@@ -23,12 +24,14 @@ public class TypeDefinition {
             String name,
             Collection<String> context,
             PropertyDefinition id,
+            PropertyDefinition type,
             Collection<PropertyDefinition> methods,
             Map<Class<?>, DataTypeNormalizer<?>> normalizers        
             ) {
         this.name = name;
         this.context = context;
         this.id = id;
+        this.type = type;
         this.methods = methods;
         this.normalizers = normalizers;
     }
@@ -45,6 +48,10 @@ public class TypeDefinition {
         return id;
     }
     
+    public PropertyDefinition type() {
+        return type;
+    }
+    
     public String name() {
         return name;
     }
@@ -53,7 +60,7 @@ public class TypeDefinition {
         return vocab;
     }
 
-    public DataTypeNormalizer normalizer(Class<?> clazz) {
+    public DataTypeNormalizer<?> normalizer(Class<?> clazz) {
         return normalizers.get(clazz);
     }
 }

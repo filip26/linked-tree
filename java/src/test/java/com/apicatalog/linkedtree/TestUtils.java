@@ -12,7 +12,6 @@ import java.util.Collections;
 import java.util.stream.Stream;
 
 import com.apicatalog.linkedtree.jsonld.JsonLdComparison;
-import com.apicatalog.linkedtree.writer.DictionaryWriter;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
@@ -36,11 +35,24 @@ public class TestUtils {
                 .sorted()
                 .map(path -> {
                     try (var reader = Json.createReader(TestUtils.class.getResourceAsStream(folder + "/" + path.getFileName().toString()))) {
-                        return new Object[] { path.getFileName().toString(), reader.readArray() };
+                        return new Object[] { path.getFileName().toString(), reader.read() };
                     }
                 });
     }
-    
+
+    public static final Stream<Object[]> resources(String folder, String inSuffix, String outSuffix) throws IOException, URISyntaxException {
+        return Files.walk(Paths.get(TestUtils.class.getResource(folder).toURI()), 1)
+                .filter(name -> name.toString().endsWith(inSuffix))
+                .sorted()
+                .map(path -> {
+                    try (var inReader = Json.createReader(TestUtils.class.getResourceAsStream(folder + "/" + path.getFileName().toString()))) {
+                        try (var outReader = Json.createReader(TestUtils.class.getResourceAsStream(folder + "/" + path.getFileName().toString().replace(inSuffix, outSuffix)))) {
+                            return new Object[] { path.getFileName().toString(), inReader.read(), outReader.read() };
+                        }
+                    }
+                });
+    }
+
     public static final boolean compareJson(final String testCase, final JsonStructure result, final JsonStructure expected) {
 
         if (JsonLdComparison.equals(expected, result)) {
@@ -53,7 +65,6 @@ public class TestUtils {
         return false;
     }
 
-
     public static final boolean compareJson(final String testCase, final LinkedNode data, final JsonStructure result, final JsonStructure expected) {
 
         if (JsonLdComparison.equals(expected, result)) {
@@ -63,7 +74,7 @@ public class TestUtils {
         print(testCase, result, expected, null);
 
         final StringWriter stringWriter = new StringWriter();
-        (new DictionaryWriter(new PrintWriter(stringWriter))).print(data);
+//        (new DictionaryWriter(new PrintWriter(stringWriter))).print(data);
         System.out.print(stringWriter.toString());
 
         fail("Expected " + expected + ", but was" + result);
