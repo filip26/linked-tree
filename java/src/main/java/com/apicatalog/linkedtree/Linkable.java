@@ -16,7 +16,6 @@ public interface Linkable {
             throw new IllegalStateException(e);
         }
     }
-    
-    LinkedNode ld();
 
+    LinkedNode ld();
 }

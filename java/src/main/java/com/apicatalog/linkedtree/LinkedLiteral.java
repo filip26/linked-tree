@@ -25,13 +25,4 @@ public interface LinkedLiteral extends LinkedNode {
      * @return an absolute IRI, never <code>null</code>
      */
     String datatype();
-
-    @SuppressWarnings("unchecked")
-    default <T> T cast(Class<T> clazz) {
-        return (T) this;
-    }
-    
-    default Linkable cast() {
-        return this;
-    }    
 }

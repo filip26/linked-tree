@@ -12,6 +12,9 @@ public interface LinkedContainer extends LinkedNode, Iterable<LinkedNode> {
     public enum ContainerType {
         OrderedList,
         UnorderedSet,
+        /**
+         * The first node is root node, the rest is unordered set
+         */
         Tree
     };
 
@@ -77,7 +80,7 @@ public interface LinkedContainer extends LinkedNode, Iterable<LinkedNode> {
         if (single.isFragment()) {
             if (single.asFragment().id() != null
                     && single.asFragment().id().target() != null) {
-                return single.ld().asFragment().id().target().type().materialize(clazz);
+                return single.asFragment().id().target().type().materialize(clazz);
             }
             return single.asFragment().type().materialize(clazz);
         }

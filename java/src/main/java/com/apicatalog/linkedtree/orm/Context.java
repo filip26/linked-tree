@@ -9,5 +9,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface Context {
     
-    String value() default "";
+    String[] value() default "";
 }

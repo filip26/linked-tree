@@ -1,4 +1,4 @@
-package com.apicatalog.linkedtree.orm;
+package com.apicatalog.linkedtree.orm.test;
 
 @FunctionalInterface
 public interface EncodedKey  {

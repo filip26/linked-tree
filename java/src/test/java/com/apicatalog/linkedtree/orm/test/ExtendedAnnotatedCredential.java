@@ -1,4 +1,8 @@
-package com.apicatalog.linkedtree.orm;
+package com.apicatalog.linkedtree.orm.test;
+
+import com.apicatalog.linkedtree.orm.Fragment;
+import com.apicatalog.linkedtree.orm.Term;
+import com.apicatalog.linkedtree.orm.Vocab;
 
 @Fragment
 @Term("AlumniCredential")

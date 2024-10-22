@@ -9,8 +9,8 @@ import org.junit.jupiter.api.Test;
 
 import com.apicatalog.linkedtree.TestUtils;
 import com.apicatalog.linkedtree.jsonld.io.ObjectJsonLdWriter;
-import com.apicatalog.linkedtree.orm.GenericMultikey;
-import com.apicatalog.linkedtree.orm.Multikey;
+import com.apicatalog.linkedtree.orm.test.GenericMultikey;
+import com.apicatalog.linkedtree.orm.test.Multikey;
 
 import jakarta.json.JsonObject;
 

@@ -205,11 +205,4 @@ public final class JsonUtils {
         return string != null && !string.isBlank();
     }
 
-    static final String strip(final String string) {
-        return string.strip();
-    }
-
-    static final String stripTrailing(final String string) {
-        return string.stripTrailing();
-    }
 }

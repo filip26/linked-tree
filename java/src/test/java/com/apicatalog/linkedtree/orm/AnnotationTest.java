@@ -27,6 +27,14 @@ import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.literal.ImmutableLiteral;
 import com.apicatalog.linkedtree.orm.mapper.TreeMapping;
+import com.apicatalog.linkedtree.orm.test.AlumniSubject;
+import com.apicatalog.linkedtree.orm.test.AnnotatedCredential;
+import com.apicatalog.linkedtree.orm.test.ControllerDocument;
+import com.apicatalog.linkedtree.orm.test.EncodedKey;
+import com.apicatalog.linkedtree.orm.test.EncodedKeyAdapter;
+import com.apicatalog.linkedtree.orm.test.ExtendedAnnotatedCredential;
+import com.apicatalog.linkedtree.orm.test.Multikey;
+import com.apicatalog.linkedtree.orm.test.VerificationMethod;
 import com.apicatalog.linkedtree.xsd.XsdDateTime;
 
 import jakarta.json.JsonArray;

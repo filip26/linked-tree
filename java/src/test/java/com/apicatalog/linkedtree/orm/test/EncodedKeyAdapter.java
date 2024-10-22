@@ -1,4 +1,4 @@
-package com.apicatalog.linkedtree.orm;
+package com.apicatalog.linkedtree.orm.test;
 
 import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;

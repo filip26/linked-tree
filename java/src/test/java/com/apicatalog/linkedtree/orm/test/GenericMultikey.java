@@ -1,4 +1,4 @@
-package com.apicatalog.linkedtree.orm;
+package com.apicatalog.linkedtree.orm.test;
 
 import java.net.URI;
 import java.time.Instant;

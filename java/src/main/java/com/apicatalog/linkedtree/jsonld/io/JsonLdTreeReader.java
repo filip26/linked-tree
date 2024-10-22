@@ -395,48 +395,39 @@ public class JsonLdTreeReader extends JsonTreeReader {
     }
 
     protected static String getLiteralDataType(JsonObject valueObject) {
-
         final JsonValue jsonType = valueObject.get(JsonLdKeyword.TYPE);
         if (jsonType == null || ValueType.NULL.equals(jsonType.getValueType())) {
             return null;
         }
-        if (!ValueType.STRING.equals(jsonType.getValueType())) {
-            throw new IllegalArgumentException();
+        if (jsonType instanceof JsonString string) {
+            return string.getString();
         }
-
-        return ((JsonString) jsonType).getString();
+        throw new IllegalArgumentException();
     }
 
     protected static String getLiteralLanguage(JsonObject valueObject) {
-
         final JsonValue jsonType = valueObject.get(JsonLdKeyword.LANGUAGE);
         if (jsonType == null || ValueType.NULL.equals(jsonType.getValueType())) {
             return null;
         }
-        if (!ValueType.STRING.equals(jsonType.getValueType())) {
-            throw new IllegalArgumentException();
+        if (jsonType instanceof JsonString string) {
+            return string.getString();
         }
-
-        return ((JsonString) jsonType).getString();
+        throw new IllegalArgumentException();
     }
 
     protected static LanguageDirection getLiteralDirection(JsonObject valueObject) {
-
         final JsonValue jsonType = valueObject.get(JsonLdKeyword.DIRECTION);
         if (jsonType == null || ValueType.NULL.equals(jsonType.getValueType())) {
             return null;
         }
-        if (!ValueType.STRING.equals(jsonType.getValueType())) {
-            throw new IllegalArgumentException();
+        if (jsonType instanceof JsonString string) {
+            return switch (string.getString().toLowerCase()) {
+            case "ltr" -> LanguageDirection.LTR;
+            case "rtl" -> LanguageDirection.RTL;
+            default -> null;
+            };
         }
-
-        final String value = ((JsonString) jsonType).getString();
-
-        return switch (value.toLowerCase()) {
-        case "ltr" -> LanguageDirection.LTR;
-        case "rtl" -> LanguageDirection.RTL;
-        default -> null;
-        };
+        throw new IllegalArgumentException();
     }
-
 }
