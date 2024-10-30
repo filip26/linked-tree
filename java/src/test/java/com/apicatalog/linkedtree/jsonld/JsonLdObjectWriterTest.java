@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.DisplayName;
@@ -14,11 +16,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import com.apicatalog.linkedtree.Linkable;
 import com.apicatalog.linkedtree.TestUtils;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
-import com.apicatalog.linkedtree.jsonld.io.ObjectJsonLdWriter;
+import com.apicatalog.linkedtree.jsonld.io.JsonLdObjectWriter;
 import com.apicatalog.linkedtree.orm.mapper.TreeMapping;
 import com.apicatalog.linkedtree.orm.test.ControllerDocument;
 import com.apicatalog.linkedtree.orm.test.GenericMultikey;
@@ -28,7 +31,7 @@ import com.apicatalog.linkedtree.orm.test.Multikey;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 
-class ObjectJsonLdWriterTest {
+class JsonLdObjectWriterTest {
 
     static JsonLdTreeReader READER = JsonLdTreeReader.of(
             TreeMapping.createBuilder()
@@ -37,17 +40,23 @@ class ObjectJsonLdWriterTest {
                     .scan(Multikey.class)
                     .build());
 
-
-    static ObjectJsonLdWriter WRITER = new ObjectJsonLdWriter()
+    static JsonLdObjectWriter WRITER = new JsonLdObjectWriter()
             .scan(ControllerDocument.class)
             .scan(Multikey.class)
-            .scan(JsonWebKey.class)
-            ;
+            .scan(JsonWebKey.class);
 
+    static Map<String, Class<?>> TYPES = new HashMap<>();
+    
+    static {
+        TYPES.put("doc-1-in.jsonld", ControllerDocument.class);
+        TYPES.put("jwk-1-in.jsonld", JsonWebKey.class);
+        TYPES.put("multikey-4-in.jsonld", Multikey.class);
+    }
+    
     @Test
     void testWriteMultikey() {
 
-        ObjectJsonLdWriter writer = new ObjectJsonLdWriter()
+        JsonLdObjectWriter writer = new JsonLdObjectWriter()
                 .scan(Multikey.class);
 
         Multikey multikey = new GenericMultikey(
@@ -65,27 +74,26 @@ class ObjectJsonLdWriterTest {
 
         TestUtils.prettyPrint(jsonld);
     }
-    
 
     @DisplayName("Read/Write")
     @ParameterizedTest(name = "{0}")
     @MethodSource("resources")
     void compacted(String name, JsonArray input, JsonObject expected) throws TreeBuilderError, NodeAdapterError {
 
-        var tree = READER.read(input);
+        Class<?> type = TYPES.get(name);
+        
+        var tree = READER.read(type, input);
 
         assertNotNull(tree);
 
-        var output = WRITER.compacted(tree.materialize(Object.class));
+        var output = WRITER.compacted(tree);
 
         assertNotNull(output);
 
-        assertTrue(TestUtils.compareJson(name, tree, output, expected));
+        assertTrue(TestUtils.compareJson(name, ((Linkable)tree).ld(), output, expected));
     }
-    
+
     static final Stream<Object[]> resources() throws IOException, URISyntaxException {
         return TestUtils.resources("jsonld/compacted", "-in.jsonld", ".jsonld");
     }
-
-
 }

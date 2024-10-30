@@ -29,17 +29,17 @@ import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
 
-public class ObjectJsonLdWriter {
+public class JsonLdObjectWriter {
 
     Map<Class<?>, TypeDefinition> fragments;
     Map<Class<?>, DataTypeNormalizer<?>> datatypes;
 
-    public ObjectJsonLdWriter() {
+    public JsonLdObjectWriter() {
         this.fragments = new HashMap<>();
         this.datatypes = new HashMap<>();
     }
 
-    public ObjectJsonLdWriter scan(Class<?> type) {
+    public JsonLdObjectWriter scan(Class<?> type) {
 
         Objects.requireNonNull(type);
 
@@ -161,6 +161,7 @@ public class ObjectJsonLdWriter {
 
         PropertyDefinition id = null;
         PropertyDefinition type = null;
+
         final Collection<String> types = new ArrayList<>(1);
 
         for (final Class<?> typeInterface : object.getClass().getInterfaces()) {
@@ -233,7 +234,6 @@ public class ObjectJsonLdWriter {
         if (property.isTargetFragment()) {
 
         } else {
-
             DataTypeNormalizer normalizer = property.normalizer();
 
             if (normalizer == null) {
