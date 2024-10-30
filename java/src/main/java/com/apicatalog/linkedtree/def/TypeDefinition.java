@@ -7,8 +7,7 @@ import com.apicatalog.linkedtree.literal.adapter.DataTypeNormalizer;
 
 public class TypeDefinition {
 
-    String name;
-    
+    Collection<String> types;
     String vocab;
     
     Collection<String> context;
@@ -21,15 +20,15 @@ public class TypeDefinition {
     Map<Class<?>, DataTypeNormalizer<?>> normalizers;
     
     public TypeDefinition(
-            String name,
+            Collection<String> types,
             Collection<String> context,
             PropertyDefinition id,
             PropertyDefinition type,
             Collection<PropertyDefinition> methods,
             Map<Class<?>, DataTypeNormalizer<?>> normalizers        
             ) {
-        this.name = name;
         this.context = context;
+        this.types = types;
         this.id = id;
         this.type = type;
         this.methods = methods;
@@ -53,7 +52,7 @@ public class TypeDefinition {
     }
     
     public String name() {
-        return name;
+        return types != null && types.size() > 0 ? types.iterator().next() : null;
     }
     
     public String vocab() {
@@ -62,5 +61,9 @@ public class TypeDefinition {
 
     public DataTypeNormalizer<?> normalizer(Class<?> clazz) {
         return normalizers.get(clazz);
+    }
+    
+    public Collection<String> types() {
+        return types;
     }
 }

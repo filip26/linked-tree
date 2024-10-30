@@ -19,8 +19,11 @@ import com.apicatalog.linkedtree.xsd.XsdDateTimeAdapter;
 @Term("VerifiableCredential")
 @Vocab("https://www.w3.org/2018/credentials#")
 @Context({
-        "https://www.w3.org/2018/credentials/v1",
-        "https://w3id.org/security/data-integrity/v2" })
+//        "https://www.w3.org/2018/credentials/v1",
+//        "https://w3id.org/security/data-integrity/v2",
+//        "https://www.w3.org/ns/credentials/examples/v1"
+    "https://www.w3.org/ns/credentials/v2"
+})
 public interface AnnotatedCredential {
 
     @Id

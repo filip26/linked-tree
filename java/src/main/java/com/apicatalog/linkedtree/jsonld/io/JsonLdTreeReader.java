@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import com.apicatalog.linkedtree.LinkedTree;
@@ -70,6 +71,9 @@ public class JsonLdTreeReader extends JsonTreeReader {
     }
 
     public <T> T read(Class<T> clazz, JsonArray expanded) throws TreeBuilderError, NodeAdapterError {
+        Objects.requireNonNull(clazz);
+        Objects.requireNonNull(expanded);
+
         return read(clazz, Collections.emptyList(), expanded);
     }
 

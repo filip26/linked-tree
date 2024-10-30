@@ -12,7 +12,9 @@ public class PropertyDefinition {
 
     protected String vocab;
     protected String name;
+    
     protected Method method;
+    
     protected boolean targetFragment;
     protected DataTypeNormalizer<?> normalizer;
 

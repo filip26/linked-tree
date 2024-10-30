@@ -10,11 +10,12 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
+import com.apicatalog.linkedtree.Linkable;
 import com.apicatalog.linkedtree.def.PropertyDefinition;
 import com.apicatalog.linkedtree.def.TypeDefinition;
 import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
+import com.apicatalog.linkedtree.lang.LanguageMap;
 import com.apicatalog.linkedtree.literal.adapter.DataTypeNormalizer;
 import com.apicatalog.linkedtree.orm.Context;
 import com.apicatalog.linkedtree.orm.Fragment;
@@ -61,28 +62,28 @@ public class JsonLdObjectWriter {
             return;
         }
 
-        Context fragmentContext = typeInterface.getAnnotation(Context.class);
+//        Context fragmentContext = typeInterface.getAnnotation(Context.class);
 
-        Collection<String> context = Collections.emptySet();
+        final Collection<String> context = new LinkedHashSet<String>(2);
+        final Collection<String> type = new LinkedHashSet<String>(2);
 
-        if (fragmentContext != null) {
-            context = Set.of(fragmentContext.value());
-        }
+        scanHierarchy(typeInterface, context, type);
 
-        String name = null;
+//        if (fragmentContext != null) {
+//            context = List.of(fragmentContext.value());
+//        }
 
-        PropertyDefinition type = null;
-
+//        String name = null;
         // process type
-        if (!fragment.generic()) {
-            name = typeInterface.getSimpleName();
-
-            Term fragmentTerm = typeInterface.getAnnotation(Term.class);
-
-            if (fragmentTerm != null) {
-                name = fragmentTerm.value();
-            }
-        }
+//        if (!fragment.generic()) {
+//            name = typeInterface.getSimpleName();
+//
+//            Term fragmentTerm = typeInterface.getAnnotation(Term.class);
+//
+//            if (fragmentTerm != null) {
+//                name = fragmentTerm.value();
+//            }
+//        }
 
         String vocab = null;
         Vocab fragmentVocab = typeInterface.getAnnotation(Vocab.class);
@@ -90,12 +91,17 @@ public class JsonLdObjectWriter {
             vocab = fragmentVocab.value();
         }
 
-        PropertyDefinition id = null;
+        PropertyDefinition idMethod = null;
+        PropertyDefinition typeMethod = null;
 
         Collection<PropertyDefinition> properties = new ArrayList<>(7);
         Map<Class<?>, DataTypeNormalizer<?>> normalizers = new HashMap<>();
 
         for (final Method method : typeInterface.getMethods()) {
+
+            if (method.isSynthetic() || method.isDefault()) {
+                continue;
+            }
 
             String propertyVocab = vocab;
             Vocab methodVocab = method.getAnnotation(Vocab.class);
@@ -136,17 +142,59 @@ public class JsonLdObjectWriter {
                     normalizer);
 
             if (method.isAnnotationPresent(Id.class)) {
-                id = def;
+                idMethod = def;
 
             } else if (Type.class.isAssignableFrom(method.getReturnType())) {
-                type = def;
+                typeMethod = def;
 
             } else {
                 properties.add(def);
             }
         }
 
-        fragments.put(typeInterface, new TypeDefinition(name, context, id, type, properties, normalizers));
+        fragments.put(typeInterface, new TypeDefinition(
+                type,
+                context,
+                idMethod,
+                typeMethod,
+                properties,
+                normalizers));
+    }
+
+    void scanHierarchy(Class<?> typeInterface, Collection<String> context, Collection<String> type) {
+        if (typeInterface == null) {
+            return;
+        }
+
+        if (typeInterface.getInterfaces() != null) {
+            for (Class<?> superType : typeInterface.getInterfaces()) {
+                scanHierarchy(superType, context, type);
+            }
+        }
+
+        Fragment fragment = typeInterface.getDeclaredAnnotation(Fragment.class);
+
+        if (fragment != null) {
+
+            Context fragmentContext = typeInterface.getAnnotation(Context.class);
+            if (fragmentContext != null) {
+                for (String ctx : fragmentContext.value()) {
+                    context.add(ctx);
+                }
+            }
+
+            // process type
+            if (!fragment.generic()) {
+                String name = typeInterface.getSimpleName();
+
+                Term fragmentTerm = typeInterface.getAnnotation(Term.class);
+
+                if (fragmentTerm != null) {
+                    name = fragmentTerm.value();
+                }
+                type.add(name);
+            }
+        }
     }
 
     public JsonObject compacted(Object object) {
@@ -162,7 +210,7 @@ public class JsonLdObjectWriter {
         PropertyDefinition id = null;
         PropertyDefinition type = null;
 
-        final Collection<String> types = new LinkedHashSet<>(1);
+        Collection<String> types = null;
 
         for (final Class<?> typeInterface : object.getClass().getInterfaces()) {
 
@@ -172,7 +220,7 @@ public class JsonLdObjectWriter {
                 continue;
             }
 
-            //TODO better, use ContextReducer, detect and resolve
+            // TODO better, use ContextReducer, detect and resolve
             if (attachContext) {
                 typeDef.context().forEach(context::add);
             }
@@ -186,7 +234,7 @@ public class JsonLdObjectWriter {
             }
 
             if (typeDef.name() != null) {
-                types.add(typeDef.name());
+                types = typeDef.types(); // TODO
             }
 
             for (final PropertyDefinition propertyDef : typeDef.methods()) {
@@ -199,6 +247,15 @@ public class JsonLdObjectWriter {
             }
         }
 
+        if (id == null && type == null && fragment.isEmpty()) {
+            // fallback
+            if (object instanceof Linkable linkable) {
+                return JsonLdTreeWriter.fragment(linkable.ld().asFragment());
+            }
+            // TODO
+            return null;
+        }
+
         Map.Entry<String, JsonValue> idEntry = null;
 
         if (id != null) {
@@ -208,19 +265,22 @@ public class JsonLdObjectWriter {
         Map.Entry<String, JsonValue> typeEntry = null;
 
         if (type != null) {
+            if (types == null || types.isEmpty()) {
 
-            if (types.isEmpty()) {
                 Type objectTypes = (Type) type.invoke(object);
+
                 if (objectTypes != null) {
-                    objectTypes.forEach(types::add);
+                    types = objectTypes.stream().toList();
                 }
             }
 
-            if (types.size() == 1) {
-                typeEntry = Map.entry(type.name(), Json.createValue(types.iterator().next()));
+            if (types != null) {
+                if (types.size() == 1) {
+                    typeEntry = Map.entry(type.name(), Json.createValue(types.iterator().next()));
 
-            } else if (types.size() > 0) {
-                typeEntry = Map.entry(type.name(), Json.createArrayBuilder(types).build());
+                } else if (types.size() > 0) {
+                    typeEntry = Map.entry(type.name(), Json.createArrayBuilder(types).build());
+                }
             }
         }
 
@@ -267,6 +327,33 @@ public class JsonLdObjectWriter {
             return value(context, propertyDef, collection.iterator().next());
         }
 
+        if (value instanceof LanguageMap langMap && langMap.size() > 0) {
+
+            if (langMap.size() == 1) {
+                return Json.createValue(langMap.first().lexicalValue());
+            }
+
+            final JsonArrayBuilder values = Json.createArrayBuilder();
+
+            langMap.values().stream()
+                    .map(langString -> {
+                        JsonObjectBuilder builder = Json.createObjectBuilder()
+                                .add(JsonLdKeyword.VALUE, langString.lexicalValue());
+
+                        if (langString.language() != null) {
+                            builder.add(JsonLdKeyword.LANGUAGE, langString.language());
+                        }
+                        if (langString.direction() != null) {
+                            builder.add(JsonLdKeyword.DIRECTION, langString.direction().toString().toLowerCase());
+                        }
+
+                        return builder;
+                    })
+                    .forEach(values::add);
+
+            return values.build();
+        }
+
         return value(context, propertyDef, value);
     }
 
@@ -285,15 +372,17 @@ public class JsonLdObjectWriter {
 
         DataTypeNormalizer normalizer = propertyDef.normalizer();
 
-        if (normalizer == null) {
-            // TODO default normalizers
+        if (normalizer != null) {
+            return Json.createValue(normalizer.normalize(object));
+
         }
 
-        if (normalizer == null) {
-            return Json.createValue(object.toString());
+        if (object instanceof Linkable linkable) {
+            return JsonLdTreeWriter.node(linkable.ld());
         }
 
-        return Json.createValue(normalizer.normalize(object));
+        // TODO default normalizers
+        return Json.createValue(object.toString());
     }
 
     JsonObject materialize(

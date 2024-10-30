@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -20,14 +19,20 @@ import com.apicatalog.linkedtree.Linkable;
 import com.apicatalog.linkedtree.TestUtils;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
-import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdObjectWriter;
+import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.orm.mapper.TreeMapping;
+import com.apicatalog.linkedtree.orm.test.AlumniSubject;
+import com.apicatalog.linkedtree.orm.test.AnnotatedCredential;
+import com.apicatalog.linkedtree.orm.test.BitstringStatusListEntry;
 import com.apicatalog.linkedtree.orm.test.ControllerDocument;
+import com.apicatalog.linkedtree.orm.test.ExtendedAnnotatedCredential;
 import com.apicatalog.linkedtree.orm.test.GenericMultikey;
+import com.apicatalog.linkedtree.orm.test.GenericSubject;
 import com.apicatalog.linkedtree.orm.test.JsonWebKey;
 import com.apicatalog.linkedtree.orm.test.Multikey;
 import com.apicatalog.linkedtree.orm.test.VerificationMethod;
+import com.apicatalog.linkedtree.test.Status;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
@@ -39,13 +44,23 @@ class JsonLdObjectWriterTest {
                     .scan(ControllerDocument.class)
                     .scan(JsonWebKey.class)
                     .scan(Multikey.class)
+                    .scan(BitstringStatusListEntry.class)
+                    .scan(ExtendedAnnotatedCredential.class)
+                    .scan(AnnotatedCredential.class)
                     .build());
 
     static JsonLdObjectWriter WRITER = new JsonLdObjectWriter()
             .scan(ControllerDocument.class)
             .scan(Multikey.class)
             .scan(JsonWebKey.class)
-            .scan(VerificationMethod.class);
+            .scan(VerificationMethod.class)
+            .scan(AnnotatedCredential.class)
+            .scan(BitstringStatusListEntry.class)
+            .scan(GenericSubject.class)
+            .scan(Status.class)
+            .scan(ExtendedAnnotatedCredential.class)
+            .scan(AlumniSubject.class)
+            ;
 
     static Map<String, Class<?>> TYPES = new HashMap<>();
 
@@ -53,6 +68,7 @@ class JsonLdObjectWriterTest {
         TYPES.put("doc-1-in.jsonld", ControllerDocument.class);
         TYPES.put("jwk-1-in.jsonld", JsonWebKey.class);
         TYPES.put("multikey-4-in.jsonld", Multikey.class);
+        TYPES.put("signed-vc-1-in.jsonld", ExtendedAnnotatedCredential.class);
     }
 
     @Test

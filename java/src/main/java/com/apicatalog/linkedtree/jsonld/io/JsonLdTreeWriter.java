@@ -31,6 +31,14 @@ import jakarta.json.stream.JsonParser;
 
 public class JsonLdTreeWriter {
 
+    public static JsonValue node(LinkedNode node) {
+        return (new JsonLdTreeWriter()).writeNode(node, Collections.emptyList());
+    }
+
+    public static JsonObject fragment(LinkedFragment fragment) {
+        return (new JsonLdTreeWriter()).writeFragment(fragment);
+    }
+
     public JsonArray write(LinkedTree tree) {
         if (tree.id() != null
                 || !tree.type().isEmpty()
