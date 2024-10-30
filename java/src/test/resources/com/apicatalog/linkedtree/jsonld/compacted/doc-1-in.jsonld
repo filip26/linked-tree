@@ -6,11 +6,13 @@
       }
     ],
     "@id": "https://controller.example/1",
-    "https://w3id.org/security#verificationMethod": [
+    "https://w3id.org/security#verificationMethod": 
+[
       {
         "https://w3id.org/security#controller": [
           {
-            "@id": "https://controller.example/123456789abcdefghi"
+            "@id": "https://controller.example/123456789abcdefghi",
+            "@type": ["https://example.com/superkey"]
           }
         ],
         "@id": "https://controller.example/123#_Qq0UL2Fq651Q0Fjd6TvnYE-faHiOpRlPVQcY_-tA4A",

@@ -27,6 +27,7 @@ import com.apicatalog.linkedtree.orm.test.ControllerDocument;
 import com.apicatalog.linkedtree.orm.test.GenericMultikey;
 import com.apicatalog.linkedtree.orm.test.JsonWebKey;
 import com.apicatalog.linkedtree.orm.test.Multikey;
+import com.apicatalog.linkedtree.orm.test.VerificationMethod;
 
 import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
@@ -43,16 +44,17 @@ class JsonLdObjectWriterTest {
     static JsonLdObjectWriter WRITER = new JsonLdObjectWriter()
             .scan(ControllerDocument.class)
             .scan(Multikey.class)
-            .scan(JsonWebKey.class);
+            .scan(JsonWebKey.class)
+            .scan(VerificationMethod.class);
 
     static Map<String, Class<?>> TYPES = new HashMap<>();
-    
+
     static {
         TYPES.put("doc-1-in.jsonld", ControllerDocument.class);
         TYPES.put("jwk-1-in.jsonld", JsonWebKey.class);
         TYPES.put("multikey-4-in.jsonld", Multikey.class);
     }
-    
+
     @Test
     void testWriteMultikey() {
 
@@ -75,13 +77,12 @@ class JsonLdObjectWriterTest {
         TestUtils.prettyPrint(jsonld);
     }
 
-    @DisplayName("Read/Write")
     @ParameterizedTest(name = "{0}")
     @MethodSource("resources")
     void compacted(String name, JsonArray input, JsonObject expected) throws TreeBuilderError, NodeAdapterError {
 
         Class<?> type = TYPES.get(name);
-        
+
         var tree = READER.read(type, input);
 
         assertNotNull(tree);
@@ -90,7 +91,7 @@ class JsonLdObjectWriterTest {
 
         assertNotNull(output);
 
-        assertTrue(TestUtils.compareJson(name, ((Linkable)tree).ld(), output, expected));
+        assertTrue(TestUtils.compareJson(name, ((Linkable) tree).ld(), output, expected));
     }
 
     static final Stream<Object[]> resources() throws IOException, URISyntaxException {

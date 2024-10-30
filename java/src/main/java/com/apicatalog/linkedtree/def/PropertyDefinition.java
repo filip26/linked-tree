@@ -2,6 +2,8 @@ package com.apicatalog.linkedtree.def;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.util.Collection;
 
 import com.apicatalog.linkedtree.literal.adapter.DataTypeNormalizer;
 import com.apicatalog.linkedtree.orm.Fragment;
@@ -24,11 +26,22 @@ public class PropertyDefinition {
         def.method = method;
         def.vocab = vocab;
         def.normalizer = normalizer;
-        def.targetFragment = method.getReturnType().isAnnotationPresent(Fragment.class);
+
+        Class<?> type = null;
+
+        if (Collection.class.isAssignableFrom(method.getReturnType())) {
+            type = (Class<?>) ((ParameterizedType) method.getGenericReturnType()).getActualTypeArguments()[0];
+        }
+
+        if (type == null) {
+            type = method.getReturnType();
+        }
+
+        def.targetFragment = type.isAnnotationPresent(Fragment.class);
 
         return def;
     }
-    
+
     public Object invoke(Object object) {
         try {
             return method.invoke(object);

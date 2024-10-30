@@ -150,17 +150,19 @@ public class JsonLdObjectWriter {
     }
 
     public JsonObject compacted(Object object) {
-
         Objects.requireNonNull(object);
 
-        final Map<String, JsonValue> fragment = new LinkedHashMap<>(7);
+        return compacted(new LinkedHashSet<>(2), object, true);
+    }
 
-        final Collection<String> context = new LinkedHashSet<>(2);
+    JsonObject compacted(final Collection<String> context, final Object object, boolean attachContext) {
+
+        final Map<String, JsonValue> fragment = new LinkedHashMap<>(7);
 
         PropertyDefinition id = null;
         PropertyDefinition type = null;
 
-        final Collection<String> types = new ArrayList<>(1);
+        final Collection<String> types = new LinkedHashSet<>(1);
 
         for (final Class<?> typeInterface : object.getClass().getInterfaces()) {
 
@@ -170,7 +172,10 @@ public class JsonLdObjectWriter {
                 continue;
             }
 
-            typeDef.context().forEach(context::add);
+            //TODO better, use ContextReducer, detect and resolve
+            if (attachContext) {
+                typeDef.context().forEach(context::add);
+            }
 
             if (typeDef.id() != null && id == null) {
                 id = typeDef.id();
@@ -186,7 +191,7 @@ public class JsonLdObjectWriter {
 
             for (final PropertyDefinition propertyDef : typeDef.methods()) {
 
-                final JsonValue value = property(propertyDef, object, fragment);
+                final JsonValue value = property(context, propertyDef, object, fragment);
 
                 if (value != null) {
                     fragment.put(propertyDef.name(), value);
@@ -197,12 +202,20 @@ public class JsonLdObjectWriter {
         Map.Entry<String, JsonValue> idEntry = null;
 
         if (id != null) {
-            idEntry = Map.entry(id.name(), property(id, object, fragment));
+            idEntry = Map.entry(id.name(), property(context, id, object, fragment));
         }
 
         Map.Entry<String, JsonValue> typeEntry = null;
 
         if (type != null) {
+
+            if (types.isEmpty()) {
+                Type objectTypes = (Type) type.invoke(object);
+                if (objectTypes != null) {
+                    objectTypes.forEach(types::add);
+                }
+            }
+
             if (types.size() == 1) {
                 typeEntry = Map.entry(type.name(), Json.createValue(types.iterator().next()));
 
@@ -212,13 +225,13 @@ public class JsonLdObjectWriter {
         }
 
         return materialize(
-                context,
+                attachContext ? context : Collections.emptyList(),
                 idEntry,
                 typeEntry,
                 fragment);
     }
 
-    JsonValue property(PropertyDefinition propertyDef, Object object, Map<String, JsonValue> fragment) {
+    JsonValue property(Collection<String> context, PropertyDefinition propertyDef, Object object, Map<String, JsonValue> fragment) {
 
         Object value = propertyDef.invoke(object);
 
@@ -228,15 +241,13 @@ public class JsonLdObjectWriter {
 
         if (value instanceof JsonValue jsonValue) {
             if (ValueType.ARRAY.equals(jsonValue.getValueType())
-                    && jsonValue.asJsonArray().isEmpty() 
-                    ) {
+                    && jsonValue.asJsonArray().isEmpty()) {
                 return null;
             }
             if (ValueType.OBJECT.equals(jsonValue.getValueType())
-                    && jsonValue.asJsonObject().isEmpty() 
-                    ) {
+                    && jsonValue.asJsonObject().isEmpty()) {
                 return null;
-            }            
+            }
             return jsonValue;
         }
 
@@ -248,40 +259,41 @@ public class JsonLdObjectWriter {
                 JsonArrayBuilder array = Json.createArrayBuilder();
 
                 for (Object item : collection) {
-                    array.add(item(propertyDef, item));
+                    array.add(item(context, propertyDef, item));
                 }
 
                 return array.build();
             }
-            return value(propertyDef, collection.iterator().next());
+            return value(context, propertyDef, collection.iterator().next());
         }
 
-        return value(propertyDef, value);
+        return value(context, propertyDef, value);
     }
 
-    JsonValue item(PropertyDefinition propertyDef, Object object) {
+    JsonValue item(Collection<String> context, PropertyDefinition propertyDef, Object object) {
         if (object == null) {
             return JsonValue.NULL;
         }
-        return value(propertyDef, object);
+        return value(context, propertyDef, object);
     }
 
-    JsonValue value(PropertyDefinition propertyDef, Object object) {
+    JsonValue value(Collection<String> context, PropertyDefinition propertyDef, Object object) {
+
         if (propertyDef.isTargetFragment()) {
-
-        } else {
-            DataTypeNormalizer normalizer = propertyDef.normalizer();
-
-            if (normalizer == null) {
-                // TODO default normalizers
-            }
-
-            if (normalizer == null) {
-                return Json.createValue(object.toString());
-            }
-            return Json.createValue(normalizer.normalize(object));
+            return compacted(context, object, false);
         }
-        return null;
+
+        DataTypeNormalizer normalizer = propertyDef.normalizer();
+
+        if (normalizer == null) {
+            // TODO default normalizers
+        }
+
+        if (normalizer == null) {
+            return Json.createValue(object.toString());
+        }
+
+        return Json.createValue(normalizer.normalize(object));
     }
 
     JsonObject materialize(
