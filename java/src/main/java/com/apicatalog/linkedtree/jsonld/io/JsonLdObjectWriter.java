@@ -25,9 +25,11 @@ import com.apicatalog.linkedtree.orm.Vocab;
 import com.apicatalog.linkedtree.type.Type;
 
 import jakarta.json.Json;
+import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
+import jakarta.json.JsonValue.ValueType;
 
 public class JsonLdObjectWriter {
 
@@ -112,12 +114,9 @@ public class JsonLdObjectWriter {
                 }
             }
 
-            boolean targetFragment = method.getReturnType().isAnnotationPresent(Fragment.class);
-
             Literal literal = method.getAnnotation(Literal.class);
 
             DataTypeNormalizer<?> normalizer = normalizers.get(method.getReturnType());
-            ;
 
             if (literal != null && normalizer == null
                     && DataTypeNormalizer.class.isAssignableFrom(literal.value())) {
@@ -130,11 +129,10 @@ public class JsonLdObjectWriter {
                 }
             }
 
-            PropertyDefinition def = new PropertyDefinition(
+            final PropertyDefinition def = PropertyDefinition.of(
                     propertyName,
                     propertyVocab,
                     method,
-                    targetFragment,
                     normalizer);
 
             if (method.isAnnotationPresent(Id.class)) {
@@ -186,12 +184,12 @@ public class JsonLdObjectWriter {
                 types.add(typeDef.name());
             }
 
-            for (final PropertyDefinition property : typeDef.methods()) {
+            for (final PropertyDefinition propertyDef : typeDef.methods()) {
 
-                final JsonValue value = property(property, object, fragment);
+                final JsonValue value = property(propertyDef, object, fragment);
 
                 if (value != null) {
-                    fragment.put(property.name(), value);
+                    fragment.put(propertyDef.name(), value);
                 }
             }
         }
@@ -220,30 +218,68 @@ public class JsonLdObjectWriter {
                 fragment);
     }
 
-    JsonValue property(PropertyDefinition property, Object object, Map<String, JsonValue> fragment) {
-        Object value = property.invoke(object);
+    JsonValue property(PropertyDefinition propertyDef, Object object, Map<String, JsonValue> fragment) {
+
+        Object value = propertyDef.invoke(object);
 
         if (value == null) {
             return null;
         }
 
         if (value instanceof JsonValue jsonValue) {
+            if (ValueType.ARRAY.equals(jsonValue.getValueType())
+                    && jsonValue.asJsonArray().isEmpty() 
+                    ) {
+                return null;
+            }
+            if (ValueType.OBJECT.equals(jsonValue.getValueType())
+                    && jsonValue.asJsonObject().isEmpty() 
+                    ) {
+                return null;
+            }            
             return jsonValue;
         }
 
-        if (property.isTargetFragment()) {
+        if (value instanceof Collection collection) {
+            if (collection.isEmpty()) {
+                return null;
+            }
+            if (collection.size() > 1) {
+                JsonArrayBuilder array = Json.createArrayBuilder();
+
+                for (Object item : collection) {
+                    array.add(item(propertyDef, item));
+                }
+
+                return array.build();
+            }
+            return value(propertyDef, collection.iterator().next());
+        }
+
+        return value(propertyDef, value);
+    }
+
+    JsonValue item(PropertyDefinition propertyDef, Object object) {
+        if (object == null) {
+            return JsonValue.NULL;
+        }
+        return value(propertyDef, object);
+    }
+
+    JsonValue value(PropertyDefinition propertyDef, Object object) {
+        if (propertyDef.isTargetFragment()) {
 
         } else {
-            DataTypeNormalizer normalizer = property.normalizer();
+            DataTypeNormalizer normalizer = propertyDef.normalizer();
 
             if (normalizer == null) {
                 // TODO default normalizers
             }
 
             if (normalizer == null) {
-                return Json.createValue(value.toString());
+                return Json.createValue(object.toString());
             }
-            return Json.createValue(normalizer.normalize(value));
+            return Json.createValue(normalizer.normalize(object));
         }
         return null;
     }

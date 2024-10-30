@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import com.apicatalog.linkedtree.literal.adapter.DataTypeNormalizer;
+import com.apicatalog.linkedtree.orm.Fragment;
 
 public class PropertyDefinition {
 
@@ -13,14 +14,21 @@ public class PropertyDefinition {
     protected boolean targetFragment;
     protected DataTypeNormalizer<?> normalizer;
 
-    public PropertyDefinition(String name, String vocab, Method method, boolean targetFragment, DataTypeNormalizer<?> normalizer) {
-        this.name = name;
-        this.method = method;
-        this.vocab = vocab;
-        this.targetFragment = targetFragment;
-        this.normalizer = normalizer;
+    PropertyDefinition() {
     }
 
+    public static PropertyDefinition of(String name, String vocab, Method method, DataTypeNormalizer<?> normalizer) {
+
+        var def = new PropertyDefinition();
+        def.name = name;
+        def.method = method;
+        def.vocab = vocab;
+        def.normalizer = normalizer;
+        def.targetFragment = method.getReturnType().isAnnotationPresent(Fragment.class);
+
+        return def;
+    }
+    
     public Object invoke(Object object) {
         try {
             return method.invoke(object);
