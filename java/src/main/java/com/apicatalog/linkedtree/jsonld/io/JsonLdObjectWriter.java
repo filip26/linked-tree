@@ -10,6 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.logging.Logger;
 
 import com.apicatalog.linkedtree.Linkable;
 import com.apicatalog.linkedtree.def.PropertyDefinition;
@@ -23,6 +24,8 @@ import com.apicatalog.linkedtree.orm.Id;
 import com.apicatalog.linkedtree.orm.Literal;
 import com.apicatalog.linkedtree.orm.Term;
 import com.apicatalog.linkedtree.orm.Vocab;
+import com.apicatalog.linkedtree.orm.context.ContextReducer;
+import com.apicatalog.linkedtree.orm.getter.GetterMethod;
 import com.apicatalog.linkedtree.type.Type;
 
 import jakarta.json.Json;
@@ -34,14 +37,23 @@ import jakarta.json.JsonValue.ValueType;
 
 public class JsonLdObjectWriter {
 
+    private static final Logger LOGGER = Logger.getLogger(JsonLdObjectWriter.class.getName());
+    
+    ContextReducer contextReducer;
+    
     Map<Class<?>, TypeDefinition> fragments;
     Map<Class<?>, DataTypeNormalizer<?>> datatypes;
 
     public JsonLdObjectWriter() {
+        this.contextReducer = new ContextReducer();
         this.fragments = new HashMap<>();
         this.datatypes = new HashMap<>();
     }
 
+    public ContextReducer contextReducer() {
+        return contextReducer;
+    }
+    
     public JsonLdObjectWriter scan(Class<?> type) {
 
         Objects.requireNonNull(type);
@@ -62,28 +74,10 @@ public class JsonLdObjectWriter {
             return;
         }
 
-//        Context fragmentContext = typeInterface.getAnnotation(Context.class);
-
         final Collection<String> context = new LinkedHashSet<String>(2);
         final Collection<String> type = new LinkedHashSet<String>(2);
 
         scanHierarchy(typeInterface, context, type);
-
-//        if (fragmentContext != null) {
-//            context = List.of(fragmentContext.value());
-//        }
-
-//        String name = null;
-        // process type
-//        if (!fragment.generic()) {
-//            name = typeInterface.getSimpleName();
-//
-//            Term fragmentTerm = typeInterface.getAnnotation(Term.class);
-//
-//            if (fragmentTerm != null) {
-//                name = fragmentTerm.value();
-//            }
-//        }
 
         String vocab = null;
         Vocab fragmentVocab = typeInterface.getAnnotation(Vocab.class);
@@ -97,11 +91,7 @@ public class JsonLdObjectWriter {
         Collection<PropertyDefinition> properties = new ArrayList<>(7);
         Map<Class<?>, DataTypeNormalizer<?>> normalizers = new HashMap<>();
 
-        for (final Method method : typeInterface.getMethods()) {
-
-            if (method.isSynthetic() || method.isDefault()) {
-                continue;
-            }
+        for (final Method method : GetterMethod.filter(typeInterface)) {
 
             String propertyVocab = vocab;
             Vocab methodVocab = method.getAnnotation(Vocab.class);
@@ -220,10 +210,7 @@ public class JsonLdObjectWriter {
                 continue;
             }
 
-            // TODO better, use ContextReducer, detect and resolve
-            if (attachContext) {
-                typeDef.context().forEach(context::add);
-            }
+            typeDef.context().forEach(context::add);
 
             if (typeDef.id() != null && id == null) {
                 id = typeDef.id();
@@ -393,11 +380,13 @@ public class JsonLdObjectWriter {
 
         JsonObjectBuilder builder = Json.createObjectBuilder();
 
-        if (context.size() == 1) {
+        Collection<String> reduced = contextReducer.reduce(context);
+        
+        if (reduced.size() == 1) {
             builder.add(JsonLdKeyword.CONTEXT, context.iterator().next());
 
-        } else if (context.size() > 0) {
-            builder.add(JsonLdKeyword.CONTEXT, Json.createArrayBuilder(context));
+        } else if (reduced.size() > 1) {            
+            builder.add(JsonLdKeyword.CONTEXT, Json.createArrayBuilder(reduced));
         }
 
         if (id != null) {
@@ -414,5 +403,4 @@ public class JsonLdObjectWriter {
 
         return builder.build();
     }
-
 }

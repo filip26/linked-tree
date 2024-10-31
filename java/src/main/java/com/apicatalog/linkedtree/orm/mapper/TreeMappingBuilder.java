@@ -40,6 +40,7 @@ import com.apicatalog.linkedtree.orm.Vocab;
 import com.apicatalog.linkedtree.orm.getter.CollectionGetter;
 import com.apicatalog.linkedtree.orm.getter.FragmentGetter;
 import com.apicatalog.linkedtree.orm.getter.Getter;
+import com.apicatalog.linkedtree.orm.getter.GetterMethod;
 import com.apicatalog.linkedtree.orm.getter.IdGetter;
 import com.apicatalog.linkedtree.orm.getter.LangMapGetter;
 import com.apicatalog.linkedtree.orm.getter.LiteralGetter;
@@ -110,40 +111,31 @@ public class TreeMappingBuilder {
         return this;
     }
 
-    public TreeMappingBuilder scan(final Class<?> clazz) {
+    public TreeMappingBuilder scan(final Class<?> typeInterface) {
 
-        if (typeAdapters.containsKey(clazz)) {
+        if (typeAdapters.containsKey(typeInterface)) {
             return this;
         }
 
-        final Fragment fragment = clazz.getAnnotation(Fragment.class);
+        final Fragment fragment = typeInterface.getAnnotation(Fragment.class);
 
         if (fragment == null) {
-            LOGGER.log(Level.WARNING, "Skipped class {0} - not annotated as @Fragment", clazz);
+            LOGGER.log(Level.WARNING, "Skipped class {0} - not annotated as @Fragment", typeInterface);
             return this;
         }
 
-        final Vocab vocab = clazz.getAnnotation(Vocab.class);
+        final Vocab vocab = typeInterface.getAnnotation(Vocab.class);
 
         String typeName = null;
 
         if (!fragment.generic()) {
-            typeName = expand(vocab, clazz.getAnnotation(Term.class), clazz.getSimpleName());
+            typeName = expand(vocab, typeInterface.getAnnotation(Term.class), typeInterface.getSimpleName());
         }
 
-        final Map<Method, Getter> getters = new HashMap<>(clazz.getMethods().length);
+        final Map<Method, Getter> getters = new HashMap<>(typeInterface.getMethods().length);
 
         // scan methods
-        for (final Method method : clazz.getMethods()) {
-
-            if (method.isDefault() || void.class.equals(method.getReturnType())) {
-                continue;
-            }
-
-            if (method.getParameterCount() > 0) {
-                LOGGER.log(Level.WARNING, "Skipped method {0} - not a getter, has {1} paramters", new Object[] { method.toGenericString(), (Integer) method.getParameterCount() });
-                continue;
-            }
+        for (final Method method : GetterMethod.filter(typeInterface)) {
 
             Mapper mapper = method.getAnnotation(Mapper.class);
             if (mapper != null) {
@@ -258,8 +250,8 @@ public class TreeMappingBuilder {
 
         }
 
-        final FragmentProxy proxy = new FragmentProxy(clazz, typeName, getters);
-        typeAdapters.put(clazz, proxy);
+        final FragmentProxy proxy = new FragmentProxy(typeInterface, typeName, getters);
+        typeAdapters.put(typeInterface, proxy);
 
         return this;
     }

@@ -8,6 +8,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -59,8 +60,14 @@ class JsonLdObjectWriterTest {
             .scan(GenericSubject.class)
             .scan(Status.class)
             .scan(ExtendedAnnotatedCredential.class)
-            .scan(AlumniSubject.class)
-            ;
+            .scan(AlumniSubject.class);
+
+    static {
+        WRITER.contextReducer()
+                .define("https://www.w3.org/ns/controller/v1",
+                        List.of("https://w3id.org/security/jwk/v1",
+                                "https://w3id.org/security/multikey/v1"));
+    }
 
     static Map<String, Class<?>> TYPES = new HashMap<>();
 
