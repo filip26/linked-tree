@@ -100,7 +100,7 @@ public class DebugNodeWriter {
 
         } else if (node.isLiteral()) {
             print("class: ")
-                    .println(node.asLiteral().cast().getClass().getSimpleName());
+                    .println(node.asLiteral().getClass().getSimpleName());
             printLiteral(node.asLiteral(), ops);
         }
     }

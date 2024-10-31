@@ -4,10 +4,9 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
-import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.literal.DoubleValue;
 import com.apicatalog.linkedtree.literal.NumericValue;
-import com.apicatalog.linkedtree.xsd.XsdConstants;
+import com.apicatalog.linkedtree.xsd.XsdVocab;
 
 public class JsonDecimal implements NumericValue, DoubleValue, JsonNode {
 
@@ -19,21 +18,19 @@ public class JsonDecimal implements NumericValue, DoubleValue, JsonNode {
 
     protected jakarta.json.JsonNumber jsonValue;
     protected String datatype;
-    protected LinkedTree root;
 
     protected JsonDecimal() {
         // protected
     }
 
-    public static JsonDecimal of(jakarta.json.JsonNumber jsonNumber, LinkedTree root) {
-        return of(jsonNumber, XsdConstants.DOUBLE, root);
+    public static JsonDecimal of(jakarta.json.JsonNumber jsonNumber) {
+        return of(jsonNumber, XsdVocab.DOUBLE);
     }
 
-    public static JsonDecimal of(jakarta.json.JsonNumber jsonNumber, String datatype, LinkedTree root) {
+    public static JsonDecimal of(jakarta.json.JsonNumber jsonNumber, String datatype) {
         final JsonDecimal number = new JsonDecimal();
         number.jsonValue = jsonNumber;
         number.datatype = datatype;
-        number.root = root;
         return number;
     }
 
@@ -58,15 +55,10 @@ public class JsonDecimal implements NumericValue, DoubleValue, JsonNode {
     }
 
     @Override
-    public LinkedTree root() {
-        return root;
-    }
-
-    @Override
     public String toString() {
         return "JsonDecimal [json=" + jsonValue + ", datatype=" + datatype + "]";
     }
-    
+
     @Override
     public jakarta.json.JsonNumber jsonValue() {
         return jsonValue;

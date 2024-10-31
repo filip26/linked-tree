@@ -1,8 +1,7 @@
 package com.apicatalog.linkedtree.json;
 
 import com.apicatalog.linkedtree.LinkedLiteral;
-import com.apicatalog.linkedtree.LinkedTree;
-import com.apicatalog.linkedtree.rdf.RdfConstants;
+import com.apicatalog.linkedtree.rdf.RdfVocab;
 
 import jakarta.json.JsonValue;
 
@@ -10,17 +9,15 @@ public class JsonLiteral implements LinkedLiteral, JsonNode {
 
     protected JsonValue jsonValue;
     protected String value;
-    protected LinkedTree root;
 
     protected JsonLiteral() {
         // protected
     }
 
-    public static JsonLiteral of(JsonValue value, LinkedTree root) {
+    public static JsonLiteral of(JsonValue value) {
         final JsonLiteral literal = new JsonLiteral();
         literal.jsonValue = value;
         literal.value = null;
-        literal.root = root;
         return literal;
     }
 
@@ -41,12 +38,7 @@ public class JsonLiteral implements LinkedLiteral, JsonNode {
 
     @Override
     public String datatype() {
-        return RdfConstants.JSON;
-    }
-
-    @Override
-    public LinkedTree root() {
-        return root;
+        return RdfVocab.JSON;
     }
 
     @Override

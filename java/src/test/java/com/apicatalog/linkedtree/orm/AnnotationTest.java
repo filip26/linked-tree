@@ -5,16 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,35 +19,50 @@ import org.junit.jupiter.api.Test;
 
 import com.apicatalog.linkedtree.Linkable;
 import com.apicatalog.linkedtree.LinkedFragment;
+import com.apicatalog.linkedtree.TestUtils;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
-import com.apicatalog.linkedtree.jsonld.JsonLdComparison;
-import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
-import com.apicatalog.linkedtree.orm.mapper.TreeMapper;
-import com.apicatalog.linkedtree.orm.mapper.TreeMapperBuilder;
+import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
+import com.apicatalog.linkedtree.literal.ImmutableLiteral;
+import com.apicatalog.linkedtree.orm.mapper.TreeMapping;
+import com.apicatalog.linkedtree.orm.test.AlumniSubject;
+import com.apicatalog.linkedtree.orm.test.AnnotatedCredential;
+import com.apicatalog.linkedtree.orm.test.ControllerDocument;
+import com.apicatalog.linkedtree.orm.test.EncodedKey;
+import com.apicatalog.linkedtree.orm.test.EncodedKeyAdapter;
+import com.apicatalog.linkedtree.orm.test.ExtendedAnnotatedCredential;
+import com.apicatalog.linkedtree.orm.test.Multikey;
+import com.apicatalog.linkedtree.orm.test.VerificationMethod;
+import com.apicatalog.linkedtree.test.Base64ByteArray;
+import com.apicatalog.linkedtree.test.BitstringStatusListEntry;
+import com.apicatalog.linkedtree.xsd.XsdDateTime;
 
-import jakarta.json.Json;
 import jakarta.json.JsonArray;
-import jakarta.json.JsonStructure;
-import jakarta.json.JsonValue;
-import jakarta.json.JsonWriter;
-import jakarta.json.JsonWriterFactory;
-import jakarta.json.stream.JsonGenerator;
 
 class AnnotationTest {
 
     @Test
     void credential() throws IOException, URISyntaxException, TreeBuilderError, NodeAdapterError {
 
-        TreeMapper reader = new TreeMapperBuilder()
+        TreeMapping mapping = TreeMapping.createBuilder()
+                .with(BitstringStatusListEntry.TYPE,
+                        BitstringStatusListEntry.class,
+                        BitstringStatusListEntry::of)
+
+                // literals
+                .with(Base64ByteArray.typeAdapter())
+                .with(XsdDateTime.typeAdapter())
+
                 .scan(AnnotatedCredential.class)
                 .scan(ExtendedAnnotatedCredential.class)
-                .scan(BitstringStatusListEntry.class)
+
                 .build();
 
-        JsonArray input = resource("custom/signed-vc-1.jsonld");
+        JsonArray input = TestUtils.resource("jsonld/custom/signed-vc-1.jsonld");
 
-        AnnotatedCredential vc = reader.get(
+        JsonLdTreeReader reader = JsonLdTreeReader.of(mapping);
+
+        AnnotatedCredential vc = reader.read(
                 AnnotatedCredential.class,
                 List.of("https://www.w3.org/2018/credentials/v1",
                         "https://w3id.org/security/data-integrity/v2"),
@@ -77,14 +88,19 @@ class AnnotationTest {
     @Test
     void controller() throws IOException, URISyntaxException, TreeBuilderError, NodeAdapterError {
 
-        TreeMapper mapper = new TreeMapperBuilder()
+        TreeMapping mapping = TreeMapping.createBuilder()
+                .map(ImmutableLiteral.class,
+                        EncodedKey.class,
+                        EncodedKeyAdapter::map)
                 .scan(Multikey.class)
                 .scan(ControllerDocument.class)
                 .build();
 
-        JsonArray input = resource("custom/controller-doc-2.jsonld");
+        JsonLdTreeReader reader = JsonLdTreeReader.of(mapping);
 
-        ControllerDocument doc = mapper.get(
+        JsonArray input = TestUtils.resource("jsonld/custom/controller-doc-2.jsonld");
+
+        ControllerDocument doc = reader.read(
                 ControllerDocument.class,
                 List.of("https://www.w3.org/ns/controller/v1"),
                 input);
@@ -96,7 +112,7 @@ class AnnotationTest {
 
         assertEquals(1, doc.controller().size());
         assertEquals(URI.create("https://controllerB.example/abc"), doc.controller().iterator().next());
-        
+
         assertEquals(2, doc.authentication().size());
         var ait = doc.authentication().iterator();
         assertMethodK1(ait.next());
@@ -105,11 +121,11 @@ class AnnotationTest {
         var vmit = doc.verificationMethod().iterator();
         vmit.next();
         assertMethodK1(vmit.next());
-        
+
         assertEquals(2, doc.assertionMethod().size());
         var amit = doc.assertionMethod().iterator();
         assertMethodK1(amit.next());
-        
+
         assertEquals(0, doc.alsoKnownAs().size());
         assertEquals(0, doc.keyAgreement().size());
         assertEquals(0, doc.capabilityDelegation().size());
@@ -121,8 +137,8 @@ class AnnotationTest {
         assertEquals(URI.create("https://controller.example/123456789abcdefghi#keys-1"), method.id());
         assertTrue(method.type().contains("https://w3id.org/security#Multikey"));
         assertTrue(method instanceof Multikey);
-        assertEquals("z6MkmM42vxfqZQsv4ehtTjFFxQ4sQKS2w6WR7emozFAn5cxu", ((Multikey)method).publicKey().encodedKey());
-        assertNull(((Multikey)method).privateKey());
+        assertEquals("z6MkmM42vxfqZQsv4ehtTjFFxQ4sQKS2w6WR7emozFAn5cxu", ((Multikey) method).publicKey().encodedKey());
+        assertNull(((Multikey) method).privateKey());
     }
 
     static void assertVc(AnnotatedCredential vc) {
@@ -167,66 +183,4 @@ class AnnotationTest {
         }
 
     }
-
-    static final JsonArray resource(String name) throws IOException, URISyntaxException {
-        try (var reader = Json.createReader(JsonLdKeyword.class.getResourceAsStream(name))) {
-            return reader.readArray();
-        }
-    }
-
-    static final boolean compareJson(final String testCase, final JsonStructure result, final JsonStructure expected) {
-
-        if (JsonLdComparison.equals(expected, result)) {
-            return true;
-        }
-
-        write(testCase, result, expected, null);
-
-        fail("Expected " + expected + ", but was" + result);
-        return false;
-    }
-
-    static void write(final String testCase, final JsonStructure result, final JsonStructure expected, Exception error) {
-        final StringWriter stringWriter = new StringWriter();
-
-        try (final PrintWriter writer = new PrintWriter(stringWriter)) {
-            writer.println("Test " + testCase);
-
-            final JsonWriterFactory writerFactory = Json.createWriterFactory(Collections.singletonMap(JsonGenerator.PRETTY_PRINTING, true));
-
-            if (expected != null) {
-                write(writer, writerFactory, "Expected", expected);
-                writer.println();
-
-//            } else if (testCase.expectErrorCode != null) {
-//                writer.println("Expected: " + testCase.expectErrorCode);
-            }
-
-            if (result != null) {
-                write(writer, writerFactory, "Actual", result);
-                writer.println();
-            }
-            if (error != null) {
-                writer.println("Actual: ");
-                error.printStackTrace(writer);
-            }
-        }
-
-        System.out.println(stringWriter.toString());
-    }
-
-    static final void write(final PrintWriter writer, final JsonWriterFactory writerFactory, final String name, final JsonValue result) {
-
-        writer.println(name + ":");
-
-        final StringWriter out = new StringWriter();
-
-        try (final JsonWriter jsonWriter = writerFactory.createWriter(out)) {
-            jsonWriter.write(result);
-        }
-
-        writer.write(out.toString());
-        writer.println();
-    }
-
 }

@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Stack;
 import java.util.stream.Collectors;
 
@@ -366,6 +367,7 @@ public class TreeBuilder<T> implements NodeConsumer<T> {
 
     protected TreeBuilder<T> literal(
             LinkedLiteral literal) {
+        Objects.requireNonNull(literal);
         nodeStack.push(literal);
         return this;
     }
@@ -385,7 +387,7 @@ public class TreeBuilder<T> implements NodeConsumer<T> {
             String datatype,
             Collection<ProcessingInstruction> ops) {
         pi(ops);
-        nodeStack.push(new ImmutableLiteral(value, datatype, root()));
+        nodeStack.push(new ImmutableLiteral(value, datatype));
         return this;
     }
 

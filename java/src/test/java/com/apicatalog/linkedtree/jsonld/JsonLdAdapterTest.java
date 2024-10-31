@@ -5,16 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,35 +20,31 @@ import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import com.apicatalog.linkedtree.AlumniCredential;
-import com.apicatalog.linkedtree.Base64ByteArray;
-import com.apicatalog.linkedtree.BitstringStatusListEntry;
 import com.apicatalog.linkedtree.LinkedTree;
-import com.apicatalog.linkedtree.UnknownStatus;
-import com.apicatalog.linkedtree.VerifiableCredential;
+import com.apicatalog.linkedtree.TestUtils;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeWriter;
 import com.apicatalog.linkedtree.literal.ByteArrayValue;
+import com.apicatalog.linkedtree.orm.mapper.TreeMapping;
+import com.apicatalog.linkedtree.test.AlumniCredential;
+import com.apicatalog.linkedtree.test.Base64ByteArray;
+import com.apicatalog.linkedtree.test.BitstringStatusListEntry;
+import com.apicatalog.linkedtree.test.UnknownStatus;
+import com.apicatalog.linkedtree.test.VerifiableCredential;
 import com.apicatalog.linkedtree.xsd.XsdDateTime;
 
-import jakarta.json.Json;
 import jakarta.json.JsonArray;
-import jakarta.json.JsonStructure;
-import jakarta.json.JsonValue;
-import jakarta.json.JsonWriter;
-import jakarta.json.JsonWriterFactory;
-import jakarta.json.stream.JsonGenerator;
 
 @DisplayName("JsonLd Adapter Tests")
 @TestMethodOrder(OrderAnnotation.class)
 class JsonLdAdapterTest {
 
-    static JsonLdTreeReader READER = JsonLdTreeReader.create()
+    static JsonLdTreeReader READER = JsonLdTreeReader.of(TreeMapping.createGenericBuilder()
             // types
-            .with(VerifiableCredential.TYPE, VerifiableCredential.typeAdapter())
-            .with(AlumniCredential.TYPE, AlumniCredential.typeAdapter())
+            .with(VerifiableCredential.typeAdapter())
+            .with(AlumniCredential.typeAdapter())
             .with(BitstringStatusListEntry.TYPE,
                     BitstringStatusListEntry.class,
                     BitstringStatusListEntry::of)
@@ -60,16 +52,15 @@ class JsonLdAdapterTest {
             // literals
             .with(Base64ByteArray.typeAdapter())
             .with(XsdDateTime.typeAdapter())
-
-            .build();
+            .build());
 
     static JsonLdTreeWriter WRITER = new JsonLdTreeWriter();
 
     @Test
     void base64ByteArray() throws IOException, URISyntaxException, TreeBuilderError, ClassCastException, NodeAdapterError {
 
-        JsonArray input = resource("custom/base64-1.jsonld");
-        JsonArray output = resource("custom/base64-2.jsonld");
+        JsonArray input = TestUtils.resource("jsonld/custom/base64-1.jsonld");
+        JsonArray output = TestUtils.resource("jsonld/custom/base64-2.jsonld");
 
         var tree = READER.read(input);
 
@@ -90,13 +81,13 @@ class JsonLdAdapterTest {
 
         assertNotNull(output);
 
-        assertTrue(compareJson("", copy, output));
+        assertTrue(TestUtils.compareJson("", copy, output));
     }
 
     @Test
     void credential() throws IOException, URISyntaxException, TreeBuilderError, ClassCastException, NodeAdapterError {
 
-        JsonArray input = resource("custom/signed-vc-1.jsonld");
+        JsonArray input = TestUtils.resource("jsonld/custom/signed-vc-1.jsonld");
 
         LinkedTree tree = READER.read(
                 List.of("https://www.w3.org/2018/credentials/v1",
@@ -151,66 +142,4 @@ class JsonLdAdapterTest {
         assertTrue(status1 instanceof BitstringStatusListEntry);
         assertTrue(status2 instanceof UnknownStatus);
     }
-
-    static final JsonArray resource(String name) throws IOException, URISyntaxException {
-        try (var reader = Json.createReader(JsonLdKeyword.class.getResourceAsStream(name))) {
-            return reader.readArray();
-        }
-    }
-
-    static final boolean compareJson(final String testCase, final JsonStructure result, final JsonStructure expected) {
-
-        if (JsonLdComparison.equals(expected, result)) {
-            return true;
-        }
-
-        write(testCase, result, expected, null);
-
-        fail("Expected " + expected + ", but was" + result);
-        return false;
-    }
-
-    static void write(final String testCase, final JsonStructure result, final JsonStructure expected, Exception error) {
-        final StringWriter stringWriter = new StringWriter();
-
-        try (final PrintWriter writer = new PrintWriter(stringWriter)) {
-            writer.println("Test " + testCase);
-
-            final JsonWriterFactory writerFactory = Json.createWriterFactory(Collections.singletonMap(JsonGenerator.PRETTY_PRINTING, true));
-
-            if (expected != null) {
-                write(writer, writerFactory, "Expected", expected);
-                writer.println();
-
-//            } else if (testCase.expectErrorCode != null) {
-//                writer.println("Expected: " + testCase.expectErrorCode);
-            }
-
-            if (result != null) {
-                write(writer, writerFactory, "Actual", result);
-                writer.println();
-            }
-            if (error != null) {
-                writer.println("Actual: ");
-                error.printStackTrace(writer);
-            }
-        }
-
-        System.out.println(stringWriter.toString());
-    }
-
-    static final void write(final PrintWriter writer, final JsonWriterFactory writerFactory, final String name, final JsonValue result) {
-
-        writer.println(name + ":");
-
-        final StringWriter out = new StringWriter();
-
-        try (final JsonWriter jsonWriter = writerFactory.createWriter(out)) {
-            jsonWriter.write(result);
-        }
-
-        writer.write(out.toString());
-        writer.println();
-    }
-
 }

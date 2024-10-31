@@ -1,0 +1,123 @@
+[
+  {
+    "https://www.w3.org/2018/credentials#credentialSubject": [
+      {
+        "https://www.w3.org/ns/credentials/examples#alumniOf": [
+          {
+            "@value": "The School of Examples"
+          }
+        ],
+        "@id": "did:example:abcdefgh"
+      }
+    ],
+    "https://schema.org/description": [
+      {
+        "@value": "A minimum viable example of an Alumni Credential."
+      }
+    ],
+    "@id": "urn:uuid:58172aac-d8ba-11ed-83dd-0b3aef56cc33",
+    "https://www.w3.org/2018/credentials#issuer": [
+      {
+        "@id": "https://vc.example/issuers/5678"
+      }
+    ],
+    "https://schema.org/name": [
+      {
+        "@value": "Alumni Credential"
+      }
+    ],
+    "https://w3id.org/security#proof": [
+      {
+        "@graph": [
+          {
+            "http://purl.org/dc/terms/created": [
+              {
+                "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
+                "@value": "2023-02-24T23:36:38Z"
+              }
+            ],
+            "https://w3id.org/security#cryptosuite": [
+              {
+                "@type": "https://w3id.org/security#cryptosuiteString",
+                "@value": "eddsa-rdfc-2022"
+              }
+            ],
+            "https://w3id.org/security#proofPurpose": [
+              {
+                "@id": "https://w3id.org/security#assertionMethod"
+              }
+            ],
+            "https://w3id.org/security#proofValue": [
+              {
+                "@type": "https://w3id.org/security#multibase",
+                "@value": "z21EVs3eXERqTn4acNHT9viboqgzUaQ3kTmhPT3eA8qrVPE7CrQq78WkzctnMX5W4CrzcKnHw8V6dvy5pgWYCU5e9"
+              }
+            ],
+            "@type": [
+              "https://w3id.org/security#DataIntegrityProof"
+            ],
+            "https://w3id.org/security#verificationMethod": [
+              {
+                "@id": "https://vc.example/issuers/5678#z6MkrJVnaZkeFzdQyMZu1cgjg7k1pZZ6pvBQ7XJPt4swbTQ2"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "https://www.w3.org/2018/credentials#credentialStatus": [
+      {
+        "@id": "https://license.example/credentials/status/84#14278",
+        "https://www.w3.org/ns/credentials/status#statusListCredential": [
+          {
+            "@id": "https://license.example/credentials/status/85"
+          }
+        ],
+        "https://www.w3.org/ns/credentials/status#statusListIndex": [
+          {
+            "@value": "14278"
+          }
+        ],
+        "https://www.w3.org/ns/credentials/status#statusPurpose": [
+          {
+            "@value": "revocation"
+          }
+        ],
+        "@type": [
+          "https://www.w3.org/ns/credentials/status#BitstringStatusListEntry"
+        ]
+      },
+      {
+        "@id": "https://license.example/credentials/status/84#82938",
+        "https://www.w3.org/ns/credentials/status#statusListCredential": [
+          {
+            "@id": "https://license.example/credentials/status/84"
+          }
+        ],
+        "https://www.w3.org/ns/credentials/status#statusListIndex": [
+          {
+            "@value": "82938"
+          }
+        ],
+        "https://www.w3.org/ns/credentials/status#statusPurpose": [
+          {
+            "@value": "suspension"
+          }
+        ],
+        "@type": [
+          "https://www.w3.org/ns/credentials/status#Unknown"
+        ]
+      }
+    ],
+    "@type": [
+      "https://www.w3.org/2018/credentials#VerifiableCredential",
+      "https://www.w3.org/ns/credentials/examples#AlumniCredential"
+    ],
+    "https://www.w3.org/2018/credentials#validFrom": [
+      {
+        "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
+        "@value": "2023-01-01T00:00:00Z"
+      }
+    ]
+  }
+]

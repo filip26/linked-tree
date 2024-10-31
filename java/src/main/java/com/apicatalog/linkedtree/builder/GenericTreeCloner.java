@@ -168,8 +168,7 @@ public class GenericTreeCloner implements NodeConsumer<LinkedNode>, NodeSelector
             }
             return new ImmutableLiteral(
                     source.asLiteral().lexicalValue(),
-                    source.asLiteral().datatype(),
-                    root);
+                    source.asLiteral().datatype());
         }
         throw new IllegalStateException();
     }

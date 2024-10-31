@@ -5,6 +5,7 @@ import com.apicatalog.linkedtree.adapter.NodeAdapter;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 
 public record GenericTypeAdapter(
+        String type,
         Class<?> typeInterface,
         NodeAdapter<LinkedFragment, Object> materialize
         ) implements TypeAdapter {

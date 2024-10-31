@@ -3,18 +3,18 @@ package com.apicatalog.linkedtree.orm.getter;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
-import com.apicatalog.linkedtree.orm.adapter.LiteralMapper;
+import com.apicatalog.linkedtree.orm.mapper.LiteralMapper;
 
 public class LiteralGetter implements Getter {
 
     String term;
     Class<?> returnType;
-    LiteralMapper adapter;
+    LiteralMapper<LinkedLiteral, ?> adapter;
 
     public LiteralGetter(
             String term,
             Class<?> returnType,
-            LiteralMapper adapter) {
+            LiteralMapper<LinkedLiteral, ?> adapter) {
         this.term = term;
         this.returnType = returnType;
         this.adapter = adapter;
@@ -22,12 +22,11 @@ public class LiteralGetter implements Getter {
 
     public Object get(LinkedFragment source) throws NodeAdapterError {
 
-        LinkedLiteral x = source.literal(term, LinkedLiteral.class);
-        if (x == null) {
+        LinkedLiteral literal = source.literal(term, LinkedLiteral.class);
+        if (literal == null) {
             return null;
         }
-
-        return adapter.map(returnType, x);
+        return adapter.map(literal);
     }
 
 }

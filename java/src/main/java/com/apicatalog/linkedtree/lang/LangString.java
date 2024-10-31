@@ -1,7 +1,7 @@
 package com.apicatalog.linkedtree.lang;
 
 import com.apicatalog.linkedtree.LinkedLiteral;
-import com.apicatalog.linkedtree.xsd.XsdConstants;
+import com.apicatalog.linkedtree.xsd.XsdVocab;
 
 public interface LangString extends LinkedLiteral {
 
@@ -13,7 +13,7 @@ public interface LangString extends LinkedLiteral {
 
     @Override
     default String datatype() {
-        return XsdConstants.STRING;
+        return XsdVocab.STRING;
     }
 
     /**

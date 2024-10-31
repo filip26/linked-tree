@@ -12,11 +12,8 @@ import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.fragment.GenericFragment;
-import com.apicatalog.linkedtree.lang.ImmutableLangString;
-import com.apicatalog.linkedtree.lang.LangString;
 import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.link.MutableLink;
-import com.apicatalog.linkedtree.literal.ImmutableLiteral;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 import com.apicatalog.linkedtree.primitive.GenericContainer;
 import com.apicatalog.linkedtree.primitive.GenericTree;
@@ -37,10 +34,10 @@ public class GenericTreeCompiler implements NodeConsumer<LinkedNode>, NodeSelect
         this.nodeStack = null;
         this.clonedTrees = null;
         this.nodeSelector = null;
-        
-      nodeStack = new Stack<>();
-      clonedTrees = new Stack<>();
-      nodeSelector = (node, indexOrder, indexTerm, depth) -> TraversalPolicy.Accept; 
+
+        nodeStack = new Stack<>();
+        clonedTrees = new Stack<>();
+        nodeSelector = (node, indexOrder, indexTerm, depth) -> TraversalPolicy.Accept;
     }
 
     @Override
@@ -108,10 +105,10 @@ public class GenericTreeCompiler implements NodeConsumer<LinkedNode>, NodeSelect
         if (source.isTree()) {
 
             var tree = GenericTree.of(
-                    source.asTree(), 
+                    source.asTree(),
                     cloneLink(source.asTree().id()),
                     root);
-            
+
             clonedTrees.push(tree);
 
             return tree;
@@ -133,7 +130,7 @@ public class GenericTreeCompiler implements NodeConsumer<LinkedNode>, NodeSelect
                     cloneLink(source.asFragment().id()),
 
                     types,
-                    
+
                     new LinkedHashMap<>(source.asFragment().terms().size()),
                     root);
 
@@ -144,17 +141,18 @@ public class GenericTreeCompiler implements NodeConsumer<LinkedNode>, NodeSelect
             return fragment;
 
         } else if (source.isLiteral()) {
-            if (source.asLiteral() instanceof LangString langString) {
-                return new ImmutableLangString(
-                        langString.lexicalValue(),
-                        langString.language(),
-                        langString.direction(),
-                        root);
-            }
-            return new ImmutableLiteral(
-                    source.asLiteral().lexicalValue(),
-                    source.asLiteral().datatype(),
-                    root);
+            // literals are immutable
+            return source;
+//            if (source.asLiteral() instanceof LangString langString) {
+//                return new ImmutableLangString(
+//                        langString.lexicalValue(),
+//                        langString.language(),
+//                        langString.direction(),
+//                        root);
+//            }
+//            return new ImmutableLiteral(
+//                    source.asLiteral().lexicalValue(),
+//                    source.asLiteral().datatype());
         }
         throw new IllegalStateException();
     }

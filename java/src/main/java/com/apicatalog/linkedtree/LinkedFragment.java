@@ -33,7 +33,7 @@ public interface LinkedFragment extends LinkedNode {
     LinkedContainer container(String term);
 
     @SuppressWarnings("unchecked")
-    default <T extends Linkable> T materialize(String term, Class<T> clazz) throws InvalidSelector, NodeAdapterError {
+    default <T> T materialize(String term, Class<T> clazz) throws InvalidSelector, NodeAdapterError {
 
         Objects.requireNonNull(clazz);
 
@@ -63,11 +63,10 @@ public interface LinkedFragment extends LinkedNode {
                 return node.asFragment().type().materialize(clazz);
             }
 
-            if (node.isLiteral()
-                    && clazz.isInstance(node.asLiteral().cast())) {
-
-                return node.asLiteral().cast(clazz);
+            if (node.isLiteral() && clazz.isInstance(node)) {
+                return clazz.cast(node.asLiteral());
             }
+
             throw new InvalidSelector(term);
 
         } catch (ClassCastException e) {
@@ -87,6 +86,16 @@ public interface LinkedFragment extends LinkedNode {
         }
         return container.node();
     }
+
+    /**
+     * A {@link LinkedTree} instance to which the {@link LinkedNode} belongs to.
+     * 
+     * Please note a tree instance can have a root if is a child node of another
+     * tree instance.
+     * 
+     * @return an instance or <code>null</code> if the node is a root
+     */
+    LinkedTree root();
 
 //    default <R> R single(String term, LinkableMapper<R> mapper) throws DocumentError {
 //
@@ -160,15 +169,15 @@ public interface LinkedFragment extends LinkedNode {
 //        }
     }
 
-    default <T extends Linkable> T literal(String term, Class<T> clazz) throws InvalidSelector {
+    default <T> T literal(String term, Class<T> clazz) throws InvalidSelector {
         return literal(term, clazz, Function.identity());
     }
 
-    default <T extends Linkable, R> R literal(String term, Class<T> clazz, Function<T, R> mapper) throws InvalidSelector {
+    default <T, R> R literal(String term, Class<T> clazz, Function<T, R> mapper) throws InvalidSelector {
         return literal(term, clazz, mapper, null);
     }
 
-    default <T extends Linkable, R> R literal(String term, Class<T> clazz, Function<T, R> mapper, R defaultValue) throws InvalidSelector {
+    default <T, R> R literal(String term, Class<T> clazz, Function<T, R> mapper, R defaultValue) throws InvalidSelector {
 
         Objects.requireNonNull(mapper);
 
@@ -276,17 +285,17 @@ public interface LinkedFragment extends LinkedNode {
 
                 if (clazz.isInstance(node)) {
                     collection.add((T) node);
-                    
-                } else if (node.isFragment() 
+
+                } else if (node.isFragment()
                         && node.asFragment().id() != null
-                        && node.asFragment().id().target().type().isAdaptableTo(clazz)) {                    
+                        && node.asFragment().id().target().type().isAdaptableTo(clazz)) {
                     collection.add(node.asFragment().id().target().type().materialize(clazz));
 
                 } else if (node.isFragment() && node.asFragment().type().isAdaptableTo(clazz)) {
                     collection.add(node.asFragment().type().materialize(clazz));
-                                        
-                } else if (node.isLiteral() && clazz.isInstance(node.asLiteral().cast())) {
-                    collection.add(node.asLiteral().cast(clazz));
+
+                } else if (node.isLiteral() && clazz.isInstance(node.asLiteral())) {
+                    collection.add(clazz.cast(node.asLiteral()));
 
                 } else if (unmapped != null) {
                     if (node.isFragment()

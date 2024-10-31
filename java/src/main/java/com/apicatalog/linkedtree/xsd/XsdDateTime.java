@@ -5,37 +5,29 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
 
 import com.apicatalog.linkedtree.LinkedLiteral;
-import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.literal.DateTimeValue;
-import com.apicatalog.linkedtree.literal.adapter.TypedLiteralAdapter;
-import com.apicatalog.linkedtree.literal.adapter.GenericDatatypeAdapter;
 
 public class XsdDateTime implements LinkedLiteral, DateTimeValue {
 
-    public static final String TYPE = XsdConstants.DATE_TIME;
-
     protected Instant datetime;
     protected String value;
-    protected LinkedTree root;
 
-    protected XsdDateTime(String value, LinkedTree root) {
+    protected XsdDateTime(String value) {
         this.value = value;
         this.datetime = null;
-        this.root = root;
     }
 
-    protected XsdDateTime(Instant datetime, LinkedTree root) {
+    protected XsdDateTime(Instant datetime) {
         this.value = null;
         this.datetime = datetime;
-        this.root = root;
     }
 
-    public static XsdDateTime of(String value, LinkedTree root) {
-        return new XsdDateTime(value, root);
+    public static XsdDateTime of(String value) {
+        return new XsdDateTime(value);
     }
 
-    public static XsdDateTime of(Instant datetime, LinkedTree root) {
-        return new XsdDateTime(datetime, root);
+    public static XsdDateTime of(Instant datetime) {
+        return new XsdDateTime(datetime);
     }
 
     @Override
@@ -58,7 +50,7 @@ public class XsdDateTime implements LinkedLiteral, DateTimeValue {
 
     @Override
     public String datatype() {
-        return TYPE;
+        return XsdVocab.DATE_TIME;
     }
 
     public void value(String value) {
@@ -71,21 +63,12 @@ public class XsdDateTime implements LinkedLiteral, DateTimeValue {
         this.value = null;
     }
 
-    protected static TypedLiteralAdapter ADAPTER = new GenericDatatypeAdapter(
-            TYPE,
-            XsdDateTime::of);
-
-    public static TypedLiteralAdapter typeAdapter() {
-        return ADAPTER;
-    }
-
     @Override
     public String toString() {
         return "XsdDateTime [datetime=" + datetime + ", value=" + value + "]";
     }
 
-    @Override
-    public LinkedTree root() {
-        return root;
+    public static XsdDateTimeAdapter typeAdapter() {
+        return XsdDateTimeAdapter.INSTANCE;
     }
 }

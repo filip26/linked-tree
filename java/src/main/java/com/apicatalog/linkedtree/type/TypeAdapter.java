@@ -5,5 +5,7 @@ import com.apicatalog.linkedtree.adapter.NodeAdapter;
 
 public interface TypeAdapter extends NodeAdapter<LinkedFragment, Object>  {
 
+    String type();
+    
     Class<?> typeInterface();
 }

@@ -10,13 +10,12 @@ public interface Linkable {
 
     static Method method() {
         try {
-            return Linkable.class.getMethod("ld");
+            return Linkable.class.getDeclaredMethod("ld");
         } catch (NoSuchMethodException | SecurityException e) {
             // does not happen
             throw new IllegalStateException(e);
         }
     }
-    
-    LinkedNode ld();
 
+    LinkedNode ld();
 }

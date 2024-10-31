@@ -1,0 +1,10 @@
+{
+  "@context": "https://w3id.org/security/multikey/v1",
+  "id": "https://controller.example/#keys-4",
+  "type": "Multikey",
+  "controller": "https://controller.example/4",
+  "publicKeyMultibase": "zDnaerx9CtbPJ1q36T5Ln5wYt3MQYeGRG5ehnPAmxcf5mDZpv",
+  "secretKeyMultibase": "z42twTcNeSYcnqg1FLuSFs2bsGH3ZqbRHFmvS9XMsYhjxvHN",
+  "expires": "2025-12-06T15:41:46Z",
+  "revoked": "2024-10-06T15:41:46Z"
+}

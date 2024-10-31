@@ -11,7 +11,7 @@ import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.adapter.NodeAdapter;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
-import com.apicatalog.linkedtree.orm.adapter.FragmentProxy;
+import com.apicatalog.linkedtree.type.TypeAdapter;
 
 public class CollectionGetter implements Getter {
 
@@ -33,7 +33,7 @@ public class CollectionGetter implements Getter {
     }
     
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public static CollectionGetter of(String term, Class<?> collectionType, Class<?> componentType, FragmentProxy adapter) {
+    public static CollectionGetter of(String term, Class<?> collectionType, Class<?> componentType, TypeAdapter adapter) {
         return new CollectionGetter(term, collectionType, (Class<Object>)componentType, (NodeAdapter)adapter);
     }
 

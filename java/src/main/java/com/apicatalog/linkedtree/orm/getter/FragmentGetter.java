@@ -3,14 +3,14 @@ package com.apicatalog.linkedtree.orm.getter;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
-import com.apicatalog.linkedtree.orm.adapter.FragmentProxy;
+import com.apicatalog.linkedtree.type.TypeAdapter;
 
 public class FragmentGetter implements Getter {
 
     String term;
-    FragmentProxy adapter;
+    TypeAdapter adapter;
     
-    public FragmentGetter(String term, FragmentProxy adapter) {
+    public FragmentGetter(String term, TypeAdapter adapter) {
         this.term = term;
         this.adapter = adapter;
     }
