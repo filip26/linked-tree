@@ -60,14 +60,11 @@ class JsonLdObjectWriterTest {
             .scan(GenericSubject.class)
             .scan(Status.class)
             .scan(ExtendedAnnotatedCredential.class)
-            .scan(AlumniSubject.class);
-
-    static {
-        WRITER.contextReducer()
-                .define("https://www.w3.org/ns/controller/v1",
-                        List.of("https://w3id.org/security/jwk/v1",
-                                "https://w3id.org/security/multikey/v1"));
-    }
+            .scan(AlumniSubject.class)
+            // context reducer definitions
+            .context("https://www.w3.org/ns/controller/v1",
+                    List.of("https://w3id.org/security/jwk/v1",
+                            "https://w3id.org/security/multikey/v1"));
 
     static Map<String, Class<?>> TYPES = new HashMap<>();
 

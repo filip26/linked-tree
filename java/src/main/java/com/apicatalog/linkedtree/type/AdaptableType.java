@@ -1,7 +1,6 @@
 package com.apicatalog.linkedtree.type;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -79,32 +78,4 @@ public class AdaptableType implements Type {
         type.put(name, adapter);
         return this;
     }
-
-    static Type EMPTY = new Type() {
-
-        @Override
-        public Iterator<String> iterator() {
-            return Collections.emptyIterator();
-        }
-
-        @Override
-        public boolean isEmpty() {
-            return true;
-        }
-
-        @Override
-        public boolean contains(String type) {
-            return false;
-        }
-
-        @Override
-        public <T> T materialize(Class<T> clazz) throws ClassCastException {
-            throw new ClassCastException("A type set is empty. It cannot be cast to an unknown interface/class " + clazz);
-        }
-        
-        @Override
-        public String toString() {
-            return "Type.empty()";
-        }
-    };
 }

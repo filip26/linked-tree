@@ -91,7 +91,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
             return tree.materialize(clazz);
         }
 
-        if (typeAdapters.containsKey(clazz)) {
+        if (typeAdapters.containsKey(clazz) && (tree.size() == 1 && tree.node().isFragment())) {
             return (T) typeAdapters.get(clazz).materialize(tree.fragment());
         }
 

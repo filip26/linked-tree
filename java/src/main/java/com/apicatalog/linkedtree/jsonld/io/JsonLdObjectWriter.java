@@ -38,9 +38,9 @@ import jakarta.json.JsonValue.ValueType;
 public class JsonLdObjectWriter {
 
     private static final Logger LOGGER = Logger.getLogger(JsonLdObjectWriter.class.getName());
-    
+
     ContextReducer contextReducer;
-    
+
     Map<Class<?>, TypeDefinition> fragments;
     Map<Class<?>, DataTypeNormalizer<?>> datatypes;
 
@@ -53,7 +53,7 @@ public class JsonLdObjectWriter {
     public ContextReducer contextReducer() {
         return contextReducer;
     }
-    
+
     public JsonLdObjectWriter scan(Class<?> type) {
 
         Objects.requireNonNull(type);
@@ -64,6 +64,21 @@ public class JsonLdObjectWriter {
 
         scanInterface(type);
 
+        return this;
+    }
+
+    public JsonLdObjectWriter context(
+            String id,
+            int position,
+            Collection<String> includes) {
+        contextReducer.define(id, position, includes);
+        return this;
+    }
+
+    public JsonLdObjectWriter context(
+            String id,
+            Collection<String> includes) {
+        contextReducer.define(id, includes);
         return this;
     }
 
@@ -168,6 +183,9 @@ public class JsonLdObjectWriter {
 
             Context fragmentContext = typeInterface.getAnnotation(Context.class);
             if (fragmentContext != null) {
+                if (fragmentContext.override()) {
+                    context.clear();
+                }
                 for (String ctx : fragmentContext.value()) {
                     context.add(ctx);
                 }
@@ -381,11 +399,11 @@ public class JsonLdObjectWriter {
         JsonObjectBuilder builder = Json.createObjectBuilder();
 
         Collection<String> reduced = contextReducer.reduce(context);
-        
+
         if (reduced.size() == 1) {
             builder.add(JsonLdKeyword.CONTEXT, context.iterator().next());
 
-        } else if (reduced.size() > 1) {            
+        } else if (reduced.size() > 1) {
             builder.add(JsonLdKeyword.CONTEXT, Json.createArrayBuilder(reduced));
         }
 

@@ -8,7 +8,7 @@ import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 public interface Type extends Iterable<String> {
 
     public static Type empty() {
-        return AdaptableType.EMPTY;
+        return EmptyType.instance();
     }
     
     default boolean contains(String type) {
