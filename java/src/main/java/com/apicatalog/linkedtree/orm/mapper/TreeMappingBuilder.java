@@ -135,7 +135,7 @@ public class TreeMappingBuilder {
         final Map<Method, Getter> getters = new HashMap<>(typeInterface.getMethods().length);
 
         // scan methods
-        for (final Method method : GetterMethod.filter(typeInterface)) {
+        for (final Method method : GetterMethod.filter(typeInterface, false)) {
 
             Mapper mapper = method.getAnnotation(Mapper.class);
             if (mapper != null) {

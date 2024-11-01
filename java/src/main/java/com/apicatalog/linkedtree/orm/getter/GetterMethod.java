@@ -11,7 +11,7 @@ public class GetterMethod {
 
     private static final Logger LOGGER = Logger.getLogger(GetterMethod.class.getName());
     
-    public static Collection<Method> filter(Class<?> type) {
+    public static Collection<Method> filter(Class<?> type, boolean def) {
         
         if (type.getMethods() == null || type.getMethods().length == 0) {
             return Collections.emptyList();
@@ -20,7 +20,7 @@ public class GetterMethod {
         Collection<Method> getters = new ArrayList<Method>(type.getMethods().length);
         
         for (Method method : type.getMethods()) {
-            if (method.isDefault() || method.isSynthetic() || void.class.equals(method.getReturnType())) {
+            if (!def && method.isDefault() || method.isSynthetic() || void.class.equals(method.getReturnType())) {
                 continue;
             }
 

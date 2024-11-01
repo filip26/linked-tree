@@ -20,7 +20,7 @@ import com.apicatalog.linkedtree.Linkable;
 import com.apicatalog.linkedtree.TestUtils;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
-import com.apicatalog.linkedtree.jsonld.io.JsonLdObjectWriter;
+import com.apicatalog.linkedtree.jsonld.io.JsonLdWriter;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.orm.mapper.TreeMapping;
 import com.apicatalog.linkedtree.orm.test.AlumniSubject;
@@ -50,7 +50,7 @@ class JsonLdObjectWriterTest {
                     .scan(AnnotatedCredential.class)
                     .build());
 
-    static JsonLdObjectWriter WRITER = new JsonLdObjectWriter()
+    static JsonLdWriter WRITER = new JsonLdWriter()
             .scan(ControllerDocument.class)
             .scan(Multikey.class)
             .scan(JsonWebKey.class)
@@ -78,7 +78,7 @@ class JsonLdObjectWriterTest {
     @Test
     void testWriteMultikey() {
 
-        JsonLdObjectWriter writer = new JsonLdObjectWriter()
+        JsonLdWriter writer = new JsonLdWriter()
                 .scan(Multikey.class);
 
         Multikey multikey = new GenericMultikey(

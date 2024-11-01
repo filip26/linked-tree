@@ -35,16 +35,16 @@ import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
 
-public class JsonLdObjectWriter {
+public class JsonLdWriter {
 
-    private static final Logger LOGGER = Logger.getLogger(JsonLdObjectWriter.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(JsonLdWriter.class.getName());
 
     ContextReducer contextReducer;
 
     Map<Class<?>, TypeDefinition> fragments;
     Map<Class<?>, DataTypeNormalizer<?>> datatypes;
 
-    public JsonLdObjectWriter() {
+    public JsonLdWriter() {
         this.contextReducer = new ContextReducer();
         this.fragments = new HashMap<>();
         this.datatypes = new HashMap<>();
@@ -54,7 +54,7 @@ public class JsonLdObjectWriter {
         return contextReducer;
     }
 
-    public JsonLdObjectWriter scan(Class<?> type) {
+    public JsonLdWriter scan(Class<?> type) {
 
         Objects.requireNonNull(type);
 
@@ -67,7 +67,7 @@ public class JsonLdObjectWriter {
         return this;
     }
 
-    public JsonLdObjectWriter context(
+    public JsonLdWriter context(
             String id,
             int position,
             Collection<String> includes) {
@@ -75,7 +75,7 @@ public class JsonLdObjectWriter {
         return this;
     }
 
-    public JsonLdObjectWriter context(
+    public JsonLdWriter context(
             String id,
             Collection<String> includes) {
         contextReducer.define(id, includes);
@@ -106,7 +106,7 @@ public class JsonLdObjectWriter {
         Collection<PropertyDefinition> properties = new ArrayList<>(7);
         Map<Class<?>, DataTypeNormalizer<?>> normalizers = new HashMap<>();
 
-        for (final Method method : GetterMethod.filter(typeInterface)) {
+        for (final Method method : GetterMethod.filter(typeInterface, true)) {
 
             String propertyVocab = vocab;
             Vocab methodVocab = method.getAnnotation(Vocab.class);
@@ -149,7 +149,8 @@ public class JsonLdObjectWriter {
             if (method.isAnnotationPresent(Id.class)) {
                 idMethod = def;
 
-            } else if (Type.class.isAssignableFrom(method.getReturnType())) {
+            } else if (method.isAnnotationPresent(com.apicatalog.linkedtree.orm.Type.class)
+                    || Type.class.isAssignableFrom(method.getReturnType())) {
                 typeMethod = def;
 
             } else {
