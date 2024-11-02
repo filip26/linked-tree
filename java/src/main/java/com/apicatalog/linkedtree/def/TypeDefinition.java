@@ -20,6 +20,7 @@ public class TypeDefinition {
     Map<Class<?>, DataTypeNormalizer<?>> normalizers;
     
     public TypeDefinition(
+            String vocab,
             Collection<String> types,
             Collection<String> context,
             PropertyDefinition id,
@@ -27,6 +28,7 @@ public class TypeDefinition {
             Collection<PropertyDefinition> methods,
             Map<Class<?>, DataTypeNormalizer<?>> normalizers        
             ) {
+        this.vocab = vocab;
         this.context = context;
         this.types = types;
         this.id = id;

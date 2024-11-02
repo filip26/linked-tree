@@ -162,6 +162,7 @@ public class JsonLdWriter {
         }
 
         typeDefinitons.put(typeInterface, new TypeDefinition(
+                vocab,
                 type,
                 context,
                 idMethod,
@@ -221,22 +222,24 @@ public class JsonLdWriter {
         }
         return definitions(typeInterfaces, new ArrayList<>(2));
     }
-    
+
     Collection<TypeDefinition> definitions(Class<?>[] typeInterfaces, Collection<TypeDefinition> defs) {
         for (final Class<?> typeInterface : typeInterfaces) {
             TypeDefinition def = typeDefinitons.get(typeInterface);
             if (def != null) {
                 defs.add(def);
                 continue;
-            } 
-            definitions(typeInterface.getInterfaces(), defs);            
+            }
+            definitions(typeInterface.getInterfaces(), defs);
         }
         return defs;
     }
-    
+
     JsonObject compacted(final Collection<String> context, final Object object, boolean attachContext) {
 
         final Map<String, JsonValue> fragment = new LinkedHashMap<>(7);
+
+        String vocab = null;
 
         PropertyDefinition id = null;
         PropertyDefinition type = null;
@@ -257,6 +260,10 @@ public class JsonLdWriter {
 
             if (typeDef.name() != null) {
                 types = typeDef.types(); // TODO
+            }
+
+            if (typeDef.vocab() != null && vocab == null) {
+                vocab = typeDef.vocab();
             }
 
             for (final PropertyDefinition propertyDef : typeDef.methods()) {
@@ -294,23 +301,27 @@ public class JsonLdWriter {
 
                 Object objectTypes = type.invoke(object);
 
+                final String v = vocab;
+
                 if (objectTypes instanceof FragmentType fragmentType) {
-                    types = fragmentType.stream().toList();
+                    types = fragmentType.stream().map(t -> compactType(v, t)).toList();
 
                 } else if (objectTypes instanceof String stringType) {
-                    types = List.of(stringType);
+                    types = List.of(compactType(vocab, stringType));
 
                 } else if (objectTypes instanceof URI uriType) {
-                    types = List.of(uriType.toString());
+                    types = List.of(compactType(vocab, uriType.toString()));
 
                 } else if (objectTypes instanceof Collection fragmentTypes) {
                     Class<?> typeClass = fragmentTypes.getClass().getComponentType();
 
                     if (typeClass.isAssignableFrom(String.class)) {
-                        types = ((Collection<String>) fragmentTypes);
+                        types = ((Collection<String>) fragmentTypes).stream()
+                                .map(t -> compactType(v, t)).toList();
 
                     } else if (typeClass.isAssignableFrom(URI.class)) {
-                        types = ((Collection<URI>) fragmentTypes).stream().map(URI::toString).toList();
+                        types = ((Collection<URI>) fragmentTypes).stream().map(URI::toString)
+                                .map(t -> compactType(v, t)).toList();
                     }
                 }
             }
@@ -330,6 +341,16 @@ public class JsonLdWriter {
                 idEntry,
                 typeEntry,
                 fragment);
+    }
+
+    static String compactType(String vocab, String type) {
+        if (vocab == null || type == null) {
+            return type;
+        }
+        if (type.startsWith(vocab)) {
+            return type.substring(vocab.length());
+        }
+        return type;
     }
 
     JsonValue property(Collection<String> context, PropertyDefinition propertyDef, Object object, Map<String, JsonValue> fragment) {
