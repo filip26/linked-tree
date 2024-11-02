@@ -9,7 +9,7 @@ import java.util.Objects;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 
-public class AdaptableType implements Type {
+public class AdaptableType implements FragmentType {
 
     protected final Map<String, TypeAdapter> type;
     protected LinkedFragment fragment;

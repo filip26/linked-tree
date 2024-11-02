@@ -5,9 +5,9 @@ import java.util.stream.StreamSupport;
 
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 
-public interface Type extends Iterable<String> {
+public interface FragmentType extends Iterable<String> {
 
-    public static Type empty() {
+    public static FragmentType empty() {
         return EmptyType.instance();
     }
     

@@ -3,11 +3,11 @@ package com.apicatalog.linkedtree.type;
 import java.util.Collections;
 import java.util.Iterator;
 
-final class EmptyType implements Type {
+final class EmptyType implements FragmentType {
 
-    static final Type EMPTY = new EmptyType();
+    static final FragmentType EMPTY = new EmptyType();
     
-    static final Type instance() {
+    static final FragmentType instance() {
         return EMPTY;
     }
 

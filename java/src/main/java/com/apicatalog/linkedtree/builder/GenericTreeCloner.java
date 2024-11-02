@@ -24,7 +24,7 @@ import com.apicatalog.linkedtree.traversal.DepthFirstSearch;
 import com.apicatalog.linkedtree.traversal.NodeConsumer;
 import com.apicatalog.linkedtree.traversal.NodeSelector;
 import com.apicatalog.linkedtree.type.AdaptableType;
-import com.apicatalog.linkedtree.type.Type;
+import com.apicatalog.linkedtree.type.FragmentType;
 
 public class GenericTreeCloner implements NodeConsumer<LinkedNode>, NodeSelector<LinkedNode> {
 
@@ -139,7 +139,7 @@ public class GenericTreeCloner implements NodeConsumer<LinkedNode>, NodeSelector
         } else if (source.isFragment()) {
 
             var types = source.asFragment().type().isEmpty()
-                    ? Type.empty()
+                    ? FragmentType.empty()
                     : AdaptableType.of(source.asFragment().type().stream().toList());
 
             var fragment = new GenericFragment(

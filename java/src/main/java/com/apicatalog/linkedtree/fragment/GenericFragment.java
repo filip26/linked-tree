@@ -7,11 +7,11 @@ import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.link.Link;
-import com.apicatalog.linkedtree.type.Type;
+import com.apicatalog.linkedtree.type.FragmentType;
 
 public record GenericFragment(
         Link id,
-        Type type,
+        FragmentType type,
         Map<String, LinkedContainer> entries,
         LinkedTree root) implements LinkedFragment {
 

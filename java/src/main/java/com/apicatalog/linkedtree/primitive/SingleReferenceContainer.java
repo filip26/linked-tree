@@ -12,7 +12,7 @@ import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
-import com.apicatalog.linkedtree.type.Type;
+import com.apicatalog.linkedtree.type.FragmentType;
 
 public final class SingleReferenceContainer implements LinkedFragment, LinkedContainer {
 
@@ -46,8 +46,8 @@ public final class SingleReferenceContainer implements LinkedFragment, LinkedCon
     }
 
     @Override
-    public Type type() {
-        return Type.empty();
+    public FragmentType type() {
+        return FragmentType.empty();
     }
 
     @Override

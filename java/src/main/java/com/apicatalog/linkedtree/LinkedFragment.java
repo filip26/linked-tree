@@ -15,7 +15,7 @@ import com.apicatalog.linkedtree.lang.LangStringSelector;
 import com.apicatalog.linkedtree.lang.LanguageMap;
 import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.selector.InvalidSelector;
-import com.apicatalog.linkedtree.type.Type;
+import com.apicatalog.linkedtree.type.FragmentType;
 import com.apicatalog.linkedtree.xsd.XsdDateTime;
 
 public interface LinkedFragment extends LinkedNode {
@@ -26,7 +26,7 @@ public interface LinkedFragment extends LinkedNode {
      */
     Link id();
 
-    Type type();
+    FragmentType type();
 
     Collection<String> terms();
 

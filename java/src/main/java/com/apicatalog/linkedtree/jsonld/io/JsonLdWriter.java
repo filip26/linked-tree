@@ -26,7 +26,7 @@ import com.apicatalog.linkedtree.orm.Term;
 import com.apicatalog.linkedtree.orm.Vocab;
 import com.apicatalog.linkedtree.orm.context.ContextReducer;
 import com.apicatalog.linkedtree.orm.getter.GetterMethod;
-import com.apicatalog.linkedtree.type.Type;
+import com.apicatalog.linkedtree.type.FragmentType;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
@@ -150,7 +150,7 @@ public class JsonLdWriter {
                 idMethod = def;
 
             } else if (method.isAnnotationPresent(com.apicatalog.linkedtree.orm.Type.class)
-                    || Type.class.isAssignableFrom(method.getReturnType())) {
+                    || FragmentType.class.isAssignableFrom(method.getReturnType())) {
                 typeMethod = def;
 
             } else {
@@ -273,7 +273,7 @@ public class JsonLdWriter {
         if (type != null) {
             if (types == null || types.isEmpty()) {
 
-                Type objectTypes = (Type) type.invoke(object);
+                FragmentType objectTypes = (FragmentType) type.invoke(object);
 
                 if (objectTypes != null) {
                     types = objectTypes.stream().toList();

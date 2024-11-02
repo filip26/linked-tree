@@ -11,6 +11,7 @@ public class IdGetter implements Getter {
         // protected
     }
     
+    @Override
     public Object get(LinkedFragment source) throws NodeAdapterError {
         return source.uri();
     }
