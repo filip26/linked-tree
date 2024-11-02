@@ -44,12 +44,12 @@ public class JsonLdWriter {
 
     ContextReducer contextReducer;
 
-    Map<Class<?>, TypeDefinition> fragments;
+    Map<Class<?>, TypeDefinition> typeDefinitons;
     Map<Class<?>, DataTypeNormalizer<?>> datatypes;
 
     public JsonLdWriter() {
         this.contextReducer = new ContextReducer();
-        this.fragments = new HashMap<>();
+        this.typeDefinitons = new HashMap<>();
         this.datatypes = new HashMap<>();
     }
 
@@ -161,7 +161,7 @@ public class JsonLdWriter {
             }
         }
 
-        fragments.put(typeInterface, new TypeDefinition(
+        typeDefinitons.put(typeInterface, new TypeDefinition(
                 type,
                 context,
                 idMethod,
@@ -215,6 +215,25 @@ public class JsonLdWriter {
         return compacted(new LinkedHashSet<>(2), object, true);
     }
 
+    Collection<TypeDefinition> definitions(Class<?>[] typeInterfaces) {
+        if (typeInterfaces == null || typeInterfaces.length == 0) {
+            return Collections.emptyList();
+        }
+        return definitions(typeInterfaces, new ArrayList<>(2));
+    }
+    
+    Collection<TypeDefinition> definitions(Class<?>[] typeInterfaces, Collection<TypeDefinition> defs) {
+        for (final Class<?> typeInterface : typeInterfaces) {
+            TypeDefinition def = typeDefinitons.get(typeInterface);
+            if (def != null) {
+                defs.add(def);
+                continue;
+            } 
+            definitions(typeInterface.getInterfaces(), defs);            
+        }
+        return defs;
+    }
+    
     JsonObject compacted(final Collection<String> context, final Object object, boolean attachContext) {
 
         final Map<String, JsonValue> fragment = new LinkedHashMap<>(7);
@@ -224,13 +243,7 @@ public class JsonLdWriter {
 
         Collection<String> types = null;
 
-        for (final Class<?> typeInterface : object.getClass().getInterfaces()) {
-
-            TypeDefinition typeDef = fragments.get(typeInterface);
-
-            if (typeDef == null) {
-                continue;
-            }
+        for (final TypeDefinition typeDef : definitions(object.getClass().getInterfaces())) {
 
             typeDef.context().forEach(context::add);
 
@@ -257,6 +270,7 @@ public class JsonLdWriter {
         }
 
         if (id == null && type == null && fragment.isEmpty()) {
+
             // fallback
             if (object instanceof Linkable linkable) {
                 return JsonLdTreeWriter.fragment(linkable.ld().asFragment());
