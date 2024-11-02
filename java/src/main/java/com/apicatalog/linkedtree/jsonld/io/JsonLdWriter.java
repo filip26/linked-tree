@@ -12,6 +12,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import com.apicatalog.linkedtree.Linkable;
@@ -267,7 +268,9 @@ public class JsonLdWriter {
         Map.Entry<String, JsonValue> idEntry = null;
 
         if (id != null) {
-            idEntry = Map.entry(id.name(), property(context, id, object, fragment));
+            final String idName = id.name();
+            idEntry = Optional.ofNullable(property(context, id, object, fragment))
+                    .map(value -> Map.entry(idName, value)).orElse(null);
         }
 
         Map.Entry<String, JsonValue> typeEntry = null;
@@ -285,15 +288,15 @@ public class JsonLdWriter {
 
                 } else if (objectTypes instanceof URI uriType) {
                     types = List.of(uriType.toString());
-                    
+
                 } else if (objectTypes instanceof Collection fragmentTypes) {
                     Class<?> typeClass = fragmentTypes.getClass().getComponentType();
-                    
+
                     if (typeClass.isAssignableFrom(String.class)) {
-                        types = ((Collection<String>)fragmentTypes);
-                        
+                        types = ((Collection<String>) fragmentTypes);
+
                     } else if (typeClass.isAssignableFrom(URI.class)) {
-                        types = ((Collection<URI>)fragmentTypes).stream().map(URI::toString).toList();
+                        types = ((Collection<URI>) fragmentTypes).stream().map(URI::toString).toList();
                     }
                 }
             }
