@@ -2,12 +2,14 @@ package com.apicatalog.linkedtree.jsonld.io;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Logger;
@@ -273,10 +275,26 @@ public class JsonLdWriter {
         if (type != null) {
             if (types == null || types.isEmpty()) {
 
-                FragmentType objectTypes = (FragmentType) type.invoke(object);
+                Object objectTypes = type.invoke(object);
 
-                if (objectTypes != null) {
-                    types = objectTypes.stream().toList();
+                if (objectTypes instanceof FragmentType fragmentType) {
+                    types = fragmentType.stream().toList();
+
+                } else if (objectTypes instanceof String stringType) {
+                    types = List.of(stringType);
+
+                } else if (objectTypes instanceof URI uriType) {
+                    types = List.of(uriType.toString());
+                    
+                } else if (objectTypes instanceof Collection fragmentTypes) {
+                    Class<?> typeClass = fragmentTypes.getClass().getComponentType();
+                    
+                    if (typeClass.isAssignableFrom(String.class)) {
+                        types = ((Collection<String>)fragmentTypes);
+                        
+                    } else if (typeClass.isAssignableFrom(URI.class)) {
+                        types = ((Collection<URI>)fragmentTypes).stream().map(URI::toString).toList();
+                    }
                 }
             }
 
