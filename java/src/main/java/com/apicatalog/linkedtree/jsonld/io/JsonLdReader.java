@@ -6,6 +6,7 @@ import java.util.Collection;
 import com.apicatalog.jsonld.JsonLd;
 import com.apicatalog.jsonld.JsonLdError;
 import com.apicatalog.jsonld.document.JsonDocument;
+import com.apicatalog.jsonld.loader.DocumentLoader;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
@@ -20,14 +21,16 @@ import jakarta.json.JsonStructure;
 
 public class JsonLdReader {
 
-    final JsonLdTreeReader reader;
+    protected final JsonLdTreeReader reader;
+    protected DocumentLoader loader;
     
-    protected JsonLdReader(JsonLdTreeReader reader) {
+    protected JsonLdReader(JsonLdTreeReader reader, DocumentLoader loader) {
         this.reader = reader;
+        this.loader = loader;
     }
     
-    public static final JsonLdReader of(TreeMapping mapping) {
-        return new JsonLdReader(JsonLdTreeReader.of(mapping));
+    public static final JsonLdReader of(TreeMapping mapping, DocumentLoader loader) {
+        return new JsonLdReader(JsonLdTreeReader.of(mapping), loader);
     }
     
     public <T> T read(Class<T> typeInterface, JsonObject fragment) throws TreeBuilderError, NodeAdapterError {
@@ -38,14 +41,19 @@ public class JsonLdReader {
         
         // check context
         if (!input.containsKey(JsonLdKeyword.CONTEXT)) {
-            Collection<String> contexts = context(typeInterface, new ArrayList<>(2));
+            Collection<String> contexts = context(typeInterface, new ArrayList<>(2)); //TODO get from scans, use cache
+            // inject context if exist
             if (!contexts.isEmpty()) {
                 expandContext = Json.createArrayBuilder(contexts).build();
             }
         }
 
         try {
-            JsonArray expanded = JsonLd.expand(JsonDocument.of(fragment)).context(expandContext).get();
+            final JsonArray expanded = JsonLd
+                    .expand(JsonDocument.of(fragment))
+                    .context(expandContext)
+                    .loader(loader)
+                    .get();
             
             return reader.read(typeInterface, expanded);
             
@@ -55,6 +63,7 @@ public class JsonLdReader {
     }
 
     Collection<String> context(Class<?> typeInterface, Collection<String> context) {
+
         if (typeInterface == null) {
             return context;
         }
@@ -80,6 +89,5 @@ public class JsonLdReader {
             }
         }
         return context;
-    }
-    
+    }    
 }

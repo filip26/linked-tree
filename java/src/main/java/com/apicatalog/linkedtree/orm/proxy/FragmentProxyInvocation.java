@@ -67,14 +67,20 @@ public class FragmentProxyInvocation implements InvocationHandler {
 
         final Getter getter = fragmentProxy.getters.get(method);
 
+        LinkedFragment target = source;
+        
+//        if (source.id() != null) {
+//            target = source.id().target();
+//        }
+        
         if (getter != null) {
-            return cache(method, getter.get(source));
+            return cache(method, getter.get(target));
         }
         if (fragmentProxy.typeInterface.equals(method.getDeclaringClass())) {
-            return cache(method, method.invoke(source, args));
+            return cache(method, method.invoke(target, args));
         }
         if (Object.class.equals(method.getDeclaringClass())) {
-            return method.invoke(source, args);
+            return method.invoke(target, args);
         }
 
         throw new UnsupportedOperationException(method.toGenericString());

@@ -35,6 +35,7 @@ import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
+import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
 
@@ -213,7 +214,7 @@ public class JsonLdWriter {
     public JsonObject compacted(Object object) {
         Objects.requireNonNull(object);
 
-        return compacted(new LinkedHashSet<>(2), object, true);
+        return (JsonObject)compacted(new LinkedHashSet<>(2), object, new ArrayList<>(10), true);
     }
 
     Collection<TypeDefinition> definitions(Class<?>[] typeInterfaces) {
@@ -235,7 +236,7 @@ public class JsonLdWriter {
         return defs;
     }
 
-    JsonObject compacted(final Collection<String> context, final Object object, boolean attachContext) {
+    JsonValue compacted(final Collection<String> context, final Object object, Collection<String> processedIds, boolean attachContext) {
 
         final Map<String, JsonValue> fragment = new LinkedHashMap<>(7);
 
@@ -246,12 +247,25 @@ public class JsonLdWriter {
 
         Collection<String> types = null;
 
+        Map.Entry<String, JsonValue> idEntry = null;
+
         for (final TypeDefinition typeDef : definitions(object.getClass().getInterfaces())) {
 
             typeDef.context().forEach(context::add);
 
             if (typeDef.id() != null && id == null) {
                 id = typeDef.id();
+                if (id != null) {
+                    final String idName = id.name();
+                    idEntry = Optional.ofNullable(property(context, id, object, fragment, processedIds))
+                            .map(value -> Map.entry(idName, value)).orElse(null);
+                    if (idEntry != null  
+                            && processedIds.contains((((JsonString)idEntry.getValue()).getString()))) {
+                        return idEntry.getValue();
+                    }
+                    
+                    processedIds.add((((JsonString)idEntry.getValue()).getString()));
+                }
             }
 
             if (typeDef.type() != null && type == null) {
@@ -268,7 +282,7 @@ public class JsonLdWriter {
 
             for (final PropertyDefinition propertyDef : typeDef.methods()) {
 
-                final JsonValue value = property(context, propertyDef, object, fragment);
+                final JsonValue value = property(context, propertyDef, object, fragment, processedIds);
 
                 if (value != null) {
                     fragment.put(propertyDef.name(), value);
@@ -284,14 +298,6 @@ public class JsonLdWriter {
             }
             // TODO
             return null;
-        }
-
-        Map.Entry<String, JsonValue> idEntry = null;
-
-        if (id != null) {
-            final String idName = id.name();
-            idEntry = Optional.ofNullable(property(context, id, object, fragment))
-                    .map(value -> Map.entry(idName, value)).orElse(null);
         }
 
         Map.Entry<String, JsonValue> typeEntry = null;
@@ -353,7 +359,7 @@ public class JsonLdWriter {
         return type;
     }
 
-    JsonValue property(Collection<String> context, PropertyDefinition propertyDef, Object object, Map<String, JsonValue> fragment) {
+    JsonValue property(Collection<String> context, PropertyDefinition propertyDef, Object object, Map<String, JsonValue> fragment, Collection<String> processedIds) {
 
         Object value = propertyDef.invoke(object);
 
@@ -377,16 +383,16 @@ public class JsonLdWriter {
             if (collection.isEmpty()) {
                 return null;
             }
-            if (collection.size() > 1) {
+            if (collection.size() > 1 || propertyDef.keepArray()) {
                 JsonArrayBuilder array = Json.createArrayBuilder();
 
                 for (Object item : collection) {
-                    array.add(item(context, propertyDef, item));
+                    array.add(item(context, propertyDef, item, processedIds));
                 }
 
                 return array.build();
             }
-            return value(context, propertyDef, collection.iterator().next());
+            return value(context, propertyDef, collection.iterator().next(), processedIds);
         }
 
         if (value instanceof LanguageMap langMap && langMap.size() > 0) {
@@ -416,20 +422,20 @@ public class JsonLdWriter {
             return values.build();
         }
 
-        return value(context, propertyDef, value);
+        return value(context, propertyDef, value, processedIds);
     }
 
-    JsonValue item(Collection<String> context, PropertyDefinition propertyDef, Object object) {
+    JsonValue item(Collection<String> context, PropertyDefinition propertyDef, Object object, Collection<String> processedIds) {
         if (object == null) {
             return JsonValue.NULL;
         }
-        return value(context, propertyDef, object);
+        return value(context, propertyDef, object, processedIds);
     }
 
-    JsonValue value(Collection<String> context, PropertyDefinition propertyDef, Object object) {
+    JsonValue value(Collection<String> context, PropertyDefinition propertyDef, Object object, Collection<String> processedIds) {
 
         if (propertyDef.isTargetFragment()) {
-            return compacted(context, object, false);
+            return compacted(context, object, processedIds, false);
         }
 
         DataTypeNormalizer normalizer = propertyDef.normalizer();

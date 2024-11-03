@@ -6,6 +6,7 @@ import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 
 import com.apicatalog.linkedtree.literal.adapter.DataTypeNormalizer;
+import com.apicatalog.linkedtree.orm.Compaction;
 import com.apicatalog.linkedtree.orm.Fragment;
 
 public class PropertyDefinition {
@@ -18,6 +19,8 @@ public class PropertyDefinition {
     protected boolean targetFragment;
     protected DataTypeNormalizer<?> normalizer;
 
+    protected boolean keepArray;
+    
     PropertyDefinition() {
     }
 
@@ -38,6 +41,9 @@ public class PropertyDefinition {
         if (type == null) {
             type = method.getReturnType();
         }
+        
+        Compaction compaction = method.getAnnotation(Compaction.class);
+        def.keepArray = compaction != null && compaction.keepArray();
 
         def.targetFragment = type.isAnnotationPresent(Fragment.class);
 
@@ -66,5 +72,9 @@ public class PropertyDefinition {
 
     public DataTypeNormalizer<?> normalizer() {
         return normalizer;
+    }
+
+    public boolean keepArray() {
+        return keepArray;
     }
 }
