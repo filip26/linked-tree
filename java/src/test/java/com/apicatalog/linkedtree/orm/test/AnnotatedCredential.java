@@ -41,6 +41,7 @@ public interface AnnotatedCredential {
     @Term("credentialSubject")
     GenericSubject subject();
 
+    @Term
     URI issuer();
 
     @Literal(XsdDateTimeAdapter.class)

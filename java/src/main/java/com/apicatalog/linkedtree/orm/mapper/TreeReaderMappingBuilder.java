@@ -31,6 +31,7 @@ import com.apicatalog.linkedtree.literal.DateTimeValue;
 import com.apicatalog.linkedtree.literal.DoubleValue;
 import com.apicatalog.linkedtree.literal.IntegerValue;
 import com.apicatalog.linkedtree.literal.adapter.DataTypeAdapter;
+import com.apicatalog.linkedtree.orm.Compaction;
 import com.apicatalog.linkedtree.orm.Fragment;
 import com.apicatalog.linkedtree.orm.Id;
 import com.apicatalog.linkedtree.orm.Literal;
@@ -56,23 +57,23 @@ import com.apicatalog.linkedtree.type.TypeAdapter;
 
 import jakarta.json.JsonValue;
 
-public class TreeMappingBuilder {
+public class TreeReaderMappingBuilder {
 
-    private static final Logger LOGGER = Logger.getLogger(TreeMappingBuilder.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(TreeReaderMappingBuilder.class.getName());
 
     final Map<Class<?>, TypeAdapter> typeAdapters;
     final Map<Class<? extends DataTypeAdapter>, DataTypeAdapter> literalAdapters;
 
     final LiteralMapping literalMapping;
 
-    protected TreeMappingBuilder() {
+    protected TreeReaderMappingBuilder() {
         this.typeAdapters = new LinkedHashMap<>();
         this.literalAdapters = new LinkedHashMap<>();
 
         this.literalMapping = new LiteralMapping();
     }
 
-    public TreeMappingBuilder defaults() {
+    public TreeReaderMappingBuilder defaults() {
         literalMapping
                 .add(LinkedLiteral.class, String.class,
                         LinkedLiteral::lexicalValue)
@@ -91,29 +92,29 @@ public class TreeMappingBuilder {
         return this;
     }
 
-    public TreeMappingBuilder with(TypeAdapter adapter) {
+    public TreeReaderMappingBuilder with(TypeAdapter adapter) {
         this.typeAdapters.put(adapter.typeInterface(), adapter);
         return this;
     }
 
-    public TreeMappingBuilder with(
+    public TreeReaderMappingBuilder with(
             String type,
             Class<?> typeInterface,
             NodeAdapter<LinkedFragment, Object> adapter) {
         return with(new GenericTypeAdapter(type, typeInterface, adapter));
     }
 
-    public TreeMappingBuilder with(DataTypeAdapter adapter) {
+    public TreeReaderMappingBuilder with(DataTypeAdapter adapter) {
         this.literalAdapters.put(adapter.getClass(), adapter);
         return this;
     }
 
-    public <T extends LinkedLiteral, R> TreeMappingBuilder map(Class<T> source, Class<R> target, LiteralMapper<T, R> mapper) {
+    public <T extends LinkedLiteral, R> TreeReaderMappingBuilder map(Class<T> source, Class<R> target, LiteralMapper<T, R> mapper) {
         literalMapping.add(source, target, mapper);
         return this;
     }
 
-    public TreeMappingBuilder scan(final Class<?> typeInterface) {
+    public TreeReaderMappingBuilder scan(final Class<?> typeInterface) {
 
         if (typeAdapters.containsKey(typeInterface)) {
             return this;
@@ -146,6 +147,28 @@ public class TreeMappingBuilder {
                 continue;
             }
 
+            final Vocab declaredVocab = method.getDeclaringClass().getAnnotation(Vocab.class);
+            Vocab methodVocab = method.getAnnotation(Vocab.class);
+            final Term methodTerm = method.getAnnotation(Term.class);
+            
+            final boolean isIdMethod = method.isAnnotationPresent(Id.class);
+            final boolean isTypeMethod = method.isAnnotationPresent(Type.class)
+                    || method.getReturnType().isAssignableFrom(FragmentType.class);
+            final boolean isLangMap = method.getReturnType().isAssignableFrom(LanguageMap.class);
+
+            // ignore if no annotation is found
+            if (methodVocab == null
+                    && declaredVocab == null
+                    && methodTerm == null
+                    && !isIdMethod
+                    && !isTypeMethod
+                    && !isLangMap
+                    && !method.isAnnotationPresent(Literal.class)
+                    && !method.isAnnotationPresent(Compaction.class)                    
+                    ) {
+                continue;
+            }
+
             Mapper mapper = method.getAnnotation(Mapper.class);
             if (mapper != null) {
                 try {
@@ -174,8 +197,6 @@ public class TreeMappingBuilder {
                 }
             }
 
-            final Vocab declaredVocab = method.getDeclaringClass().getAnnotation(Vocab.class);
-
             Getter getter = null;
 
             // @id
@@ -189,13 +210,9 @@ public class TreeMappingBuilder {
 
             } else {
 
-                Vocab methodVocab = method.getAnnotation(Vocab.class);
-
                 if (methodVocab == null) {
                     methodVocab = declaredVocab;
                 }
-
-                final Term methodTerm = method.getAnnotation(Term.class);
 
                 final String termUri = expand(
                         methodVocab,

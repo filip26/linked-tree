@@ -10,11 +10,11 @@ public record TreeReaderMapping(
         Map<String, TypeAdapter> fragmentAdapters,
         Map<String, LiteralAdapter> literalAdapters) {
 
-    public static TreeMappingBuilder createBuilder() {
-        return new TreeMappingBuilder().defaults();
+    public static TreeReaderMappingBuilder createBuilder() {
+        return new TreeReaderMappingBuilder().defaults();
     }
 
-    public static TreeMappingBuilder createGenericBuilder() {
-        return new TreeMappingBuilder();
+    public static TreeReaderMappingBuilder createGenericBuilder() {
+        return new TreeReaderMappingBuilder();
     }
 }

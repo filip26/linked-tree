@@ -26,6 +26,7 @@ public interface VerificationMethod {
 
     FragmentType type();
 
+    @Term
     URI controller();
 
     @Literal(XsdDateTimeAdapter.class)

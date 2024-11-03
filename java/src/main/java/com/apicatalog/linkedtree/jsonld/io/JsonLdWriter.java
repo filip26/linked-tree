@@ -21,11 +21,13 @@ import com.apicatalog.linkedtree.def.TypeDefinition;
 import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 import com.apicatalog.linkedtree.lang.LanguageMap;
 import com.apicatalog.linkedtree.literal.adapter.DataTypeNormalizer;
+import com.apicatalog.linkedtree.orm.Compaction;
 import com.apicatalog.linkedtree.orm.Context;
 import com.apicatalog.linkedtree.orm.Fragment;
 import com.apicatalog.linkedtree.orm.Id;
 import com.apicatalog.linkedtree.orm.Literal;
 import com.apicatalog.linkedtree.orm.Term;
+import com.apicatalog.linkedtree.orm.Type;
 import com.apicatalog.linkedtree.orm.Vocab;
 import com.apicatalog.linkedtree.orm.context.ContextReducer;
 import com.apicatalog.linkedtree.orm.getter.GetterMethod;
@@ -112,24 +114,42 @@ public class JsonLdWriter {
 
         for (final Method method : GetterMethod.filter(typeInterface, true)) {
 
-            String propertyVocab = vocab;
             Vocab methodVocab = method.getAnnotation(Vocab.class);
+            Term methodTerm = method.getAnnotation(Term.class);
+            Literal literal = method.getAnnotation(Literal.class);
+
+            final boolean isIdMethod = method.isAnnotationPresent(Id.class);
+            final boolean isTypeMethod = method.isAnnotationPresent(Type.class)
+                    || method.getReturnType().isAssignableFrom(FragmentType.class);
+            final boolean isLangMap = method.getReturnType().isAssignableFrom(LanguageMap.class);
+
+            // ignore if no annotation is found
+            if (methodVocab == null
+                    && methodTerm == null
+                    && literal == null                    
+                    && !isIdMethod
+                    && !isTypeMethod
+                    && !isLangMap
+                    && !method.isAnnotationPresent(Compaction.class)
+                    ) {
+                continue;
+            }
+
+            String propertyVocab = vocab;
             if (methodVocab != null) {
                 propertyVocab = methodVocab.value();
             }
 
             String propertyName = method.getName();
-            Term methodTerm = method.getAnnotation(Term.class);
+
             if (methodTerm != null) {
-                if (methodTerm.compact()) {
+                if (methodTerm.compact() && !methodTerm.value().isBlank()) {
                     propertyName = methodTerm.value();
                 }
-                if (methodTerm.vocab() != null) {
+                if (!methodTerm.vocab().isBlank()) {
                     propertyVocab = methodTerm.vocab();
                 }
             }
-
-            Literal literal = method.getAnnotation(Literal.class);
 
             DataTypeNormalizer<?> normalizer = normalizers.get(method.getReturnType());
 
@@ -150,11 +170,10 @@ public class JsonLdWriter {
                     method,
                     normalizer);
 
-            if (method.isAnnotationPresent(Id.class)) {
+            if (isIdMethod) {
                 idMethod = def;
 
-            } else if (method.isAnnotationPresent(com.apicatalog.linkedtree.orm.Type.class)
-                    || FragmentType.class.isAssignableFrom(method.getReturnType())) {
+            } else if (isTypeMethod) {
                 typeMethod = def;
 
             } else {
@@ -163,7 +182,7 @@ public class JsonLdWriter {
         }
 
         Collections.sort(properties);
-        
+
         typeDefinitons.put(typeInterface, new TypeDefinition(
                 vocab,
                 type,
@@ -216,7 +235,7 @@ public class JsonLdWriter {
     public JsonObject compacted(Object object) {
         Objects.requireNonNull(object);
 
-        return (JsonObject)compacted(new LinkedHashSet<>(2), object, new ArrayList<>(10), true);
+        return (JsonObject) compacted(new LinkedHashSet<>(2), object, new ArrayList<>(10), true);
     }
 
     Collection<TypeDefinition> definitions(Class<?>[] typeInterfaces) {
@@ -261,12 +280,12 @@ public class JsonLdWriter {
                     final String idName = id.name();
                     idEntry = Optional.ofNullable(property(context, id, object, fragment, processedIds))
                             .map(value -> Map.entry(idName, value)).orElse(null);
-                    if (idEntry != null  
-                            && processedIds.contains((((JsonString)idEntry.getValue()).getString()))) {
+                    if (idEntry != null
+                            && processedIds.contains((((JsonString) idEntry.getValue()).getString()))) {
                         return idEntry.getValue();
                     }
-                    
-                    processedIds.add((((JsonString)idEntry.getValue()).getString()));
+
+                    processedIds.add((((JsonString) idEntry.getValue()).getString()));
                 }
             }
 
@@ -343,7 +362,7 @@ public class JsonLdWriter {
                 }
             }
         }
-        
+
         if (!attachContext && idEntry != null && typeEntry == null && fragment.isEmpty()) {
             return idEntry.getValue();
         }
