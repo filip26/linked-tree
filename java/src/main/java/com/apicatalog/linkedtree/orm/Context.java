@@ -8,6 +8,18 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Context {
-    
-    String[] value() default "";
+
+    /**
+     * An array of <code>@context</code> URIs
+     * 
+     * @return
+     */
+    String[] value();
+
+    /**
+     * Override all previous {@link Context} declarations
+     * 
+     * @return
+     */
+    boolean override() default false;
 }

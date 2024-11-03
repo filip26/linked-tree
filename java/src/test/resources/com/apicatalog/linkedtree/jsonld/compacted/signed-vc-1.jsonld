@@ -11,11 +11,9 @@
   "description": "A minimum viable example of an Alumni Credential.",
   "name": "Alumni Credential",
   "credentialStatus": [
+    "https://license.example/credentials/status/84#142781",
     {
-      "id": "https://license.example/credentials/status/84#14278"
-    },
-    {
-      "@id": "https://license.example/credentials/status/84#82938",
+      "@id": "https://license.example/credentials/status/84#829382",
       "@type": [
         "https://www.w3.org/ns/credentials/status#Unknown"
       ],

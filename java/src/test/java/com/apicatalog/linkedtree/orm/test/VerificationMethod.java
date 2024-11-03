@@ -2,13 +2,14 @@ package com.apicatalog.linkedtree.orm.test;
 
 import java.net.URI;
 import java.time.Instant;
+import java.util.Objects;
 
 import com.apicatalog.linkedtree.orm.Fragment;
 import com.apicatalog.linkedtree.orm.Id;
 import com.apicatalog.linkedtree.orm.Literal;
 import com.apicatalog.linkedtree.orm.Term;
 import com.apicatalog.linkedtree.orm.Vocab;
-import com.apicatalog.linkedtree.type.Type;
+import com.apicatalog.linkedtree.type.FragmentType;
 import com.apicatalog.linkedtree.xsd.XsdDateTimeAdapter;
 
 /**
@@ -23,7 +24,7 @@ public interface VerificationMethod {
     @Id
     URI id();
 
-    Type type();
+    FragmentType type();
 
     URI controller();
 
@@ -34,4 +35,15 @@ public interface VerificationMethod {
     @Term(value = "expiration", compact = false)
     Instant expires();
 
+    static boolean equals(VerificationMethod k1, VerificationMethod k2) {
+        if (k1 == null || k2 == null) {
+            return k1 == k2;
+
+        }
+        return Objects.equals(k1.id(), k2.id())
+                && Objects.equals(k1.type(), k2.type())
+                && Objects.equals(k1.controller(), k2.controller())
+                && Objects.equals(k1.expires(), k2.expires())
+                && Objects.equals(k1.revoked(), k2.revoked());
+    }
 }

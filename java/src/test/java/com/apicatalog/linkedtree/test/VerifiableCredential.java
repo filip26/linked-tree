@@ -10,7 +10,7 @@ import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.lang.LangStringSelector;
 import com.apicatalog.linkedtree.selector.InvalidSelector;
 import com.apicatalog.linkedtree.type.GenericTypeAdapter;
-import com.apicatalog.linkedtree.type.Type;
+import com.apicatalog.linkedtree.type.FragmentType;
 import com.apicatalog.linkedtree.type.TypeAdapter;
 
 public class VerifiableCredential {
@@ -23,7 +23,7 @@ public class VerifiableCredential {
             VerifiableCredential::of);
 
     protected URI id;
-    protected Type type;
+    protected FragmentType type;
 
     protected LangStringSelector name;
     protected LangStringSelector description;
@@ -106,7 +106,7 @@ public class VerifiableCredential {
         return id;
     }
 
-    public Type type() {
+    public FragmentType type() {
         return type;
     }
 

@@ -2,14 +2,17 @@ package com.apicatalog.linkedtree.jsonld.io;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import com.apicatalog.linkedtree.Linkable;
@@ -26,35 +29,36 @@ import com.apicatalog.linkedtree.orm.Term;
 import com.apicatalog.linkedtree.orm.Vocab;
 import com.apicatalog.linkedtree.orm.context.ContextReducer;
 import com.apicatalog.linkedtree.orm.getter.GetterMethod;
-import com.apicatalog.linkedtree.type.Type;
+import com.apicatalog.linkedtree.type.FragmentType;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
+import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 import jakarta.json.JsonValue.ValueType;
 
-public class JsonLdObjectWriter {
+public class JsonLdWriter {
 
-    private static final Logger LOGGER = Logger.getLogger(JsonLdObjectWriter.class.getName());
-    
+    private static final Logger LOGGER = Logger.getLogger(JsonLdWriter.class.getName());
+
     ContextReducer contextReducer;
-    
-    Map<Class<?>, TypeDefinition> fragments;
+
+    Map<Class<?>, TypeDefinition> typeDefinitons;
     Map<Class<?>, DataTypeNormalizer<?>> datatypes;
 
-    public JsonLdObjectWriter() {
+    public JsonLdWriter() {
         this.contextReducer = new ContextReducer();
-        this.fragments = new HashMap<>();
+        this.typeDefinitons = new HashMap<>();
         this.datatypes = new HashMap<>();
     }
 
     public ContextReducer contextReducer() {
         return contextReducer;
     }
-    
-    public JsonLdObjectWriter scan(Class<?> type) {
+
+    public JsonLdWriter scan(Class<?> type) {
 
         Objects.requireNonNull(type);
 
@@ -64,6 +68,21 @@ public class JsonLdObjectWriter {
 
         scanInterface(type);
 
+        return this;
+    }
+
+    public JsonLdWriter context(
+            String id,
+            int position,
+            Collection<String> includes) {
+        contextReducer.define(id, position, includes);
+        return this;
+    }
+
+    public JsonLdWriter context(
+            String id,
+            Collection<String> includes) {
+        contextReducer.define(id, includes);
         return this;
     }
 
@@ -88,10 +107,10 @@ public class JsonLdObjectWriter {
         PropertyDefinition idMethod = null;
         PropertyDefinition typeMethod = null;
 
-        Collection<PropertyDefinition> properties = new ArrayList<>(7);
+        List<PropertyDefinition> properties = new ArrayList<>(7);
         Map<Class<?>, DataTypeNormalizer<?>> normalizers = new HashMap<>();
 
-        for (final Method method : GetterMethod.filter(typeInterface)) {
+        for (final Method method : GetterMethod.filter(typeInterface, true)) {
 
             String propertyVocab = vocab;
             Vocab methodVocab = method.getAnnotation(Vocab.class);
@@ -134,7 +153,8 @@ public class JsonLdObjectWriter {
             if (method.isAnnotationPresent(Id.class)) {
                 idMethod = def;
 
-            } else if (Type.class.isAssignableFrom(method.getReturnType())) {
+            } else if (method.isAnnotationPresent(com.apicatalog.linkedtree.orm.Type.class)
+                    || FragmentType.class.isAssignableFrom(method.getReturnType())) {
                 typeMethod = def;
 
             } else {
@@ -142,7 +162,10 @@ public class JsonLdObjectWriter {
             }
         }
 
-        fragments.put(typeInterface, new TypeDefinition(
+        Collections.sort(properties);
+        
+        typeDefinitons.put(typeInterface, new TypeDefinition(
+                vocab,
                 type,
                 context,
                 idMethod,
@@ -168,6 +191,9 @@ public class JsonLdObjectWriter {
 
             Context fragmentContext = typeInterface.getAnnotation(Context.class);
             if (fragmentContext != null) {
+                if (fragmentContext.override()) {
+                    context.clear();
+                }
                 for (String ctx : fragmentContext.value()) {
                     context.add(ctx);
                 }
@@ -190,30 +216,58 @@ public class JsonLdObjectWriter {
     public JsonObject compacted(Object object) {
         Objects.requireNonNull(object);
 
-        return compacted(new LinkedHashSet<>(2), object, true);
+        return (JsonObject)compacted(new LinkedHashSet<>(2), object, new ArrayList<>(10), true);
     }
 
-    JsonObject compacted(final Collection<String> context, final Object object, boolean attachContext) {
+    Collection<TypeDefinition> definitions(Class<?>[] typeInterfaces) {
+        if (typeInterfaces == null || typeInterfaces.length == 0) {
+            return Collections.emptyList();
+        }
+        return definitions(typeInterfaces, new ArrayList<>(2));
+    }
+
+    Collection<TypeDefinition> definitions(Class<?>[] typeInterfaces, Collection<TypeDefinition> defs) {
+        for (final Class<?> typeInterface : typeInterfaces) {
+            TypeDefinition def = typeDefinitons.get(typeInterface);
+            if (def != null) {
+                defs.add(def);
+                continue;
+            }
+            definitions(typeInterface.getInterfaces(), defs);
+        }
+        return defs;
+    }
+
+    JsonValue compacted(final Collection<String> context, final Object object, Collection<String> processedIds, boolean attachContext) {
 
         final Map<String, JsonValue> fragment = new LinkedHashMap<>(7);
+
+        String vocab = null;
 
         PropertyDefinition id = null;
         PropertyDefinition type = null;
 
         Collection<String> types = null;
 
-        for (final Class<?> typeInterface : object.getClass().getInterfaces()) {
+        Map.Entry<String, JsonValue> idEntry = null;
 
-            TypeDefinition typeDef = fragments.get(typeInterface);
-
-            if (typeDef == null) {
-                continue;
-            }
+        for (final TypeDefinition typeDef : definitions(object.getClass().getInterfaces())) {
 
             typeDef.context().forEach(context::add);
 
             if (typeDef.id() != null && id == null) {
                 id = typeDef.id();
+                if (id != null) {
+                    final String idName = id.name();
+                    idEntry = Optional.ofNullable(property(context, id, object, fragment, processedIds))
+                            .map(value -> Map.entry(idName, value)).orElse(null);
+                    if (idEntry != null  
+                            && processedIds.contains((((JsonString)idEntry.getValue()).getString()))) {
+                        return idEntry.getValue();
+                    }
+                    
+                    processedIds.add((((JsonString)idEntry.getValue()).getString()));
+                }
             }
 
             if (typeDef.type() != null && type == null) {
@@ -224,9 +278,13 @@ public class JsonLdObjectWriter {
                 types = typeDef.types(); // TODO
             }
 
+            if (typeDef.vocab() != null && vocab == null) {
+                vocab = typeDef.vocab();
+            }
+
             for (final PropertyDefinition propertyDef : typeDef.methods()) {
 
-                final JsonValue value = property(context, propertyDef, object, fragment);
+                final JsonValue value = property(context, propertyDef, object, fragment, processedIds);
 
                 if (value != null) {
                     fragment.put(propertyDef.name(), value);
@@ -235,6 +293,7 @@ public class JsonLdObjectWriter {
         }
 
         if (id == null && type == null && fragment.isEmpty()) {
+
             // fallback
             if (object instanceof Linkable linkable) {
                 return JsonLdTreeWriter.fragment(linkable.ld().asFragment());
@@ -243,21 +302,35 @@ public class JsonLdObjectWriter {
             return null;
         }
 
-        Map.Entry<String, JsonValue> idEntry = null;
-
-        if (id != null) {
-            idEntry = Map.entry(id.name(), property(context, id, object, fragment));
-        }
-
         Map.Entry<String, JsonValue> typeEntry = null;
 
         if (type != null) {
             if (types == null || types.isEmpty()) {
 
-                Type objectTypes = (Type) type.invoke(object);
+                Object objectTypes = type.invoke(object);
 
-                if (objectTypes != null) {
-                    types = objectTypes.stream().toList();
+                final String v = vocab;
+
+                if (objectTypes instanceof FragmentType fragmentType) {
+                    types = fragmentType.stream().map(t -> compactType(v, t)).toList();
+
+                } else if (objectTypes instanceof String stringType) {
+                    types = List.of(compactType(vocab, stringType));
+
+                } else if (objectTypes instanceof URI uriType) {
+                    types = List.of(compactType(vocab, uriType.toString()));
+
+                } else if (objectTypes instanceof Collection fragmentTypes) {
+                    Class<?> typeClass = fragmentTypes.getClass().getComponentType();
+
+                    if (typeClass.isAssignableFrom(String.class)) {
+                        types = ((Collection<String>) fragmentTypes).stream()
+                                .map(t -> compactType(v, t)).toList();
+
+                    } else if (typeClass.isAssignableFrom(URI.class)) {
+                        types = ((Collection<URI>) fragmentTypes).stream().map(URI::toString)
+                                .map(t -> compactType(v, t)).toList();
+                    }
                 }
             }
 
@@ -270,6 +343,10 @@ public class JsonLdObjectWriter {
                 }
             }
         }
+        
+        if (!attachContext && idEntry != null && typeEntry == null && fragment.isEmpty()) {
+            return idEntry.getValue();
+        }
 
         return materialize(
                 attachContext ? context : Collections.emptyList(),
@@ -278,7 +355,17 @@ public class JsonLdObjectWriter {
                 fragment);
     }
 
-    JsonValue property(Collection<String> context, PropertyDefinition propertyDef, Object object, Map<String, JsonValue> fragment) {
+    static String compactType(String vocab, String type) {
+        if (vocab == null || type == null) {
+            return type;
+        }
+        if (type.startsWith(vocab)) {
+            return type.substring(vocab.length());
+        }
+        return type;
+    }
+
+    JsonValue property(Collection<String> context, PropertyDefinition propertyDef, Object object, Map<String, JsonValue> fragment, Collection<String> processedIds) {
 
         Object value = propertyDef.invoke(object);
 
@@ -302,16 +389,16 @@ public class JsonLdObjectWriter {
             if (collection.isEmpty()) {
                 return null;
             }
-            if (collection.size() > 1) {
+            if (collection.size() > 1 || propertyDef.keepArray()) {
                 JsonArrayBuilder array = Json.createArrayBuilder();
 
                 for (Object item : collection) {
-                    array.add(item(context, propertyDef, item));
+                    array.add(item(context, propertyDef, item, processedIds));
                 }
 
                 return array.build();
             }
-            return value(context, propertyDef, collection.iterator().next());
+            return value(context, propertyDef, collection.iterator().next(), processedIds);
         }
 
         if (value instanceof LanguageMap langMap && langMap.size() > 0) {
@@ -341,20 +428,20 @@ public class JsonLdObjectWriter {
             return values.build();
         }
 
-        return value(context, propertyDef, value);
+        return value(context, propertyDef, value, processedIds);
     }
 
-    JsonValue item(Collection<String> context, PropertyDefinition propertyDef, Object object) {
+    JsonValue item(Collection<String> context, PropertyDefinition propertyDef, Object object, Collection<String> processedIds) {
         if (object == null) {
             return JsonValue.NULL;
         }
-        return value(context, propertyDef, object);
+        return value(context, propertyDef, object, processedIds);
     }
 
-    JsonValue value(Collection<String> context, PropertyDefinition propertyDef, Object object) {
+    JsonValue value(Collection<String> context, PropertyDefinition propertyDef, Object object, Collection<String> processedIds) {
 
         if (propertyDef.isTargetFragment()) {
-            return compacted(context, object, false);
+            return compacted(context, object, processedIds, false);
         }
 
         DataTypeNormalizer normalizer = propertyDef.normalizer();
@@ -381,11 +468,11 @@ public class JsonLdObjectWriter {
         JsonObjectBuilder builder = Json.createObjectBuilder();
 
         Collection<String> reduced = contextReducer.reduce(context);
-        
+
         if (reduced.size() == 1) {
             builder.add(JsonLdKeyword.CONTEXT, context.iterator().next());
 
-        } else if (reduced.size() > 1) {            
+        } else if (reduced.size() > 1) {
             builder.add(JsonLdKeyword.CONTEXT, Json.createArrayBuilder(reduced));
         }
 

@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
@@ -20,6 +21,7 @@ import jakarta.json.JsonValue;
 import jakarta.json.JsonWriter;
 import jakarta.json.JsonWriterFactory;
 import jakarta.json.stream.JsonGenerator;
+import jakarta.json.stream.JsonParser;
 
 public class TestUtils {
 
@@ -51,6 +53,16 @@ public class TestUtils {
                         }
                     }
                 });
+    }
+
+    public static final JsonValue parse(String json) {
+
+        try (JsonParser parser = Json.createParser(new StringReader(
+                "{\"kid\":\"key-1\",\"kty\":\"EC\",\"crv\":\"P-384\",\"alg\":\"ES384\",\"x\":\"1F14JSzKbwxO-Heqew5HzEt-0NZXAjCu8w-RiuV8_9tMiXrSZdjsWqi4y86OFb5d\",\"y\":\"dnd8yoq-NOJcBuEYgdVVMmSxonXg-DU90d7C4uPWb_Lkd4WIQQEH0DyeC2KUDMIU\"}"))) {
+
+            parser.next();
+            return parser.getValue();
+        }
     }
 
     public static final boolean compareJson(final String testCase, final JsonStructure result, final JsonStructure expected) {

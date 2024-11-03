@@ -5,10 +5,10 @@ import java.util.stream.StreamSupport;
 
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 
-public interface Type extends Iterable<String> {
+public interface FragmentType extends Iterable<String> {
 
-    public static Type empty() {
-        return AdaptableType.EMPTY;
+    public static FragmentType empty() {
+        return EmptyType.instance();
     }
     
     default boolean contains(String type) {

@@ -16,11 +16,11 @@ import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.link.MutableLink;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 import com.apicatalog.linkedtree.type.AdaptableType;
-import com.apicatalog.linkedtree.type.Type;
+import com.apicatalog.linkedtree.type.FragmentType;
 
 public record GenericTree(
         Link id,
-        Type type,
+        FragmentType type,
         Map<String, LinkedContainer> entries,
         Collection<LinkedNode> nodes,
         Map<String, Link> linkMap,
@@ -79,7 +79,7 @@ public record GenericTree(
                                 MutableLink::of));
 
         var types = source.asTree().type().isEmpty()
-                ? Type.empty()
+                ? FragmentType.empty()
                 : AdaptableType.of(source.asTree().type().stream().toList());
 
         final Map<String, LinkedContainer> treeMeta =

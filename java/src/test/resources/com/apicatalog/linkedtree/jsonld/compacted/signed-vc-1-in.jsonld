@@ -67,7 +67,7 @@
     ],
     "https://www.w3.org/2018/credentials#credentialStatus": [
       {
-        "@id": "https://license.example/credentials/status/84#14278",
+        "@id": "https://license.example/credentials/status/84#142781",
         "https://www.w3.org/ns/credentials/status#statusListCredential": [
           {
             "@id": "https://license.example/credentials/status/85"
@@ -88,7 +88,7 @@
         ]
       },
       {
-        "@id": "https://license.example/credentials/status/84#82938",
+        "@id": "https://license.example/credentials/status/84#829382",
         "https://www.w3.org/ns/credentials/status#statusListCredential": [
           {
             "@id": "https://license.example/credentials/status/84"

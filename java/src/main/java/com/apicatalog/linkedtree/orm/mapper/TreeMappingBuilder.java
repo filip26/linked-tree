@@ -36,6 +36,7 @@ import com.apicatalog.linkedtree.orm.Id;
 import com.apicatalog.linkedtree.orm.Literal;
 import com.apicatalog.linkedtree.orm.Mapper;
 import com.apicatalog.linkedtree.orm.Term;
+import com.apicatalog.linkedtree.orm.Type;
 import com.apicatalog.linkedtree.orm.Vocab;
 import com.apicatalog.linkedtree.orm.getter.CollectionGetter;
 import com.apicatalog.linkedtree.orm.getter.FragmentGetter;
@@ -48,8 +49,8 @@ import com.apicatalog.linkedtree.orm.getter.NodeGetter;
 import com.apicatalog.linkedtree.orm.getter.RefGetter;
 import com.apicatalog.linkedtree.orm.getter.TypeGetter;
 import com.apicatalog.linkedtree.orm.proxy.FragmentProxy;
+import com.apicatalog.linkedtree.type.FragmentType;
 import com.apicatalog.linkedtree.type.GenericTypeAdapter;
-import com.apicatalog.linkedtree.type.Type;
 import com.apicatalog.linkedtree.type.TypeAdapter;
 
 import jakarta.json.JsonValue;
@@ -135,7 +136,7 @@ public class TreeMappingBuilder {
         final Map<Method, Getter> getters = new HashMap<>(typeInterface.getMethods().length);
 
         // scan methods
-        for (final Method method : GetterMethod.filter(typeInterface)) {
+        for (final Method method : GetterMethod.filter(typeInterface, false)) {
 
             Mapper mapper = method.getAnnotation(Mapper.class);
             if (mapper != null) {
@@ -158,7 +159,7 @@ public class TreeMappingBuilder {
                             (Class) mapMethod.getParameterTypes()[0],
                             method.getReturnType(),
                             (LiteralMapper) mapper.value().getDeclaredConstructor().newInstance());
-                    
+
                 } catch (InvocationTargetException | IllegalAccessException
                         | InstantiationException | NoSuchMethodException e) {
                     throw new IllegalStateException(e);
@@ -174,8 +175,9 @@ public class TreeMappingBuilder {
                 getter = IdGetter.instance();
 
                 // @type
-            } else if (method.getReturnType().isAssignableFrom(Type.class)) {
-                getter = TypeGetter.instance();
+            } else if (method.isAnnotationPresent(Type.class)
+                    || method.getReturnType().isAssignableFrom(FragmentType.class)) {
+                getter = TypeGetter.instance(method.getReturnType());
 
             } else {
 

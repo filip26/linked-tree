@@ -3,11 +3,11 @@ package com.apicatalog.linkedtree.orm.test;
 import java.net.URI;
 import java.time.Instant;
 
-import com.apicatalog.linkedtree.type.Type;
+import com.apicatalog.linkedtree.type.FragmentType;
 
 public record GenericMultikey(
         URI id,
-        Type type,
+        FragmentType type,
         URI controller,
         Instant revoked,
         Instant expires,

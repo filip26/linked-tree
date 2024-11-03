@@ -20,7 +20,7 @@ import com.apicatalog.linkedtree.primitive.GenericTree;
 import com.apicatalog.linkedtree.traversal.NodeConsumer;
 import com.apicatalog.linkedtree.traversal.NodeSelector;
 import com.apicatalog.linkedtree.type.AdaptableType;
-import com.apicatalog.linkedtree.type.Type;
+import com.apicatalog.linkedtree.type.FragmentType;
 
 public class GenericTreeCompiler implements NodeConsumer<LinkedNode>, NodeSelector<LinkedNode> {
 
@@ -123,7 +123,7 @@ public class GenericTreeCompiler implements NodeConsumer<LinkedNode>, NodeSelect
         } else if (source.isFragment()) {
 
             var types = source.asFragment().type().isEmpty()
-                    ? Type.empty()
+                    ? FragmentType.empty()
                     : AdaptableType.of(source.asFragment().type().stream().toList());
 
             var fragment = new GenericFragment(

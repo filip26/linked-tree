@@ -6,13 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface Fragment {
+@Target(ElementType.METHOD)
+public @interface Type {
     
-    /**
-     * A generic fragment, i.e. untyped super type
-     *   
-     * @return <code>true</code> if the interface denotes a type
-     */
-    boolean generic() default false;
 }

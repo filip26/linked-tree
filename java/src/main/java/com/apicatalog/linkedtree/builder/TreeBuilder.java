@@ -28,7 +28,7 @@ import com.apicatalog.linkedtree.primitive.GenericContainer;
 import com.apicatalog.linkedtree.primitive.GenericTree;
 import com.apicatalog.linkedtree.traversal.NodeConsumer;
 import com.apicatalog.linkedtree.type.AdaptableType;
-import com.apicatalog.linkedtree.type.Type;
+import com.apicatalog.linkedtree.type.FragmentType;
 import com.apicatalog.linkedtree.type.TypeAdapter;
 
 public class TreeBuilder<T> implements NodeConsumer<T> {
@@ -218,7 +218,7 @@ public class TreeBuilder<T> implements NodeConsumer<T> {
     protected static Collection<String> mergeTypes(Collection<LinkedFragment> fragments) {
         return fragments.stream()
                 .map(LinkedFragment::type)
-                .flatMap(Type::stream)
+                .flatMap(FragmentType::stream)
                 .collect(Collectors.toSet());
     }
 
@@ -338,7 +338,7 @@ public class TreeBuilder<T> implements NodeConsumer<T> {
             Collection<ProcessingInstruction> ops) {
 
         var types = type.isEmpty()
-                ? Type.empty()
+                ? FragmentType.empty()
                 : AdaptableType.of(type);
 
         pi(ops);
@@ -415,7 +415,7 @@ public class TreeBuilder<T> implements NodeConsumer<T> {
 //                                MutableLink::of));
 
         var types = type.isEmpty()
-                ? Type.empty()
+                ? FragmentType.empty()
                 : AdaptableType.of(type);
 
         var link = link(id);

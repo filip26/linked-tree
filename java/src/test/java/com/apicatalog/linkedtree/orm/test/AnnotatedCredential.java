@@ -12,7 +12,7 @@ import com.apicatalog.linkedtree.orm.Literal;
 import com.apicatalog.linkedtree.orm.Term;
 import com.apicatalog.linkedtree.orm.Vocab;
 import com.apicatalog.linkedtree.test.Status;
-import com.apicatalog.linkedtree.type.Type;
+import com.apicatalog.linkedtree.type.FragmentType;
 import com.apicatalog.linkedtree.xsd.XsdDateTimeAdapter;
 
 @Fragment
@@ -30,7 +30,7 @@ public interface AnnotatedCredential {
     URI id();
 
     // implicit type selector, detected by return type
-    Type type();
+    FragmentType type();
 
     @Vocab("https://schema.org/")
     LangStringSelector name();
