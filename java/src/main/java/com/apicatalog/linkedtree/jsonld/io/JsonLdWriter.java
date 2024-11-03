@@ -341,6 +341,10 @@ public class JsonLdWriter {
                 }
             }
         }
+        
+        if (!attachContext && idEntry != null && typeEntry == null && fragment.isEmpty()) {
+            return idEntry.getValue();
+        }
 
         return materialize(
                 attachContext ? context : Collections.emptyList(),
