@@ -22,7 +22,7 @@ import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdWriter;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
-import com.apicatalog.linkedtree.orm.mapper.TreeMapping;
+import com.apicatalog.linkedtree.orm.mapper.TreeReaderMapping;
 import com.apicatalog.linkedtree.orm.test.AlumniSubject;
 import com.apicatalog.linkedtree.orm.test.AnnotatedCredential;
 import com.apicatalog.linkedtree.orm.test.BitstringStatusListEntry;
@@ -41,7 +41,7 @@ import jakarta.json.JsonObject;
 class JsonLdObjectWriterTest {
 
     static JsonLdTreeReader READER = JsonLdTreeReader.of(
-            TreeMapping.createBuilder()
+            TreeReaderMapping.createBuilder()
                     .scan(ControllerDocument.class)
                     .scan(JsonWebKey.class)
                     .scan(Multikey.class)

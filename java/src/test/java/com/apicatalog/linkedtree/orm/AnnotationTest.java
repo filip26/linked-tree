@@ -24,7 +24,7 @@ import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.literal.ImmutableLiteral;
-import com.apicatalog.linkedtree.orm.mapper.TreeMapping;
+import com.apicatalog.linkedtree.orm.mapper.TreeReaderMapping;
 import com.apicatalog.linkedtree.orm.test.AlumniSubject;
 import com.apicatalog.linkedtree.orm.test.AnnotatedCredential;
 import com.apicatalog.linkedtree.orm.test.ControllerDocument;
@@ -44,7 +44,7 @@ class AnnotationTest {
     @Test
     void credential() throws IOException, URISyntaxException, TreeBuilderError, NodeAdapterError {
 
-        TreeMapping mapping = TreeMapping.createBuilder()
+        TreeReaderMapping mapping = TreeReaderMapping.createBuilder()
                 .with(BitstringStatusListEntry.TYPE,
                         BitstringStatusListEntry.class,
                         BitstringStatusListEntry::of)
@@ -88,7 +88,7 @@ class AnnotationTest {
     @Test
     void controller() throws IOException, URISyntaxException, TreeBuilderError, NodeAdapterError {
 
-        TreeMapping mapping = TreeMapping.createBuilder()
+        TreeReaderMapping mapping = TreeReaderMapping.createBuilder()
                 .map(ImmutableLiteral.class,
                         EncodedKey.class,
                         EncodedKeyAdapter::map)

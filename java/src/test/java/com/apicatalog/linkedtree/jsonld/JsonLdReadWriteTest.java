@@ -18,7 +18,7 @@ import com.apicatalog.linkedtree.TestUtils;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeWriter;
-import com.apicatalog.linkedtree.orm.mapper.TreeMapping;
+import com.apicatalog.linkedtree.orm.mapper.TreeReaderMapping;
 import com.apicatalog.linkedtree.test.Base64ByteArray;
 
 import jakarta.json.JsonArray;
@@ -28,7 +28,7 @@ import jakarta.json.JsonArray;
 class JsonLdReadWriteTest {
 
     static JsonLdTreeReader READER = JsonLdTreeReader.of(
-            TreeMapping.createBuilder()
+            TreeReaderMapping.createBuilder()
                     .with(Base64ByteArray.typeAdapter())
                     .build());
 

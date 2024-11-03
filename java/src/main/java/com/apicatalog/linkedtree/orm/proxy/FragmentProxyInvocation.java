@@ -6,23 +6,26 @@ import java.lang.invoke.MethodType;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.apicatalog.linkedtree.Linkable;
 import com.apicatalog.linkedtree.LinkedFragment;
+import com.apicatalog.linkedtree.orm.Provided;
 import com.apicatalog.linkedtree.orm.getter.Getter;
 
 public class FragmentProxyInvocation implements InvocationHandler {
 
     static final Method LD_METHOD = Linkable.method();
 
-    final float javaVersion ;
-    
+    final float javaVersion;
+
     final FragmentProxy fragmentProxy;
     final LinkedFragment source;
 
-    final Map<Method, Object> cache;
+    final Map<String, Object> cache;
 
     public FragmentProxyInvocation(final FragmentProxy fragmentProxy, final LinkedFragment source) {
         this.fragmentProxy = fragmentProxy;
@@ -61,32 +64,41 @@ public class FragmentProxyInvocation implements InvocationHandler {
             return source;
         }
 
-        if (cache.containsKey(method)) {
-            return cache.get(method);
+        if (cache.containsKey(method.getName())) {
+            return cache.get(method.getName());
+        }
+
+        if (method.isAnnotationPresent(Provided.class)) {
+            if (method.getReturnType().isAssignableFrom(Collection.class)) {
+                return Collections.emptyList();
+            }
+            return null;
         }
 
         final Getter getter = fragmentProxy.getters.get(method);
 
         LinkedFragment target = source;
-        
-//        if (source.id() != null) {
-//            target = source.id().target();
-//        }
-        
+
         if (getter != null) {
-            return cache(method, getter.get(target));
+            return cache(method.getName(), getter.get(target));
         }
         if (fragmentProxy.typeInterface.equals(method.getDeclaringClass())) {
-            return cache(method, method.invoke(target, args));
+            return cache(method.getName(), method.invoke(target, args));
         }
         if (Object.class.equals(method.getDeclaringClass())) {
             return method.invoke(target, args);
+        }
+        if (PropertyValueConsumer.class.equals(method.getDeclaringClass())
+                && "acceptFragmentPropertyValue".equals(method.getName())
+                && args.length == 2) {
+            cache((String) args[0], args[1]);
+            return null;
         }
 
         throw new UnsupportedOperationException(method.toGenericString());
     }
 
-    Object cache(Method method, Object value) {
+    Object cache(String method, Object value) {
         cache.put(method, value);
         return value;
     }

@@ -17,11 +17,13 @@ public class FragmentProxy implements TypeAdapter {
 
     static final Method LD_METHOD = Linkable.method();
 
-    final String typeName;
-    final Class<?> typeInterface;
-    final Map<Method, Getter> getters;
+    protected final boolean mutable;
+    protected final String typeName;
+    protected final Class<?> typeInterface;
+    protected final Map<Method, Getter> getters;
 
-    public FragmentProxy(Class<?> typeInterface, String typeName, Map<Method, Getter> getters) {
+    public FragmentProxy(Class<?> typeInterface, String typeName, Map<Method, Getter> getters, boolean mutable) {
+        this.mutable = mutable;
         this.typeInterface = typeInterface;
         this.typeName = typeName;
         this.getters = getters;
@@ -31,7 +33,9 @@ public class FragmentProxy implements TypeAdapter {
     public Object materialize(final LinkedFragment source) throws NodeAdapterError {
         return Proxy.newProxyInstance(
                 typeInterface.getClassLoader(),
-                new Class<?>[] { typeInterface, Linkable.class },
+                mutable
+                        ? new Class<?>[] { typeInterface, PropertyValueConsumer.class, Linkable.class }
+                        : new Class<?>[] { typeInterface, Linkable.class },
                 new FragmentProxyInvocation(FragmentProxy.this, source));
     }
 

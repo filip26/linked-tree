@@ -35,6 +35,7 @@ import com.apicatalog.linkedtree.orm.Fragment;
 import com.apicatalog.linkedtree.orm.Id;
 import com.apicatalog.linkedtree.orm.Literal;
 import com.apicatalog.linkedtree.orm.Mapper;
+import com.apicatalog.linkedtree.orm.Provided;
 import com.apicatalog.linkedtree.orm.Term;
 import com.apicatalog.linkedtree.orm.Type;
 import com.apicatalog.linkedtree.orm.Vocab;
@@ -133,10 +134,17 @@ public class TreeMappingBuilder {
             typeName = expand(vocab, typeInterface.getAnnotation(Term.class), typeInterface.getSimpleName());
         }
 
+        boolean mutable = fragment.mutable();
+
         final Map<Method, Getter> getters = new HashMap<>(typeInterface.getMethods().length);
 
         // scan methods
         for (final Method method : GetterMethod.filter(typeInterface, false)) {
+
+            if (method.isAnnotationPresent(Provided.class)) {
+                mutable = true;
+                continue;
+            }
 
             Mapper mapper = method.getAnnotation(Mapper.class);
             if (mapper != null) {
@@ -252,8 +260,13 @@ public class TreeMappingBuilder {
 
         }
 
-        final FragmentProxy proxy = new FragmentProxy(typeInterface, typeName, getters);
-        typeAdapters.put(typeInterface, proxy);
+        typeAdapters.put(
+                typeInterface,
+                new FragmentProxy(
+                        typeInterface,
+                        typeName,
+                        getters,
+                        mutable));
 
         return this;
     }
@@ -382,8 +395,8 @@ public class TreeMappingBuilder {
                 : prefix + uri;
     }
 
-    public TreeMapping build() {
-        return new TreeMapping(
+    public TreeReaderMapping build() {
+        return new TreeReaderMapping(
                 Collections.unmodifiableMap(typeAdapters),
                 typeAdapters.values().stream()
                         .filter(adapter -> adapter.type() != null)

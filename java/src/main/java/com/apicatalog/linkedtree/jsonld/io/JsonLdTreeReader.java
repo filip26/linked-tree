@@ -28,7 +28,7 @@ import com.apicatalog.linkedtree.lang.LangString.LanguageDirection;
 import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.link.MutableLink;
 import com.apicatalog.linkedtree.literal.adapter.LiteralAdapter;
-import com.apicatalog.linkedtree.orm.mapper.TreeMapping;
+import com.apicatalog.linkedtree.orm.mapper.TreeReaderMapping;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 import com.apicatalog.linkedtree.traversal.NodeSelector;
 import com.apicatalog.linkedtree.type.TypeAdapter;
@@ -66,7 +66,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
         return GENERIC;
     }
 
-    public static final JsonLdTreeReader of(TreeMapping mapping) {
+    public static final JsonLdTreeReader of(TreeReaderMapping mapping) {
         return new JsonLdTreeReader(mapping.typeAdapters(), mapping.fragmentAdapters(), mapping.literalAdapters());
     }
 
