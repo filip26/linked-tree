@@ -107,7 +107,7 @@ public class JsonLdWriter {
         PropertyDefinition idMethod = null;
         PropertyDefinition typeMethod = null;
 
-        Collection<PropertyDefinition> properties = new ArrayList<>(7);
+        List<PropertyDefinition> properties = new ArrayList<>(7);
         Map<Class<?>, DataTypeNormalizer<?>> normalizers = new HashMap<>();
 
         for (final Method method : GetterMethod.filter(typeInterface, true)) {
@@ -162,6 +162,8 @@ public class JsonLdWriter {
             }
         }
 
+        Collections.sort(properties);
+        
         typeDefinitons.put(typeInterface, new TypeDefinition(
                 vocab,
                 type,

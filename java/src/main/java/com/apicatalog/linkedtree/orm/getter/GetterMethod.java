@@ -12,7 +12,7 @@ public class GetterMethod {
 
     private static final Logger LOGGER = Logger.getLogger(GetterMethod.class.getName());
     
-    public static Collection<Method> filter(Class<?> type, boolean def) {
+    public static Collection<Method> filter(Class<?> type, boolean includeDefault) {
         
         if (type.getMethods() == null || type.getMethods().length == 0) {
             return Collections.emptyList();
@@ -22,7 +22,7 @@ public class GetterMethod {
         
         for (Method method : type.getMethods()) {
             
-            if (!def && method.isDefault() 
+            if (!includeDefault && method.isDefault() 
                     || method.isSynthetic()
                     || Modifier.isStatic(method.getModifiers())
                     || Modifier.isNative(method.getModifiers())

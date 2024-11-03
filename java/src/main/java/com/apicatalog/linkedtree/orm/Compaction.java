@@ -10,5 +10,7 @@ import java.lang.annotation.Target;
 public @interface Compaction {
 
     boolean keepArray() default false;
+    
+    int order() default -1;
 
 }
