@@ -6,7 +6,7 @@ import java.util.Map;
 
 import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedNode;
-import com.apicatalog.linkedtree.selector.InvalidSelector;
+import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 
 public class LanguageMap implements LangStringSelector {
 
@@ -16,7 +16,7 @@ public class LanguageMap implements LangStringSelector {
         this.langMap = langMap;
     }
 
-    public static LanguageMap of(LinkedContainer container) throws InvalidSelector {
+    public static LanguageMap of(LinkedContainer container) throws NodeAdapterError {
 
         final Map<String, LangString> map = new HashMap<>(container.size());
 
@@ -30,7 +30,7 @@ public class LanguageMap implements LangStringSelector {
                 continue;
             }
 
-            throw new InvalidSelector("Expected a string or an array of string but got " + node);
+            throw new IllegalArgumentException("Expected a string or an array of string but got " + node);
         }
 
         return new LanguageMap(map);
