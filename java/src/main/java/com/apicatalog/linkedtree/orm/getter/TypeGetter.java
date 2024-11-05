@@ -1,6 +1,10 @@
 package com.apicatalog.linkedtree.orm.getter;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.net.URI;
+import java.util.Collection;
 import java.util.Objects;
 
 import com.apicatalog.linkedtree.LinkedFragment;
@@ -21,7 +25,11 @@ public record TypeGetter(
         return adapter.materialize(source);
     }
 
-    public static TypeGetter instance(Class<?> typeInterface) {
+    public static TypeGetter instance(Method method) {
+        return instance(method.getReturnType(), method.getGenericReturnType());
+    }
+
+    static TypeGetter instance(Class<?> typeInterface, Type type) {
 
         final NodeAdapter<LinkedFragment, ?> adapter;
 
@@ -37,6 +45,10 @@ public record TypeGetter(
             adapter = source -> source.type().isEmpty()
                     ? null
                     : source.type().iterator().next();
+
+        } else if (Collection.class.isAssignableFrom(typeInterface) && type != null) {
+            Class<?> componentClass = (Class<?>) ((ParameterizedType) type).getActualTypeArguments()[0];
+            return instance(componentClass, null);
 
         } else {
             throw new IllegalArgumentException("Return type " + typeInterface + " is not supported. Try URI, String or FragmentType ");

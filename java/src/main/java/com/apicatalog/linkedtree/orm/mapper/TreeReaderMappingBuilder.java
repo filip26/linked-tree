@@ -6,7 +6,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.net.URI;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -35,7 +34,6 @@ import com.apicatalog.linkedtree.orm.Compaction;
 import com.apicatalog.linkedtree.orm.Fragment;
 import com.apicatalog.linkedtree.orm.Id;
 import com.apicatalog.linkedtree.orm.Literal;
-import com.apicatalog.linkedtree.orm.Mapper;
 import com.apicatalog.linkedtree.orm.Provided;
 import com.apicatalog.linkedtree.orm.Term;
 import com.apicatalog.linkedtree.orm.Type;
@@ -169,33 +167,33 @@ public class TreeReaderMappingBuilder {
                 continue;
             }
 
-            Mapper mapper = method.getAnnotation(Mapper.class);
-            if (mapper != null) {
-                try {
-                    Method mapMethod = Arrays.stream(mapper.value().getDeclaredMethods())
-                            .filter(m -> !m.isDefault() && !m.isSynthetic())
-                            .filter(m -> "map".equals(m.getName())
-                                    && m.getParameterCount() == 1
-                                    && LinkedLiteral.class.isAssignableFrom(m.getParameters()[0].getType()))
-                            .findFirst()
-                            .orElseThrow(() -> new IllegalStateException("LiteralMapper.map(LinkedLiteral) method is invalid."));
-
-                    Class<?> mapperReturnType = mapMethod.getReturnType();
-
-                    if (!method.getReturnType().isAssignableFrom(mapperReturnType)) {
-                        throw new IllegalArgumentException("Provider mapper return type [" + mapperReturnType + "] does not match method return type [" + method.getReturnType() + "].");
-                    }
-
-                    literalMapping.add(
-                            (Class) mapMethod.getParameterTypes()[0],
-                            method.getReturnType(),
-                            (LiteralMapper) mapper.value().getDeclaredConstructor().newInstance());
-
-                } catch (InvocationTargetException | IllegalAccessException
-                        | InstantiationException | NoSuchMethodException e) {
-                    throw new IllegalStateException(e);
-                }
-            }
+//            Mapper mapper = method.getAnnotation(Mapper.class);
+//            if (mapper != null) {
+//                try {
+//                    Method mapMethod = Arrays.stream(mapper.value().getDeclaredMethods())
+//                            .filter(m -> !m.isDefault() && !m.isSynthetic())
+//                            .filter(m -> "map".equals(m.getName())
+//                                    && m.getParameterCount() == 1
+//                                    && LinkedLiteral.class.isAssignableFrom(m.getParameters()[0].getType()))
+//                            .findFirst()
+//                            .orElseThrow(() -> new IllegalStateException("LiteralMapper.map(LinkedLiteral) method is invalid."));
+//
+//                    Class<?> mapperReturnType = mapMethod.getReturnType();
+//
+//                    if (!method.getReturnType().isAssignableFrom(mapperReturnType)) {
+//                        throw new IllegalArgumentException("Provider mapper return type [" + mapperReturnType + "] does not match method return type [" + method.getReturnType() + "].");
+//                    }
+//
+//                    literalMapping.add(
+//                            (Class) mapMethod.getParameterTypes()[0],
+//                            method.getReturnType(),
+//                            (LiteralMapper) mapper.value().getDeclaredConstructor().newInstance());
+//
+//                } catch (InvocationTargetException | IllegalAccessException
+//                        | InstantiationException | NoSuchMethodException e) {
+//                    throw new IllegalStateException(e);
+//                }
+//            }
 
             Getter getter = null;
 
@@ -206,7 +204,7 @@ public class TreeReaderMappingBuilder {
                 // @type
             } else if (method.isAnnotationPresent(Type.class)
                     || method.getReturnType().isAssignableFrom(FragmentType.class)) {
-                getter = TypeGetter.instance(method.getReturnType());
+                getter = TypeGetter.instance(method);
 
             } else {
 

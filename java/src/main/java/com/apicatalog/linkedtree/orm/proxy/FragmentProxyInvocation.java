@@ -44,17 +44,19 @@ public class FragmentProxyInvocation implements InvocationHandler {
                 constructor.setAccessible(true);
 
                 final Class<?> clazz = method.getDeclaringClass();
+
                 return constructor.newInstance(clazz)
                         .in(clazz)
                         .unreflectSpecial(method, clazz)
                         .bindTo(proxy)
                         .invokeWithArguments(args);
+
             }
             return MethodHandles.lookup()
                     .findSpecial(
                             method.getDeclaringClass(),
                             method.getName(),
-                            MethodType.methodType(method.getReturnType(), new Class[0]),
+                            MethodType.methodType(method.getReturnType(), method.getParameterTypes()),
                             method.getDeclaringClass())
                     .bindTo(proxy)
                     .invokeWithArguments(args);
