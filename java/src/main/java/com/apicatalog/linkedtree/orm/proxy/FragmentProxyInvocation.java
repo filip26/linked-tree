@@ -13,10 +13,11 @@ import java.util.Map;
 
 import com.apicatalog.linkedtree.Linkable;
 import com.apicatalog.linkedtree.LinkedFragment;
+import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.orm.Provided;
 import com.apicatalog.linkedtree.orm.getter.Getter;
 
-public class FragmentProxyInvocation implements InvocationHandler {
+class FragmentProxyInvocation implements InvocationHandler {
 
     protected static final Method LD_METHOD = Linkable.method();
 
@@ -25,14 +26,27 @@ public class FragmentProxyInvocation implements InvocationHandler {
     protected final FragmentProxy fragmentProxy;
     protected final LinkedFragment source;
 
-    protected final Map<String, Object> cache;
+    protected final Map<String, Object> values;
 
-    public FragmentProxyInvocation(final FragmentProxy fragmentProxy, final LinkedFragment source) {
+    protected FragmentProxyInvocation(final Map<String, Object> values, final FragmentProxy fragmentProxy, final LinkedFragment source) {
         this.fragmentProxy = fragmentProxy;
         this.source = source;
 
         this.javaVersion = Float.parseFloat(System.getProperty("java.class.version"));
-        this.cache = new HashMap<>();
+        this.values = new HashMap<>();
+    }
+
+    static FragmentProxyInvocation of(final FragmentProxy fragmentProxy, final LinkedFragment source) throws NodeAdapterError {
+
+        Map<String, Object> values = new HashMap<>(fragmentProxy.getters.size());
+
+        if (fragmentProxy.eager) {
+            for (Map.Entry<Method, Getter> entry : fragmentProxy.getters.entrySet()) {
+                values.put(entry.getKey().getName(), entry.getValue().get(source));
+            }
+        }
+
+        return new FragmentProxyInvocation(values, fragmentProxy, source);
     }
 
     @Override
@@ -66,8 +80,8 @@ public class FragmentProxyInvocation implements InvocationHandler {
             return source;
         }
 
-        if (cache.containsKey(method.getName())) {
-            return cache.get(method.getName());
+        if (values.containsKey(method.getName())) {
+            return values.get(method.getName());
         }
 
         if (method.isAnnotationPresent(Provided.class)) {
@@ -101,7 +115,7 @@ public class FragmentProxyInvocation implements InvocationHandler {
     }
 
     Object cache(String method, Object value) {
-        cache.put(method, value);
+        values.put(method, value);
         return value;
     }
 }

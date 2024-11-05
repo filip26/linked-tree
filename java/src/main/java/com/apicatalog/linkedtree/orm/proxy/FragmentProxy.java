@@ -54,7 +54,7 @@ public class FragmentProxy implements TypeAdapter {
         return Proxy.newProxyInstance(
                 typeInterface.getClassLoader(),
                 interfaces,
-                new FragmentProxyInvocation(FragmentProxy.this, source));
+                FragmentProxyInvocation.of(FragmentProxy.this, source));
     }
 
     @Override
