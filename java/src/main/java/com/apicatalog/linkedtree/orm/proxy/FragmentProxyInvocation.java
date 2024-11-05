@@ -14,6 +14,7 @@ import java.util.Map;
 import com.apicatalog.linkedtree.Linkable;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
+import com.apicatalog.linkedtree.adapter.PropertyValueError;
 import com.apicatalog.linkedtree.orm.Provided;
 import com.apicatalog.linkedtree.orm.getter.Getter;
 
@@ -42,7 +43,11 @@ class FragmentProxyInvocation implements InvocationHandler {
 
         if (fragmentProxy.eager) {
             for (Map.Entry<Method, Getter> entry : fragmentProxy.getters.entrySet()) {
-                values.put(entry.getKey().getName(), entry.getValue().get(source));
+                try {
+                    values.put(entry.getKey().getName(), entry.getValue().get(source));
+                } catch (Exception e) {
+                    throw new PropertyValueError(e, entry.getKey().getName());
+                }
             }
         }
 
