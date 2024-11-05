@@ -113,6 +113,10 @@ public class TreeReaderMappingBuilder {
     }
 
     public TreeReaderMappingBuilder scan(final Class<?> typeInterface) {
+        return scan(typeInterface, false);
+    }
+
+    public TreeReaderMappingBuilder scan(final Class<?> typeInterface, boolean eager) {
 
         if (typeAdapters.containsKey(typeInterface)) {
             return this;
@@ -148,7 +152,7 @@ public class TreeReaderMappingBuilder {
             final Vocab declaredVocab = method.getDeclaringClass().getAnnotation(Vocab.class);
             Vocab methodVocab = method.getAnnotation(Vocab.class);
             final Term methodTerm = method.getAnnotation(Term.class);
-            
+
             final boolean isIdMethod = method.isAnnotationPresent(Id.class);
             final boolean isTypeMethod = method.isAnnotationPresent(Type.class)
                     || method.getReturnType().isAssignableFrom(FragmentType.class);
@@ -162,8 +166,7 @@ public class TreeReaderMappingBuilder {
                     && !isTypeMethod
                     && !isLangMap
                     && !method.isAnnotationPresent(Literal.class)
-                    && !method.isAnnotationPresent(Compaction.class)                    
-                    ) {
+                    && !method.isAnnotationPresent(Compaction.class)) {
                 continue;
             }
 
@@ -272,16 +275,17 @@ public class TreeReaderMappingBuilder {
             } else {
                 getters.put(method, getter);
             }
-
         }
 
         typeAdapters.put(
                 typeInterface,
-                new FragmentProxy(
+                FragmentProxy.of(
                         typeInterface,
                         typeName,
                         getters,
-                        mutable));
+                        mutable,
+                        eager,
+                        fragment.linkable()));
 
         return this;
     }

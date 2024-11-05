@@ -18,21 +18,21 @@ import com.apicatalog.linkedtree.orm.getter.Getter;
 
 public class FragmentProxyInvocation implements InvocationHandler {
 
-    static final Method LD_METHOD = Linkable.method();
+    protected static final Method LD_METHOD = Linkable.method();
 
-    final float javaVersion;
+    protected final float javaVersion;
 
-    final FragmentProxy fragmentProxy;
-    final LinkedFragment source;
+    protected final FragmentProxy fragmentProxy;
+    protected final LinkedFragment source;
 
-    final Map<String, Object> cache;
+    protected final Map<String, Object> cache;
 
     public FragmentProxyInvocation(final FragmentProxy fragmentProxy, final LinkedFragment source) {
         this.fragmentProxy = fragmentProxy;
         this.source = source;
 
         this.javaVersion = Float.parseFloat(System.getProperty("java.class.version"));
-        this.cache = new HashMap<>(); // TODO LRU cache
+        this.cache = new HashMap<>();
     }
 
     @Override
