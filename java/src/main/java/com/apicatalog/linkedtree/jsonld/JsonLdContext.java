@@ -28,7 +28,7 @@ public record JsonLdContext(
     public static Collection<String> strings(final JsonObject object) {
         return strings(object, Collections.emptyList());
     }
-    
+
     public static Collection<String> strings(final JsonObject object, Collection<String> defaultValue) {
 
         final JsonValue contexts = object.get(JsonLdKeyword.CONTEXT);
@@ -61,15 +61,11 @@ public record JsonLdContext(
 
         return strings;
     }
-    
+
     protected static final boolean isURI(final String value) {
-
         try {
-
             return URI.create(value) != null;
-
         } catch (IllegalArgumentException e) {
-
         }
         return false;
     }

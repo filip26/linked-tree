@@ -160,7 +160,6 @@ public class TreeReaderMappingBuilder {
 
             // ignore if no annotation is found
             if (methodVocab == null
-                    && declaredVocab == null
                     && methodTerm == null
                     && !isIdMethod
                     && !isTypeMethod
@@ -169,7 +168,6 @@ public class TreeReaderMappingBuilder {
                     && !method.isAnnotationPresent(Compaction.class)) {
                 continue;
             }
-
 //            Mapper mapper = method.getAnnotation(Mapper.class);
 //            if (mapper != null) {
 //                try {

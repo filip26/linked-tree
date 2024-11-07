@@ -5,31 +5,31 @@ import java.util.Objects;
 
 import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 
-public final class Term implements Serializable {
+public final class VocabTerm implements Serializable {
 
     private static final long serialVersionUID = -543670450852760002L;
 
-    public static final Term ID = new Term(JsonLdKeyword.ID);
-    public static final Term TYPE = new Term(JsonLdKeyword.TYPE);
+    public static final VocabTerm ID = new VocabTerm(JsonLdKeyword.ID);
+    public static final VocabTerm TYPE = new VocabTerm(JsonLdKeyword.TYPE);
 
     final String name;
     final String vocabulary;
     final String uri;
 
-    Term(String name) {
+    VocabTerm(String name) {
         this.name = name;
         this.vocabulary = null;
         this.uri = name;
     }
 
-    Term(String name, String vocabulary) {
+    VocabTerm(String name, String vocabulary) {
         this.name = name;
         this.vocabulary = vocabulary;
         this.uri = vocabulary + name;
     }
 
-    public static final Term create(String name, String vocabulary) {
-        return new Term(name, vocabulary);
+    public static final VocabTerm create(String name, String vocabulary) {
+        return new VocabTerm(name, vocabulary);
     }
 
     public String uri() {
@@ -53,7 +53,7 @@ public final class Term implements Serializable {
             return false;
         if (getClass() != obj.getClass())
             return false;
-        Term other = (Term) obj;
+        VocabTerm other = (VocabTerm) obj;
         return Objects.equals(uri, other.uri);
     }
 
