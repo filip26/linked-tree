@@ -10,7 +10,6 @@ import java.util.Objects;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.adapter.NodeAdapter;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
-import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 import com.apicatalog.linkedtree.type.FragmentType;
 
 public record TypeGetter(
@@ -30,22 +29,10 @@ public record TypeGetter(
         return instance(method.getReturnType(), method.getGenericReturnType());
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     static Getter instance(Class<?> typeInterface, Type type) {
 
-        if (typeInterface.isAssignableFrom(Collection.class) && type != null) {
-            Class<?> componentClass = (Class<?>) ((ParameterizedType) type).getActualTypeArguments()[0];
+        NodeAdapter<LinkedFragment, ?> adapter = null;
 
-            return CollectionGetter.of(JsonLdKeyword.TYPE, typeInterface, componentClass,
-                    (NodeAdapter)adapter(componentClass));
-        }
-
-        return new TypeGetter(typeInterface, adapter(typeInterface));
-    }
-
-    static NodeAdapter<LinkedFragment, ?> adapter(Class<?> typeInterface) {
-
-        final NodeAdapter<LinkedFragment, ?> adapter;
         if (typeInterface.isAssignableFrom(FragmentType.class)) {
             adapter = source -> source.type();
 
@@ -60,10 +47,22 @@ public record TypeGetter(
                     ? null
                     : source.type().iterator().next();
 
-        } else {
+        } else if (Collection.class.isAssignableFrom(typeInterface) && type != null) {
+            Class<?> componentClass = (Class<?>) ((ParameterizedType) type).getActualTypeArguments()[0];
+
+            if (componentClass.isAssignableFrom(URI.class)) {
+                adapter = source -> source.type().stream()
+                        .map(URI::create).toList();
+
+            } else if (componentClass.isAssignableFrom(String.class)) {
+                adapter = source -> source.type().stream().toList();
+            }
+        }
+
+        if (adapter == null) {
             throw new IllegalArgumentException("Return type " + typeInterface + " is not supported. Try URI, String or FragmentType ");
         }
 
-        return adapter;
+        return new TypeGetter(typeInterface, adapter);
     }
 }
