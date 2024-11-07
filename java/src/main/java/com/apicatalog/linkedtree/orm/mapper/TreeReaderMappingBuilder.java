@@ -33,6 +33,7 @@ import com.apicatalog.linkedtree.literal.adapter.DataTypeAdapter;
 import com.apicatalog.linkedtree.orm.Compaction;
 import com.apicatalog.linkedtree.orm.Fragment;
 import com.apicatalog.linkedtree.orm.Id;
+import com.apicatalog.linkedtree.orm.Injected;
 import com.apicatalog.linkedtree.orm.Literal;
 import com.apicatalog.linkedtree.orm.Provided;
 import com.apicatalog.linkedtree.orm.Term;
@@ -43,6 +44,7 @@ import com.apicatalog.linkedtree.orm.getter.FragmentGetter;
 import com.apicatalog.linkedtree.orm.getter.Getter;
 import com.apicatalog.linkedtree.orm.getter.GetterMethod;
 import com.apicatalog.linkedtree.orm.getter.IdGetter;
+import com.apicatalog.linkedtree.orm.getter.InjectedGetter;
 import com.apicatalog.linkedtree.orm.getter.LangMapGetter;
 import com.apicatalog.linkedtree.orm.getter.LiteralGetter;
 import com.apicatalog.linkedtree.orm.getter.NodeGetter;
@@ -59,12 +61,14 @@ public class TreeReaderMappingBuilder {
 
     private static final Logger LOGGER = Logger.getLogger(TreeReaderMappingBuilder.class.getName());
 
+    final Map<Class<?>, NodeAdapter<LinkedFragment, ?>> injectors;
     final Map<Class<?>, TypeAdapter> typeAdapters;
     final Map<Class<? extends DataTypeAdapter>, DataTypeAdapter> literalAdapters;
 
     final LiteralMapping literalMapping;
 
     protected TreeReaderMappingBuilder() {
+        this.injectors = new LinkedHashMap<>();
         this.typeAdapters = new LinkedHashMap<>();
         this.literalAdapters = new LinkedHashMap<>();
 
@@ -146,6 +150,11 @@ public class TreeReaderMappingBuilder {
 
             if (method.isAnnotationPresent(Provided.class)) {
                 mutable = true;
+                continue;
+            }
+
+            if (method.isAnnotationPresent(Injected.class)) {
+                getters.put(method, injector(method));
                 continue;
             }
 
@@ -286,6 +295,22 @@ public class TreeReaderMappingBuilder {
                         fragment.linkable()));
 
         return this;
+    }
+
+    Getter injector(Method method) {
+        Injected injected = method.getAnnotation(Injected.class);
+
+        NodeAdapter<LinkedFragment, ?> adapter = injectors.get(injected.value());
+
+        if (adapter == null) {
+            try {
+                adapter = injected.value().getConstructor().newInstance();
+                injectors.put(injected.value(), adapter);
+            } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+        return new InjectedGetter(adapter);
     }
 
     LiteralMapper<LinkedLiteral, ?> mapper(Method method) {
