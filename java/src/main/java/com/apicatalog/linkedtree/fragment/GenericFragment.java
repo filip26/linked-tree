@@ -9,11 +9,22 @@ import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.type.FragmentType;
 
-public record GenericFragment(
-        Link id,
-        FragmentType type,
-        Map<String, LinkedContainer> entries,
-        LinkedTree root) implements LinkedFragment {
+public class GenericFragment implements LinkedFragment {
+
+    protected final Link id;
+    protected final FragmentType type;
+    protected final Map<String, LinkedContainer> entries;
+    protected final LinkedTree root;
+
+    public GenericFragment(Link id,
+            final FragmentType type,
+            final Map<String, LinkedContainer> entries,
+            final LinkedTree root) {
+        this.id = id;
+        this.type = type;
+        this.entries = entries;
+        this.root = root;
+    }
 
     @Override
     public Collection<String> terms() {
@@ -52,16 +63,21 @@ public record GenericFragment(
     }
 
     @Override
-    public int hashCode() {
-        return System.identityHashCode(this);
+    public Link id() {
+        return id;
     }
 
     @Override
-    // containers cannot be compared as instances
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        return (obj != null);
+    public FragmentType type() {
+        return type;
+    }
+
+    public Map<String, LinkedContainer> entries() {
+        return entries;
+    }
+
+    @Override
+    public LinkedTree root() {
+        return root;
     }
 }

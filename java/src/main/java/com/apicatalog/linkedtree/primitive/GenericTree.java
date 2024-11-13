@@ -18,15 +18,36 @@ import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 import com.apicatalog.linkedtree.type.AdaptableType;
 import com.apicatalog.linkedtree.type.FragmentType;
 
-public record GenericTree(
-        Link id,
-        FragmentType type,
-        Map<String, LinkedContainer> entries,
-        Collection<LinkedNode> nodes,
-        Map<String, Link> linkMap,
-        Collection<LinkedTree> subtrees,
-        LinkedTree root,
-        Map<Integer, Collection<ProcessingInstruction>> ops) implements LinkedTree {
+public class GenericTree implements LinkedTree {
+
+    protected final Link id;
+    protected final FragmentType type;
+    protected final Map<String, LinkedContainer> entries;
+    protected final Collection<LinkedNode> nodes;
+    protected final Map<String, Link> linkMap;
+    protected final Collection<LinkedTree> subtrees;
+    protected final LinkedTree root;
+    protected final Map<Integer, Collection<ProcessingInstruction>> ops;
+
+    public GenericTree(
+            Link id,
+            FragmentType type,
+            Map<String, LinkedContainer> entries,
+            Collection<LinkedNode> nodes,
+            Map<String, Link> linkMap,
+            Collection<LinkedTree> subtrees,
+            LinkedTree root,
+            Map<Integer, Collection<ProcessingInstruction>> ops) {
+
+        this.id = id;
+        this.type = type;
+        this.entries = entries;
+        this.nodes = nodes;
+        this.linkMap = linkMap;
+        this.subtrees = subtrees;
+        this.root = root;
+        this.ops = ops;
+    }
 
     @Override
     public Collection<String> terms() {
@@ -48,18 +69,6 @@ public record GenericTree(
         return ops != null
                 ? ops.getOrDefault(processingOrder, Collections.emptyList())
                 : Collections.emptyList();
-    }
-
-    @Override
-    public int hashCode() {
-        return System.identityHashCode(this);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        return (obj != null);
     }
 
     @Override
@@ -117,4 +126,40 @@ public record GenericTree(
         return tree;
     }
 
+    @Override
+    public Link id() {
+        return id;
+    }
+
+    @Override
+    public FragmentType type() {
+        return type;
+    }
+
+    public Map<String, LinkedContainer> entries() {
+        return entries;
+    }
+
+    @Override
+    public Collection<LinkedNode> nodes() {
+        return nodes;
+    }
+
+    public Map<String, Link> linkMap() {
+        return linkMap;
+    }
+
+    @Override
+    public Collection<LinkedTree> subtrees() {
+        return subtrees;
+    }
+
+    @Override
+    public LinkedTree root() {
+        return root;
+    }
+
+    public Map<Integer, Collection<ProcessingInstruction>> ops() {
+        return ops;
+    }
 }

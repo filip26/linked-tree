@@ -58,7 +58,6 @@ public record JsonLdContext(
             }
             strings.add(contextUri);
         }
-
         return strings;
     }
 

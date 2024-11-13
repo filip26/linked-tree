@@ -50,7 +50,7 @@ public abstract class JsonTreeReader extends TreeBuilder<JsonValue> implements N
         case Accept, Stop -> process(node);
         case Drop, Ignore -> {
         }
-        default -> throw new IllegalArgumentException("Unexpected value: " + policy);
+        default -> throw new IllegalStateException("Unexpected value: " + policy);
         }
 
         return policy;

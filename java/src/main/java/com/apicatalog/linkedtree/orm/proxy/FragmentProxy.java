@@ -31,7 +31,7 @@ public class FragmentProxy implements TypeAdapter {
         this.typeName = typeName;
         this.getters = getters;
         this.interfaces = interfaces;
-        this.eager = eager;
+        this.eager = true;
     }
     
     public static FragmentProxy of(Class<?> typeInterface, String typeName, Map<Method, Getter> getters, boolean mutable, boolean eager, boolean linkable) {

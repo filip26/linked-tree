@@ -65,19 +65,24 @@ public class JsonTreeSearch<T> {
                         null,
                         depth + 1,
                         consumer);
-            }            
+            }
         } else if (ValueType.OBJECT == source.getValueType()) {
+
             for (var property : source.asJsonObject().entrySet()) {
-                postOrder(
-                        selector,
-                        property.getValue(),
-                        -1,
-                        property.getKey(),
-                        depth + 1,
-                        consumer);
-            }    
+                try {
+                    postOrder(
+                            selector,
+                            property.getValue(),
+                            -1,
+                            property.getKey(),
+                            depth + 1,
+                            consumer);
+                } catch (IllegalArgumentException e) {
+                    throw new TreeBuilderError(e, property.getKey());
+                }
+            }
         }
-        
+
         if (TraversalPolicy.Accept == policy) {
             consumer.accept(source, order, term, depth);
         }
