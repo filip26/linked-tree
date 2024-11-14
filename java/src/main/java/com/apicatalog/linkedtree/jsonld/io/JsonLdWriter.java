@@ -375,12 +375,12 @@ public class JsonLdWriter {
         }
 
         List<String> effectiveContext = Collections.emptyList();
-        
+
         if (isNotRef && !context.isEmpty()) {
             effectiveContext = new ArrayList<>(context);
             Collections.reverse(effectiveContext);
         }
-        
+
         return materialize(
                 effectiveContext,
                 idEntry,
@@ -487,15 +487,16 @@ public class JsonLdWriter {
         if (object instanceof Linkable linkable) {
             return JsonLdTreeWriter.node(linkable.ld());
         }
-        
+
         // compact URIs
         if (object instanceof URI uri) {
-            
+
             String id = uri.toString();
-            
-            if (id.startsWith(propertyDef.vocab())) {
+
+            if (propertyDef.vocab() != null && id.startsWith(propertyDef.vocab())) {
                 return Json.createValue(id.substring(propertyDef.vocab().length()));
             }
+            return Json.createValue(id);
         }
 
         // TODO default normalizers
