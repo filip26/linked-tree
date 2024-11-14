@@ -6,8 +6,5 @@ import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 @FunctionalInterface
 public interface LiteralAdapter {
 
-    default void setup(String[] params) throws NodeAdapterError {
-        /* empty */ }
-
     LinkedLiteral materialize(String source) throws NodeAdapterError;
 }

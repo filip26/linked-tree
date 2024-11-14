@@ -22,7 +22,6 @@ import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.adapter.NodeAdapter;
-import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.json.JsonLiteral;
 import com.apicatalog.linkedtree.lang.LanguageMap;
 import com.apicatalog.linkedtree.literal.ByteArrayValue;
@@ -30,6 +29,7 @@ import com.apicatalog.linkedtree.literal.DateTimeValue;
 import com.apicatalog.linkedtree.literal.DoubleValue;
 import com.apicatalog.linkedtree.literal.IntegerValue;
 import com.apicatalog.linkedtree.literal.adapter.DataTypeAdapter;
+import com.apicatalog.linkedtree.orm.Adapter;
 import com.apicatalog.linkedtree.orm.Compaction;
 import com.apicatalog.linkedtree.orm.Fragment;
 import com.apicatalog.linkedtree.orm.Id;
@@ -125,9 +125,9 @@ public class TreeReaderMappingBuilder {
         if (typeAdapters.containsKey(typeInterface)) {
             return this;
         }
-        
+
         FragmentProxy proxy = proxy(typeInterface);
-        
+
         if (proxy == null) {
             return this;
         }
@@ -189,6 +189,7 @@ public class TreeReaderMappingBuilder {
                     && !isTypeMethod
                     && !isLangMap
                     && !method.isAnnotationPresent(Literal.class)
+                    && !method.isAnnotationPresent(Adapter.class)
                     && !method.isAnnotationPresent(Compaction.class)) {
                 continue;
             }
@@ -264,7 +265,7 @@ public class TreeReaderMappingBuilder {
                                 termUri,
                                 method.getReturnType(),
                                 componentClass,
-                                source -> mapper(method).map(source.asLiteral()));
+                                source -> mapper(method).object(source.asLiteral()));
                     }
 
                     // TODO arrays
@@ -326,59 +327,76 @@ public class TreeReaderMappingBuilder {
 
     LiteralMapper<LinkedLiteral, ?> mapper(Method method) {
 
-        Literal literal = method.getAnnotation(Literal.class);
+        Adapter adapterType = method.getAnnotation(Adapter.class);
+        DataTypeAdapter adapter = null;
 
-        if (literal != null) {
+        if (adapterType != null) {
 
-            Class<? extends DataTypeAdapter> adapterType = literal.value();
-
-            DataTypeAdapter adapter = literalAdapters.get(adapterType);
+            adapter = literalAdapters.get(adapterType.value());
 
             if (adapter == null) {
                 try {
-                    Constructor<? extends DataTypeAdapter> constructor = adapterType.getDeclaredConstructor();
+                    Constructor<? extends DataTypeAdapter> constructor = adapterType.value().getDeclaredConstructor();
                     constructor.setAccessible(true);
 
                     adapter = constructor.newInstance();
 
-                    // TODO move to build, merge params
-                    adapter.setup(literal.params());
+                    literalAdapters.put(adapterType.value(), adapter);
 
-                    literalAdapters.put(adapterType, adapter);
-
-                } catch (NodeAdapterError | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+                } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
                     throw new IllegalStateException(e);
                 }
             }
+        }
 
-            final LiteralMapper<LinkedLiteral, ?> mapping = literalMapping.find(adapter.typeInterface(), method.getReturnType());
+        Literal literal = method.getAnnotation(Literal.class);
 
-            if (mapping == null) {
-                throw new IllegalArgumentException("Cannot find literal mapper from " + adapter.typeInterface() + " to " + method.getReturnType());
+        if (literal != null) {
+
+            Class<? extends LiteralMapper<? extends LinkedLiteral, ?>> mapperType = literal.value();
+
+            if (mapperType != null) {
+                try {
+                    Constructor<? extends LiteralMapper<? extends LinkedLiteral, ?>> constructor = mapperType.getDeclaredConstructor();
+                    constructor.setAccessible(true);
+
+                    LiteralMapper<? extends LinkedLiteral, ?> mapping = constructor.newInstance();
+
+                    return (LiteralMapper<LinkedLiteral, ?>) mapping;
+
+                } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+                    throw new IllegalStateException(e);
+                }
             }
-
-            return mapping;
         }
 
         Class<?> type = method.getReturnType();
 
+        if (adapter != null) {
+            LiteralMapper<LinkedLiteral, ?> mapping = literalMapping.find(adapter.typeInterface(), type);
+            if (mapping != null) {
+                return mapping;
+            }
+        }
+
+        final LiteralMapper<LinkedLiteral, ?> mapping;
+
         if (type.isAssignableFrom(LinkedLiteral.class)
                 || type.isAssignableFrom(LinkedNode.class)) {
-            return source -> source;
-        }
+            mapping = LiteralMapper.identity();
 
-        if (type.isAssignableFrom(String.class)) {
-            return source -> source.lexicalValue();
-        }
+        } else if (type.isAssignableFrom(String.class)) {
+            mapping = source -> source.lexicalValue();
 
-        if (type.isAssignableFrom(JsonValue.class)) {
-            return source -> ((JsonLiteral) source).jsonValue();
-        }
+        } else if (type.isAssignableFrom(JsonValue.class)) {
+            mapping = source -> ((JsonLiteral) source).jsonValue();
 
-        final LiteralMapper<LinkedLiteral, ?> mapping = literalMapping.find(LinkedLiteral.class, method.getReturnType());
+        } else {
+            mapping = literalMapping.find(LinkedLiteral.class, method.getReturnType());
+        }
 
         if (mapping == null) {
-            throw new IllegalArgumentException("Cannot find literal mapper from " + LinkedLiteral.class + " to " + method.getReturnType() + ". Method " + method.getName());
+            throw new IllegalArgumentException("Cannot find literal mapper from " + LinkedLiteral.class.getTypeName() + " to " + method.getReturnType().getTypeName() + " on " + method);
         }
 
         return mapping;

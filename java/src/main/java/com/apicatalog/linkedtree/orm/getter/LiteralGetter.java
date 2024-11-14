@@ -26,7 +26,7 @@ public class LiteralGetter implements Getter {
         if (literal == null) {
             return null;
         }
-        return adapter.map(literal);
+        return adapter.object(literal);
     }
 
 }

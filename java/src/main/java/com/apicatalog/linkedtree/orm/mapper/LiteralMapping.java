@@ -26,7 +26,7 @@ public class LiteralMapping {
     public <T extends LinkedLiteral, R> LiteralMapper<LinkedLiteral, ?> find(Class<T> typeInterface, Class<R> targetType) {
         
         if (targetType.isAssignableFrom(typeInterface)) {
-            return literal -> literal;
+            return LiteralMapper.identity();
         }
         
         return (LiteralMapper<LinkedLiteral, ?>) mapping.entrySet().stream()

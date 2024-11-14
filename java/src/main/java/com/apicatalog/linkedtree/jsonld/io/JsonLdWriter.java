@@ -21,6 +21,7 @@ import com.apicatalog.linkedtree.def.TypeDefinition;
 import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 import com.apicatalog.linkedtree.lang.LanguageMap;
 import com.apicatalog.linkedtree.literal.adapter.DataTypeNormalizer;
+import com.apicatalog.linkedtree.orm.Adapter;
 import com.apicatalog.linkedtree.orm.Compaction;
 import com.apicatalog.linkedtree.orm.Context;
 import com.apicatalog.linkedtree.orm.Fragment;
@@ -130,6 +131,7 @@ public class JsonLdWriter {
                     && !isIdMethod
                     && !isTypeMethod
                     && !isLangMap
+                    && !method.isAnnotationPresent(Adapter.class)
                     && !method.isAnnotationPresent(Compaction.class)) {
                 continue;
             }
