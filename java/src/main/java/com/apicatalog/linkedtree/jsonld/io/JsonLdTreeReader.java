@@ -81,7 +81,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
     public <T> T read(Class<T> clazz, List<String> context, JsonArray expanded) throws TreeBuilderError, NodeAdapterError {
 
         LinkedTree tree = read(context, expanded);
-        if (tree == null) {
+        if (tree == null || tree.size() == 0) {
             return null;
         }
 

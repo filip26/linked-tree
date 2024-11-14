@@ -125,12 +125,27 @@ public class TreeReaderMappingBuilder {
         if (typeAdapters.containsKey(typeInterface)) {
             return this;
         }
+        
+        FragmentProxy proxy = proxy(typeInterface);
+        
+        if (proxy == null) {
+            return this;
+        }
+
+        typeAdapters.put(
+                typeInterface,
+                proxy);
+
+        return this;
+    }
+
+    public FragmentProxy proxy(final Class<?> typeInterface) {
 
         final Fragment fragment = typeInterface.getAnnotation(Fragment.class);
 
         if (fragment == null) {
             LOGGER.log(Level.WARNING, "Skipped class {0} - not annotated as @Fragment", typeInterface);
-            return this;
+            return null;
         }
 
         final Vocab vocab = typeInterface.getAnnotation(Vocab.class);
@@ -284,17 +299,13 @@ public class TreeReaderMappingBuilder {
             }
         }
 
-        typeAdapters.put(
+        return FragmentProxy.of(
                 typeInterface,
-                FragmentProxy.of(
-                        typeInterface,
-                        typeName,
-                        getters,
-                        mutable,
-                        eager,
-                        fragment.linkable()));
-
-        return this;
+                typeName,
+                getters,
+                mutable,
+                true,
+                fragment.linkable());
     }
 
     Getter injector(Method method) {

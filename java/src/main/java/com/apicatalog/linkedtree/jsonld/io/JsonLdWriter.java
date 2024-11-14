@@ -126,12 +126,11 @@ public class JsonLdWriter {
             // ignore if no annotation is found
             if (methodVocab == null
                     && methodTerm == null
-                    && literal == null                    
+                    && literal == null
                     && !isIdMethod
                     && !isTypeMethod
                     && !isLangMap
-                    && !method.isAnnotationPresent(Compaction.class)
-                    ) {
+                    && !method.isAnnotationPresent(Compaction.class)) {
                 continue;
             }
 
@@ -270,9 +269,9 @@ public class JsonLdWriter {
 
         Map.Entry<String, JsonValue> idEntry = null;
 
-        for (final TypeDefinition typeDef : definitions(object.getClass().getInterfaces())) {
+        boolean isNotRef = false;
 
-            typeDef.context().forEach(context::add);
+        for (final TypeDefinition typeDef : definitions(object.getClass().getInterfaces())) {
 
             if (typeDef.id() != null && id == null) {
                 id = typeDef.id();
@@ -280,12 +279,12 @@ public class JsonLdWriter {
                     final String idName = id.name();
                     idEntry = Optional.ofNullable(property(context, id, object, fragment, processedIds))
                             .map(value -> Map.entry(idName, value)).orElse(null);
-                    if (idEntry != null
-                            && processedIds.contains((((JsonString) idEntry.getValue()).getString()))) {
-                        return idEntry.getValue();
+                    if (idEntry != null) {
+                        if (processedIds.contains((((JsonString) idEntry.getValue()).getString()))) {
+                            return idEntry.getValue();
+                        }
+                        processedIds.add((((JsonString) idEntry.getValue()).getString()));
                     }
-
-                    processedIds.add((((JsonString) idEntry.getValue()).getString()));
                 }
             }
 
@@ -301,13 +300,21 @@ public class JsonLdWriter {
                 vocab = typeDef.vocab();
             }
 
+            boolean x = false;
+
             for (final PropertyDefinition propertyDef : typeDef.methods()) {
 
                 final JsonValue value = property(context, propertyDef, object, fragment, processedIds);
 
                 if (value != null) {
                     fragment.put(propertyDef.name(), value);
+                    isNotRef = attachContext;
+                    x = true;
                 }
+
+            }
+            if (x) {
+                typeDef.context().forEach(context::add);
             }
         }
 
@@ -363,12 +370,19 @@ public class JsonLdWriter {
             }
         }
 
-        if (!attachContext && idEntry != null && typeEntry == null && fragment.isEmpty()) {
+        if (!isNotRef && idEntry != null && typeEntry == null && fragment.isEmpty()) {
             return idEntry.getValue();
         }
 
+        List<String> effectiveContext = Collections.emptyList();
+        
+        if (isNotRef && !context.isEmpty()) {
+            effectiveContext = new ArrayList<>(context);
+            Collections.reverse(effectiveContext);
+        }
+        
         return materialize(
-                attachContext ? context : Collections.emptyList(),
+                effectiveContext,
                 idEntry,
                 typeEntry,
                 fragment);
@@ -472,6 +486,16 @@ public class JsonLdWriter {
 
         if (object instanceof Linkable linkable) {
             return JsonLdTreeWriter.node(linkable.ld());
+        }
+        
+        // compact URIs
+        if (object instanceof URI uri) {
+            
+            String id = uri.toString();
+            
+            if (id.startsWith(propertyDef.vocab())) {
+                return Json.createValue(id.substring(propertyDef.vocab().length()));
+            }
         }
 
         // TODO default normalizers

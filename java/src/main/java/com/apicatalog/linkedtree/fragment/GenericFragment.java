@@ -35,27 +35,6 @@ public class GenericFragment implements LinkedFragment {
     public LinkedContainer container(String term) {
         return entries.get(term);
     }
-//
-//    @Override
-//    @SuppressWarnings("unchecked")
-//    public <T> T cast(Class<T> clazz) {
-//        if (id() != null 
-//                && id().target() != null
-//                && !Objects.equals(id().target(), this)) {
-//            return (T) id().target().cast(clazz);
-//        }
-//        return (T) this;
-//    }
-//
-//    @Override
-//    public Linkable cast() {
-//        if (id() != null 
-//                && id().target() != null
-//                && !Objects.equals(id().target(), this)) {
-//            return id().target().cast();
-//        }
-//        return this;
-//    }
 
     @Override
     public String toString() {
