@@ -2,7 +2,7 @@ package com.apicatalog.linkedtree.literal.adapter;
 
 import com.apicatalog.linkedtree.LinkedLiteral;
 
-public interface DataTypeAdapter extends LiteralAdapter {
+public interface DatatypeAdapter extends LiteralAdapter {
 
     String datatype();
 

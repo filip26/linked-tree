@@ -13,25 +13,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.logging.Logger;
 
 import com.apicatalog.linkedtree.Linkable;
+import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.def.PropertyDefinition;
 import com.apicatalog.linkedtree.def.TypeDefinition;
 import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 import com.apicatalog.linkedtree.lang.LanguageMap;
-import com.apicatalog.linkedtree.literal.adapter.DataTypeNormalizer;
 import com.apicatalog.linkedtree.orm.Adapter;
 import com.apicatalog.linkedtree.orm.Compaction;
 import com.apicatalog.linkedtree.orm.Context;
 import com.apicatalog.linkedtree.orm.Fragment;
 import com.apicatalog.linkedtree.orm.Id;
-import com.apicatalog.linkedtree.orm.Literal;
+import com.apicatalog.linkedtree.orm.Mapper;
 import com.apicatalog.linkedtree.orm.Term;
 import com.apicatalog.linkedtree.orm.Type;
 import com.apicatalog.linkedtree.orm.Vocab;
 import com.apicatalog.linkedtree.orm.context.ContextReducer;
 import com.apicatalog.linkedtree.orm.getter.GetterMethod;
+import com.apicatalog.linkedtree.orm.mapper.ObjectWriter;
 import com.apicatalog.linkedtree.type.FragmentType;
 
 import jakarta.json.Json;
@@ -44,17 +44,21 @@ import jakarta.json.JsonValue.ValueType;
 
 public class JsonLdWriter {
 
-    private static final Logger LOGGER = Logger.getLogger(JsonLdWriter.class.getName());
+//    private static final Logger LOGGER = Logger.getLogger(JsonLdWriter.class.getName());
 
     ContextReducer contextReducer;
 
     Map<Class<?>, TypeDefinition> typeDefinitons;
-    Map<Class<?>, DataTypeNormalizer<?>> datatypes;
+    Map<Class<?>, ObjectWriter<?>> datatypes;
 
+    ObjectWriterProvider defaultWriters;
+    
     public JsonLdWriter() {
         this.contextReducer = new ContextReducer();
         this.typeDefinitons = new HashMap<>();
         this.datatypes = new HashMap<>();
+//        this.defaultWriters = new ObjectWriterProvider()
+//                .add(Instant.class, DateTimeValue.class, );
     }
 
     public ContextReducer contextReducer() {
@@ -111,13 +115,13 @@ public class JsonLdWriter {
         PropertyDefinition typeMethod = null;
 
         List<PropertyDefinition> properties = new ArrayList<>(7);
-        Map<Class<?>, DataTypeNormalizer<?>> normalizers = new HashMap<>();
+        Map<Class<?>, ObjectWriter<?>> writers = new HashMap<>();
 
         for (final Method method : GetterMethod.filter(typeInterface, true)) {
 
             Vocab methodVocab = method.getAnnotation(Vocab.class);
             Term methodTerm = method.getAnnotation(Term.class);
-            Literal literal = method.getAnnotation(Literal.class);
+            Mapper literal = method.getAnnotation(Mapper.class);
 
             final boolean isIdMethod = method.isAnnotationPresent(Id.class);
             final boolean isTypeMethod = method.isAnnotationPresent(Type.class)
@@ -152,13 +156,12 @@ public class JsonLdWriter {
                 }
             }
 
-            DataTypeNormalizer<?> normalizer = normalizers.get(method.getReturnType());
+            ObjectWriter<?> objectWriter = writers.get(method.getReturnType());
 
-            if (literal != null && normalizer == null
-                    && DataTypeNormalizer.class.isAssignableFrom(literal.value())) {
+            if (literal != null && objectWriter == null) {
                 try {
-                    normalizer = DataTypeNormalizer.class.cast(literal.value().getDeclaredConstructor().newInstance());
-                    normalizers.put(method.getReturnType(), normalizer);
+                    objectWriter = ObjectWriter.class.cast(literal.value().getDeclaredConstructor().newInstance());
+                    writers.put(method.getReturnType(), objectWriter);
 
                 } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
                     throw new IllegalStateException(e);
@@ -169,7 +172,7 @@ public class JsonLdWriter {
                     propertyName,
                     propertyVocab,
                     method,
-                    normalizer);
+                    objectWriter);
 
             if (isIdMethod) {
                 idMethod = def;
@@ -191,7 +194,7 @@ public class JsonLdWriter {
                 idMethod,
                 typeMethod,
                 properties,
-                normalizers));
+                writers));
     }
 
     void scanHierarchy(Class<?> typeInterface, Collection<String> context, Collection<String> type) {
@@ -479,11 +482,15 @@ public class JsonLdWriter {
             return compacted(context, object, processedIds, false);
         }
 
-        DataTypeNormalizer normalizer = propertyDef.normalizer();
+        ObjectWriter normalizer = propertyDef.objectWriter();
 
         if (normalizer != null) {
-            return Json.createValue(normalizer.normalize(object));
 
+            LinkedLiteral literal = normalizer.literal(object);
+
+            if (literal != null) {
+                return Json.createValue(literal.lexicalValue());
+            }
         }
 
         if (object instanceof Linkable linkable) {

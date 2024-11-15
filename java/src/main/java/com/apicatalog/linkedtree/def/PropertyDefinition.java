@@ -5,9 +5,9 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 
-import com.apicatalog.linkedtree.literal.adapter.DataTypeNormalizer;
 import com.apicatalog.linkedtree.orm.Compaction;
 import com.apicatalog.linkedtree.orm.Fragment;
+import com.apicatalog.linkedtree.orm.mapper.ObjectWriter;
 
 public class PropertyDefinition implements Comparable<PropertyDefinition> {
 
@@ -17,7 +17,7 @@ public class PropertyDefinition implements Comparable<PropertyDefinition> {
     protected Method method;
 
     protected boolean targetFragment;
-    protected DataTypeNormalizer<?> normalizer;
+    protected ObjectWriter<?> writer;
 
     protected boolean keepArray;
     protected int order;
@@ -25,13 +25,13 @@ public class PropertyDefinition implements Comparable<PropertyDefinition> {
     PropertyDefinition() {
     }
 
-    public static PropertyDefinition of(String name, String vocab, Method method, DataTypeNormalizer<?> normalizer) {
+    public static PropertyDefinition of(String name, String vocab, Method method, ObjectWriter<?> writer) {
 
         var def = new PropertyDefinition();
         def.name = name;
         def.method = method;
         def.vocab = vocab;
-        def.normalizer = normalizer;
+        def.writer = writer;
 
         Class<?> type = null;
 
@@ -78,8 +78,8 @@ public class PropertyDefinition implements Comparable<PropertyDefinition> {
         return targetFragment;
     }
 
-    public DataTypeNormalizer<?> normalizer() {
-        return normalizer;
+    public ObjectWriter<?> objectWriter() {
+        return writer;
     }
 
     public boolean keepArray() {

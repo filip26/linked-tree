@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,8 +21,8 @@ import com.apicatalog.linkedtree.Linkable;
 import com.apicatalog.linkedtree.TestUtils;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
-import com.apicatalog.linkedtree.jsonld.io.JsonLdWriter;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
+import com.apicatalog.linkedtree.jsonld.io.JsonLdWriter;
 import com.apicatalog.linkedtree.orm.mapper.TreeReaderMapping;
 import com.apicatalog.linkedtree.orm.test.AlumniSubject;
 import com.apicatalog.linkedtree.orm.test.AnnotatedCredential;
@@ -86,7 +87,7 @@ class JsonLdObjectWriterTest {
                 null,
                 URI.create("https://example.org/controller/1"),
                 Instant.parse("2024-01-01T00:00:00Z"),
-                Instant.now(),
+                Instant.now().truncatedTo(ChronoUnit.MILLIS),
                 () -> "publicKeyValue",
                 () -> "privateKeyValue");
 

@@ -28,13 +28,13 @@ import com.apicatalog.linkedtree.literal.ByteArrayValue;
 import com.apicatalog.linkedtree.literal.DateTimeValue;
 import com.apicatalog.linkedtree.literal.DoubleValue;
 import com.apicatalog.linkedtree.literal.IntegerValue;
-import com.apicatalog.linkedtree.literal.adapter.DataTypeAdapter;
+import com.apicatalog.linkedtree.literal.adapter.DatatypeAdapter;
 import com.apicatalog.linkedtree.orm.Adapter;
 import com.apicatalog.linkedtree.orm.Compaction;
 import com.apicatalog.linkedtree.orm.Fragment;
 import com.apicatalog.linkedtree.orm.Id;
 import com.apicatalog.linkedtree.orm.Injected;
-import com.apicatalog.linkedtree.orm.Literal;
+import com.apicatalog.linkedtree.orm.Mapper;
 import com.apicatalog.linkedtree.orm.Provided;
 import com.apicatalog.linkedtree.orm.Term;
 import com.apicatalog.linkedtree.orm.Type;
@@ -63,16 +63,16 @@ public class TreeReaderMappingBuilder {
 
     final Map<Class<?>, NodeAdapter<LinkedFragment, ?>> injectors;
     final Map<Class<?>, TypeAdapter> typeAdapters;
-    final Map<Class<? extends DataTypeAdapter>, DataTypeAdapter> literalAdapters;
+    final Map<Class<? extends DatatypeAdapter>, DatatypeAdapter> literalAdapters;
 
-    final LiteralMapping literalMapping;
+    final ObjectReaderProvider literalMapping;
 
     protected TreeReaderMappingBuilder() {
         this.injectors = new LinkedHashMap<>();
         this.typeAdapters = new LinkedHashMap<>();
         this.literalAdapters = new LinkedHashMap<>();
 
-        this.literalMapping = new LiteralMapping();
+        this.literalMapping = new ObjectReaderProvider();
     }
 
     public TreeReaderMappingBuilder defaults() {
@@ -106,12 +106,12 @@ public class TreeReaderMappingBuilder {
         return with(new GenericTypeAdapter(type, typeInterface, adapter));
     }
 
-    public TreeReaderMappingBuilder with(DataTypeAdapter adapter) {
+    public TreeReaderMappingBuilder with(DatatypeAdapter adapter) {
         this.literalAdapters.put(adapter.getClass(), adapter);
         return this;
     }
 
-    public <T extends LinkedLiteral, R> TreeReaderMappingBuilder map(Class<T> source, Class<R> target, LiteralMapper<T, R> mapper) {
+    public <T extends LinkedLiteral, R> TreeReaderMappingBuilder map(Class<T> source, Class<R> target, ObjectReader<T, R> mapper) {
         literalMapping.add(source, target, mapper);
         return this;
     }
@@ -188,7 +188,7 @@ public class TreeReaderMappingBuilder {
                     && !isIdMethod
                     && !isTypeMethod
                     && !isLangMap
-                    && !method.isAnnotationPresent(Literal.class)
+                    && !method.isAnnotationPresent(Mapper.class)
                     && !method.isAnnotationPresent(Adapter.class)
                     && !method.isAnnotationPresent(Compaction.class)) {
                 continue;
@@ -325,10 +325,10 @@ public class TreeReaderMappingBuilder {
         return new InjectedGetter(adapter);
     }
 
-    LiteralMapper<LinkedLiteral, ?> mapper(Method method) {
+    ObjectReader<LinkedLiteral, ?> mapper(Method method) {
 
         Adapter adapterType = method.getAnnotation(Adapter.class);
-        DataTypeAdapter adapter = null;
+        DatatypeAdapter adapter = null;
 
         if (adapterType != null) {
 
@@ -336,7 +336,7 @@ public class TreeReaderMappingBuilder {
 
             if (adapter == null) {
                 try {
-                    Constructor<? extends DataTypeAdapter> constructor = adapterType.value().getDeclaredConstructor();
+                    Constructor<? extends DatatypeAdapter> constructor = adapterType.value().getDeclaredConstructor();
                     constructor.setAccessible(true);
 
                     adapter = constructor.newInstance();
@@ -349,20 +349,20 @@ public class TreeReaderMappingBuilder {
             }
         }
 
-        Literal literal = method.getAnnotation(Literal.class);
+        Mapper literal = method.getAnnotation(Mapper.class);
 
         if (literal != null) {
 
-            Class<? extends LiteralMapper<? extends LinkedLiteral, ?>> mapperType = literal.value();
+            Class<? extends ObjectReader<? extends LinkedLiteral, ?>> mapperType = literal.value();
 
             if (mapperType != null) {
                 try {
-                    Constructor<? extends LiteralMapper<? extends LinkedLiteral, ?>> constructor = mapperType.getDeclaredConstructor();
+                    Constructor<? extends ObjectReader<? extends LinkedLiteral, ?>> constructor = mapperType.getDeclaredConstructor();
                     constructor.setAccessible(true);
 
-                    LiteralMapper<? extends LinkedLiteral, ?> mapping = constructor.newInstance();
+                    ObjectReader<? extends LinkedLiteral, ?> mapping = constructor.newInstance();
 
-                    return (LiteralMapper<LinkedLiteral, ?>) mapping;
+                    return (ObjectReader<LinkedLiteral, ?>) mapping;
 
                 } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
                     throw new IllegalStateException(e);
@@ -373,17 +373,17 @@ public class TreeReaderMappingBuilder {
         Class<?> type = method.getReturnType();
 
         if (adapter != null) {
-            LiteralMapper<LinkedLiteral, ?> mapping = literalMapping.find(adapter.typeInterface(), type);
+            ObjectReader<LinkedLiteral, ?> mapping = literalMapping.find(adapter.typeInterface(), type);
             if (mapping != null) {
                 return mapping;
             }
         }
 
-        final LiteralMapper<LinkedLiteral, ?> mapping;
+        final ObjectReader<LinkedLiteral, ?> mapping;
 
         if (type.isAssignableFrom(LinkedLiteral.class)
                 || type.isAssignableFrom(LinkedNode.class)) {
-            mapping = LiteralMapper.identity();
+            mapping = source -> source;
 
         } else if (type.isAssignableFrom(String.class)) {
             mapping = source -> source.lexicalValue();
@@ -476,7 +476,7 @@ public class TreeReaderMappingBuilder {
                                 Function.identity())),
                 literalAdapters.values().stream()
                         .collect(Collectors.toUnmodifiableMap(
-                                DataTypeAdapter::datatype,
+                                DatatypeAdapter::datatype,
                                 Function.identity())));
     }
 

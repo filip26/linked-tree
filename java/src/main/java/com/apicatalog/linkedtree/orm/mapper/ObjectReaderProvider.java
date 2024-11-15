@@ -5,32 +5,32 @@ import java.util.Map;
 
 import com.apicatalog.linkedtree.LinkedLiteral;
 
-public class LiteralMapping {
+class ObjectReaderProvider {
 
-    final Map<MappingKey, LiteralMapper<? extends LinkedLiteral, ?>> mapping;
+    final Map<MappingKey, ObjectReader<? extends LinkedLiteral, ?>> mapping;
 
-    public LiteralMapping() {
+    public ObjectReaderProvider() {
         this.mapping = new LinkedHashMap<>();
     }
 
-    public <T extends LinkedLiteral, R> LiteralMapping add(
-            Class<T> typeInterface,
+    public <T extends LinkedLiteral, R> ObjectReaderProvider add(
+            Class<T> sourceType,
             Class<R> targetType,
-            LiteralMapper<T, R> mapper) {
-        mapping.put(new MappingKey(typeInterface, targetType), mapper);
+            ObjectReader<T, R> mapper) {
+        mapping.put(new MappingKey(sourceType, targetType), mapper);
 
         return this;
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends LinkedLiteral, R> LiteralMapper<LinkedLiteral, ?> find(Class<T> typeInterface, Class<R> targetType) {
+    public <T extends LinkedLiteral, R> ObjectReader<LinkedLiteral, ?> find(Class<T> sourceType, Class<R> targetType) {
         
-        if (targetType.isAssignableFrom(typeInterface)) {
-            return LiteralMapper.identity();
+        if (targetType.isAssignableFrom(sourceType)) {
+            return targetType::cast;
         }
         
-        return (LiteralMapper<LinkedLiteral, ?>) mapping.entrySet().stream()
-                .filter(e -> e.getKey().match(typeInterface, targetType))
+        return (ObjectReader<LinkedLiteral, ?>) mapping.entrySet().stream()
+                .filter(e -> e.getKey().match(sourceType, targetType))
                 .findFirst()
                 .map(Map.Entry::getValue)
                 .orElse(null);

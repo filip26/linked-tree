@@ -2,7 +2,7 @@ package com.apicatalog.linkedtree.orm.test;
 
 import com.apicatalog.linkedtree.orm.Context;
 import com.apicatalog.linkedtree.orm.Fragment;
-import com.apicatalog.linkedtree.orm.Literal;
+import com.apicatalog.linkedtree.orm.Mapper;
 import com.apicatalog.linkedtree.orm.Term;
 import com.apicatalog.linkedtree.orm.Vocab;
 
@@ -12,11 +12,11 @@ import com.apicatalog.linkedtree.orm.Vocab;
 public interface Multikey extends VerificationMethod {
 
     @Term("publicKeyMultibase")
-    @Literal(EncodedKeyAdapter.class)
+    @Mapper(EncodedKeyAdapter.class)
     EncodedKey publicKey();
 
     @Term("secretKeyMultibase")
-    @Literal(EncodedKeyAdapter.class)
+    @Mapper(EncodedKeyAdapter.class)
     EncodedKey privateKey();
 
 }
