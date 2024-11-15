@@ -10,11 +10,11 @@ import java.util.function.Function;
 
 import com.apicatalog.linkedtree.adapter.NodeAdapter;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
+import com.apicatalog.linkedtree.fragment.FragmentPropertyError;
 import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 import com.apicatalog.linkedtree.lang.LangStringSelector;
 import com.apicatalog.linkedtree.lang.LanguageMap;
 import com.apicatalog.linkedtree.link.Link;
-import com.apicatalog.linkedtree.selector.InvalidSelector;
 import com.apicatalog.linkedtree.type.FragmentType;
 import com.apicatalog.linkedtree.xsd.XsdDateTime;
 
@@ -33,7 +33,7 @@ public interface LinkedFragment extends LinkedNode {
     LinkedContainer container(String term);
 
     @SuppressWarnings("unchecked")
-    default <T> T materialize(String term, Class<T> clazz) throws InvalidSelector, NodeAdapterError {
+    default <T> T materialize(String term, Class<T> clazz) throws NodeAdapterError {
 
         Objects.requireNonNull(clazz);
 
@@ -44,7 +44,7 @@ public interface LinkedFragment extends LinkedNode {
         }
 
         if (container.nodes().size() != 1) {
-            throw new InvalidSelector(term);
+            throw new FragmentPropertyError("Expected single object but got a container of " + container.nodes().size() + " items.", term);
         }
 
         try {
@@ -67,14 +67,14 @@ public interface LinkedFragment extends LinkedNode {
                 return clazz.cast(node.asLiteral());
             }
 
-            throw new InvalidSelector(term);
-
         } catch (ClassCastException e) {
-            throw new InvalidSelector(e, term);
+            throw new FragmentPropertyError(e, term);
         }
+
+        throw new FragmentPropertyError("Value cannot be cast to " + clazz, term);
     }
 
-    default LinkedNode node(String term) throws InvalidSelector {
+    default LinkedNode node(String term) throws FragmentPropertyError {
         final LinkedContainer container = container(term);
 
         if (container == null || container.nodes().isEmpty()) {
@@ -82,7 +82,7 @@ public interface LinkedFragment extends LinkedNode {
         }
 
         if (container.nodes().size() != 1) {
-            throw new InvalidSelector(term);
+            throw new FragmentPropertyError("Expected single object but got a container of " + container.nodes().size() + " items.", term);
         }
         return container.node();
     }
@@ -169,15 +169,15 @@ public interface LinkedFragment extends LinkedNode {
 //        }
     }
 
-    default <T> T literal(String term, Class<T> clazz) throws InvalidSelector {
+    default <T> T literal(String term, Class<T> clazz) throws FragmentPropertyError {
         return literal(term, clazz, Function.identity());
     }
 
-    default <T, R> R literal(String term, Class<T> clazz, Function<T, R> mapper) throws InvalidSelector {
+    default <T, R> R literal(String term, Class<T> clazz, Function<T, R> mapper) throws FragmentPropertyError {
         return literal(term, clazz, mapper, null);
     }
 
-    default <T, R> R literal(String term, Class<T> clazz, Function<T, R> mapper, R defaultValue) throws InvalidSelector {
+    default <T, R> R literal(String term, Class<T> clazz, Function<T, R> mapper, R defaultValue) throws FragmentPropertyError {
 
         Objects.requireNonNull(mapper);
 
@@ -189,35 +189,36 @@ public interface LinkedFragment extends LinkedNode {
             }
             return mapper.apply(value);
 
-        } catch (InvalidSelector e) {
+        } catch (FragmentPropertyError e) {
             throw e;
+
         } catch (Exception e) {
-            throw new InvalidSelector(e, term);
+            throw new FragmentPropertyError(e, term);
         }
     }
 
-    default Instant xsdDateTime(String term) throws InvalidSelector {
+    default Instant xsdDateTime(String term) throws NodeAdapterError {
         return literal(
                 term,
                 XsdDateTime.class,
                 XsdDateTime::datetime);
     }
 
-    default String lexicalValue(String term) throws InvalidSelector {
+    default String lexicalValue(String term) throws NodeAdapterError {
         return literal(
                 term,
                 LinkedLiteral.class,
                 LinkedLiteral::lexicalValue);
     }
 
-    default LinkedFragment fragment(String term) throws InvalidSelector {
+    default LinkedFragment fragment(String term) throws NodeAdapterError {
         return literal(
                 term,
                 LinkedFragment.class,
                 Function.identity());
     }
 
-    default URI uri() throws InvalidSelector {
+    default URI uri() throws NodeAdapterError {
         if (id() == null) {
             return null;
         }
@@ -227,13 +228,13 @@ public interface LinkedFragment extends LinkedNode {
                 return URI.create(uri);
             }
             return null;
-        } catch (IllegalArgumentException e) {
 
+        } catch (IllegalArgumentException e) {
+            throw new FragmentPropertyError(e, JsonLdKeyword.ID);
         }
-        throw new InvalidSelector(JsonLdKeyword.ID);
     }
 
-    default URI uri(String term) throws InvalidSelector {
+    default URI uri(String term) throws NodeAdapterError {
         try {
 
             LinkedFragment node = materialize(term, LinkedFragment.class);
@@ -247,22 +248,26 @@ public interface LinkedFragment extends LinkedNode {
             }
             return null;
 
-        } catch (IllegalArgumentException | NodeAdapterError e) {
-            throw new InvalidSelector(e, term);
+        } catch (IllegalArgumentException e) {
+            throw new FragmentPropertyError(e, term);
         }
     }
 
-    default LangStringSelector languageMap(String term) throws InvalidSelector {
+    default LangStringSelector languageMap(String term) throws NodeAdapterError {
         final LinkedContainer container = container(term);
         if (container != null) {
-            return LanguageMap.of(container);
+            try {
+                return LanguageMap.of(container);
+            } catch (IllegalArgumentException e) {
+                throw new FragmentPropertyError(e, term);
+            }
         }
         return LangStringSelector.empty();
     }
 
     default <T> Collection<T> collection(
             String term,
-            Class<T> clazz) throws InvalidSelector {
+            Class<T> clazz) throws NodeAdapterError {
         return collection(term, clazz, null);
     }
 
@@ -270,7 +275,7 @@ public interface LinkedFragment extends LinkedNode {
     default <T> Collection<T> collection(
             String term,
             Class<T> clazz,
-            NodeAdapter<LinkedNode, T> unmapped) throws InvalidSelector {
+            NodeAdapter<LinkedNode, T> unmapped) throws NodeAdapterError {
 
         final LinkedContainer container = container(term);
 
@@ -305,14 +310,17 @@ public interface LinkedFragment extends LinkedNode {
                         collection.add(unmapped.materialize(node));
                     }
                 } else {
-                    throw new InvalidSelector(term);
+                    throw new FragmentPropertyError("Cannot cast an item to " + clazz, term);
                 }
             }
 
             return collection;
 
+        } catch (FragmentPropertyError e) {
+            throw e;
+
         } catch (NodeAdapterError e) {
-            throw new InvalidSelector(e, term);
+            throw new FragmentPropertyError(e, term);
         }
     }
 

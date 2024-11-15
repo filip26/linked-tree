@@ -2,6 +2,7 @@ package com.apicatalog.linkedtree.adapter;
 
 import com.apicatalog.linkedtree.LinkedNode;
 
+@FunctionalInterface
 public interface NodeAdapter<T extends LinkedNode, R> {
 
     /**

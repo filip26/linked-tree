@@ -9,12 +9,34 @@ import java.util.List;
 import com.apicatalog.linkedtree.json.JsonUtils;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 
+import jakarta.json.Json;
 import jakarta.json.JsonObject;
+import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonString;
 import jakarta.json.JsonValue;
 
 public record JsonLdContext(
         Collection<String> context) implements ProcessingInstruction {
+
+    public static JsonObject set(final Collection<String> context, final JsonObject document) {
+
+        if (context == null || context.isEmpty()) {
+            return document;
+        }
+
+        JsonObjectBuilder builder = Json.createObjectBuilder();
+
+        if (context.size() == 1) {
+            builder.add(JsonLdKeyword.CONTEXT, context.iterator().next());
+
+        } else {
+            builder.add(JsonLdKeyword.CONTEXT, Json.createArrayBuilder(context));
+        }
+
+        document.entrySet().forEach(e -> builder.add(e.getKey(), e.getValue()));
+
+        return builder.build();
+    }
 
     /**
      * 
@@ -28,7 +50,7 @@ public record JsonLdContext(
     public static Collection<String> strings(final JsonObject object) {
         return strings(object, Collections.emptyList());
     }
-    
+
     public static Collection<String> strings(final JsonObject object, Collection<String> defaultValue) {
 
         final JsonValue contexts = object.get(JsonLdKeyword.CONTEXT);
@@ -58,18 +80,13 @@ public record JsonLdContext(
             }
             strings.add(contextUri);
         }
-
         return strings;
     }
-    
+
     protected static final boolean isURI(final String value) {
-
         try {
-
             return URI.create(value) != null;
-
         } catch (IllegalArgumentException e) {
-
         }
         return false;
     }

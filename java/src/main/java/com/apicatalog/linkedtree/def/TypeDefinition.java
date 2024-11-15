@@ -3,7 +3,7 @@ package com.apicatalog.linkedtree.def;
 import java.util.Collection;
 import java.util.Map;
 
-import com.apicatalog.linkedtree.literal.adapter.DataTypeNormalizer;
+import com.apicatalog.linkedtree.orm.mapper.ObjectWriter;
 
 public class TypeDefinition {
 
@@ -17,7 +17,7 @@ public class TypeDefinition {
     
     Collection<PropertyDefinition> methods;
     
-    Map<Class<?>, DataTypeNormalizer<?>> normalizers;
+    Map<Class<?>, ObjectWriter<?>> writers;
     
     public TypeDefinition(
             String vocab,
@@ -26,7 +26,7 @@ public class TypeDefinition {
             PropertyDefinition id,
             PropertyDefinition type,
             Collection<PropertyDefinition> methods,
-            Map<Class<?>, DataTypeNormalizer<?>> normalizers        
+            Map<Class<?>, ObjectWriter<?>> writers        
             ) {
         this.vocab = vocab;
         this.context = context;
@@ -34,7 +34,7 @@ public class TypeDefinition {
         this.id = id;
         this.type = type;
         this.methods = methods;
-        this.normalizers = normalizers;
+        this.writers = writers;
     }
 
     public Collection<String> context() {
@@ -61,8 +61,8 @@ public class TypeDefinition {
         return vocab;
     }
 
-    public DataTypeNormalizer<?> normalizer(Class<?> clazz) {
-        return normalizers.get(clazz);
+    public ObjectWriter<?> objectWriter(Class<?> clazz) {
+        return writers.get(clazz);
     }
     
     public Collection<String> types() {

@@ -5,7 +5,6 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class GetterMethod {
@@ -35,7 +34,7 @@ public class GetterMethod {
             }
             
             if (method.getParameterCount() > 0) {
-                LOGGER.log(Level.FINER, "Skipped method {0} - not a getter, has {1} paramters", new Object[] { method.toGenericString(), (Integer) method.getParameterCount() });
+//                LOGGER.log(Level.FINER, "Skipped method {0} - not a getter, has {1} paramters", new Object[] { method.toGenericString(), (Integer) method.getParameterCount() });
                 continue;
             }
 

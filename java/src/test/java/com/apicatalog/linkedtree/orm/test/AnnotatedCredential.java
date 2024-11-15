@@ -6,9 +6,9 @@ import java.util.Collection;
 
 import com.apicatalog.linkedtree.lang.LangStringSelector;
 import com.apicatalog.linkedtree.orm.Context;
+import com.apicatalog.linkedtree.orm.Adapter;
 import com.apicatalog.linkedtree.orm.Fragment;
 import com.apicatalog.linkedtree.orm.Id;
-import com.apicatalog.linkedtree.orm.Literal;
 import com.apicatalog.linkedtree.orm.Term;
 import com.apicatalog.linkedtree.orm.Vocab;
 import com.apicatalog.linkedtree.test.Status;
@@ -41,12 +41,13 @@ public interface AnnotatedCredential {
     @Term("credentialSubject")
     GenericSubject subject();
 
+    @Term
     URI issuer();
 
-    @Literal(XsdDateTimeAdapter.class)
+    @Adapter(XsdDateTimeAdapter.class)
     Instant validFrom();
 
-    @Literal(XsdDateTimeAdapter.class)
+    @Adapter(XsdDateTimeAdapter.class)
     Instant validUntil();
 
     @Term("credentialStatus")

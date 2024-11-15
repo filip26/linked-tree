@@ -27,7 +27,7 @@ import com.apicatalog.linkedtree.builder.TreeBuilderError;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeReader;
 import com.apicatalog.linkedtree.jsonld.io.JsonLdTreeWriter;
 import com.apicatalog.linkedtree.literal.ByteArrayValue;
-import com.apicatalog.linkedtree.orm.mapper.TreeMapping;
+import com.apicatalog.linkedtree.orm.mapper.TreeReaderMapping;
 import com.apicatalog.linkedtree.test.AlumniCredential;
 import com.apicatalog.linkedtree.test.Base64ByteArray;
 import com.apicatalog.linkedtree.test.BitstringStatusListEntry;
@@ -41,7 +41,7 @@ import jakarta.json.JsonArray;
 @TestMethodOrder(OrderAnnotation.class)
 class JsonLdAdapterTest {
 
-    static JsonLdTreeReader READER = JsonLdTreeReader.of(TreeMapping.createGenericBuilder()
+    static JsonLdTreeReader READER = JsonLdTreeReader.of(TreeReaderMapping.createGenericBuilder()
             // types
             .with(VerifiableCredential.typeAdapter())
             .with(AlumniCredential.typeAdapter())

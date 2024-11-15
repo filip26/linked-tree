@@ -8,9 +8,8 @@ import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.lang.LangStringSelector;
-import com.apicatalog.linkedtree.selector.InvalidSelector;
-import com.apicatalog.linkedtree.type.GenericTypeAdapter;
 import com.apicatalog.linkedtree.type.FragmentType;
+import com.apicatalog.linkedtree.type.GenericTypeAdapter;
 import com.apicatalog.linkedtree.type.TypeAdapter;
 
 public class VerifiableCredential {
@@ -40,14 +39,10 @@ public class VerifiableCredential {
     }
 
     public static VerifiableCredential of(LinkedFragment fragment) throws NodeAdapterError {
-        try {
-            return setup(new VerifiableCredential(), fragment);
-        } catch (InvalidSelector e) {
-            throw new NodeAdapterError(e);
-        }
+        return setup(new VerifiableCredential(), fragment);
     }
 
-    protected static VerifiableCredential setup(VerifiableCredential credential, LinkedFragment source) throws InvalidSelector {
+    protected static VerifiableCredential setup(VerifiableCredential credential, LinkedFragment source) throws NodeAdapterError {
 
         credential.id = source.uri();
         credential.type = source.type();

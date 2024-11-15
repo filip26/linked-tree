@@ -4,8 +4,8 @@ import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 
 @FunctionalInterface
-public interface LiteralMapper<T extends LinkedLiteral, R> {
+public interface ObjectReader<T extends LinkedLiteral, R> {
 
-    R map(T literal) throws NodeAdapterError;
+    R object(T literal) throws NodeAdapterError;
 
 }

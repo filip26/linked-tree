@@ -25,20 +25,27 @@ public interface ControllerDocument {
      */
     FragmentType type();
 
+    @Term
     Set<URI> controller();
 
+    @Term
     Set<VerificationMethod> verificationMethod();
 
+    @Term
     Set<URI> alsoKnownAs();
 
     @Term("authenticationMethod")
     Set<VerificationMethod> authentication();
 
+    @Term
     Set<VerificationMethod> assertionMethod();
 
+    @Term
     Set<VerificationMethod> keyAgreement();
 
+    @Term
     Set<VerificationMethod> capabilityInvocation();
 
+    @Term
     Set<VerificationMethod> capabilityDelegation();
 }

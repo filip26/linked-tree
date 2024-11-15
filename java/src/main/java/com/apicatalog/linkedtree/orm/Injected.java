@@ -5,13 +5,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.apicatalog.linkedtree.literal.adapter.DataTypeAdapter;
+import com.apicatalog.linkedtree.LinkedFragment;
+import com.apicatalog.linkedtree.adapter.NodeAdapter;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(value = { ElementType.METHOD, ElementType.ANNOTATION_TYPE })
-public @interface Literal {
+public @interface Injected {
 
-    Class<? extends DataTypeAdapter> value();
+    Class<? extends NodeAdapter<LinkedFragment, ?>> value();
 
-    String[] params() default {};
 }

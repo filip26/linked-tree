@@ -6,7 +6,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.net.URI;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -23,18 +22,20 @@ import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.adapter.NodeAdapter;
-import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.json.JsonLiteral;
 import com.apicatalog.linkedtree.lang.LanguageMap;
 import com.apicatalog.linkedtree.literal.ByteArrayValue;
 import com.apicatalog.linkedtree.literal.DateTimeValue;
 import com.apicatalog.linkedtree.literal.DoubleValue;
 import com.apicatalog.linkedtree.literal.IntegerValue;
-import com.apicatalog.linkedtree.literal.adapter.DataTypeAdapter;
+import com.apicatalog.linkedtree.literal.adapter.DatatypeAdapter;
+import com.apicatalog.linkedtree.orm.Adapter;
+import com.apicatalog.linkedtree.orm.Compaction;
 import com.apicatalog.linkedtree.orm.Fragment;
 import com.apicatalog.linkedtree.orm.Id;
-import com.apicatalog.linkedtree.orm.Literal;
+import com.apicatalog.linkedtree.orm.Injected;
 import com.apicatalog.linkedtree.orm.Mapper;
+import com.apicatalog.linkedtree.orm.Provided;
 import com.apicatalog.linkedtree.orm.Term;
 import com.apicatalog.linkedtree.orm.Type;
 import com.apicatalog.linkedtree.orm.Vocab;
@@ -43,6 +44,7 @@ import com.apicatalog.linkedtree.orm.getter.FragmentGetter;
 import com.apicatalog.linkedtree.orm.getter.Getter;
 import com.apicatalog.linkedtree.orm.getter.GetterMethod;
 import com.apicatalog.linkedtree.orm.getter.IdGetter;
+import com.apicatalog.linkedtree.orm.getter.InjectedGetter;
 import com.apicatalog.linkedtree.orm.getter.LangMapGetter;
 import com.apicatalog.linkedtree.orm.getter.LiteralGetter;
 import com.apicatalog.linkedtree.orm.getter.NodeGetter;
@@ -55,23 +57,25 @@ import com.apicatalog.linkedtree.type.TypeAdapter;
 
 import jakarta.json.JsonValue;
 
-public class TreeMappingBuilder {
+public class TreeReaderMappingBuilder {
 
-    private static final Logger LOGGER = Logger.getLogger(TreeMappingBuilder.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(TreeReaderMappingBuilder.class.getName());
 
+    final Map<Class<?>, NodeAdapter<LinkedFragment, ?>> injectors;
     final Map<Class<?>, TypeAdapter> typeAdapters;
-    final Map<Class<? extends DataTypeAdapter>, DataTypeAdapter> literalAdapters;
+    final Map<Class<? extends DatatypeAdapter>, DatatypeAdapter> literalAdapters;
 
-    final LiteralMapping literalMapping;
+    final ObjectReaderProvider literalMapping;
 
-    protected TreeMappingBuilder() {
+    protected TreeReaderMappingBuilder() {
+        this.injectors = new LinkedHashMap<>();
         this.typeAdapters = new LinkedHashMap<>();
         this.literalAdapters = new LinkedHashMap<>();
 
-        this.literalMapping = new LiteralMapping();
+        this.literalMapping = new ObjectReaderProvider();
     }
 
-    public TreeMappingBuilder defaults() {
+    public TreeReaderMappingBuilder defaults() {
         literalMapping
                 .add(LinkedLiteral.class, String.class,
                         LinkedLiteral::lexicalValue)
@@ -90,39 +94,58 @@ public class TreeMappingBuilder {
         return this;
     }
 
-    public TreeMappingBuilder with(TypeAdapter adapter) {
+    public TreeReaderMappingBuilder with(TypeAdapter adapter) {
         this.typeAdapters.put(adapter.typeInterface(), adapter);
         return this;
     }
 
-    public TreeMappingBuilder with(
+    public TreeReaderMappingBuilder with(
             String type,
             Class<?> typeInterface,
             NodeAdapter<LinkedFragment, Object> adapter) {
         return with(new GenericTypeAdapter(type, typeInterface, adapter));
     }
 
-    public TreeMappingBuilder with(DataTypeAdapter adapter) {
+    public TreeReaderMappingBuilder with(DatatypeAdapter adapter) {
         this.literalAdapters.put(adapter.getClass(), adapter);
         return this;
     }
 
-    public <T extends LinkedLiteral, R> TreeMappingBuilder map(Class<T> source, Class<R> target, LiteralMapper<T, R> mapper) {
+    public <T extends LinkedLiteral, R> TreeReaderMappingBuilder map(Class<T> source, Class<R> target, ObjectReader<T, R> mapper) {
         literalMapping.add(source, target, mapper);
         return this;
     }
 
-    public TreeMappingBuilder scan(final Class<?> typeInterface) {
+    public TreeReaderMappingBuilder scan(final Class<?> typeInterface) {
+        return scan(typeInterface, false);
+    }
+
+    public TreeReaderMappingBuilder scan(final Class<?> typeInterface, boolean eager) {
 
         if (typeAdapters.containsKey(typeInterface)) {
             return this;
         }
 
+        FragmentProxy proxy = proxy(typeInterface);
+
+        if (proxy == null) {
+            return this;
+        }
+
+        typeAdapters.put(
+                typeInterface,
+                proxy);
+
+        return this;
+    }
+
+    public FragmentProxy proxy(final Class<?> typeInterface) {
+
         final Fragment fragment = typeInterface.getAnnotation(Fragment.class);
 
         if (fragment == null) {
             LOGGER.log(Level.WARNING, "Skipped class {0} - not annotated as @Fragment", typeInterface);
-            return this;
+            return null;
         }
 
         final Vocab vocab = typeInterface.getAnnotation(Vocab.class);
@@ -133,40 +156,70 @@ public class TreeMappingBuilder {
             typeName = expand(vocab, typeInterface.getAnnotation(Term.class), typeInterface.getSimpleName());
         }
 
+        boolean mutable = fragment.mutable();
+
         final Map<Method, Getter> getters = new HashMap<>(typeInterface.getMethods().length);
 
         // scan methods
         for (final Method method : GetterMethod.filter(typeInterface, false)) {
 
-            Mapper mapper = method.getAnnotation(Mapper.class);
-            if (mapper != null) {
-                try {
-                    Method mapMethod = Arrays.stream(mapper.value().getDeclaredMethods())
-                            .filter(m -> !m.isDefault() && !m.isSynthetic())
-                            .filter(m -> "map".equals(m.getName())
-                                    && m.getParameterCount() == 1
-                                    && LinkedLiteral.class.isAssignableFrom(m.getParameters()[0].getType()))
-                            .findFirst()
-                            .orElseThrow(() -> new IllegalStateException("LiteralMapper.map(LinkedLiteral) method is invalid."));
+            if (method.isAnnotationPresent(Provided.class)) {
+                mutable = true;
+                continue;
+            }
 
-                    Class<?> mapperReturnType = mapMethod.getReturnType();
-
-                    if (!method.getReturnType().isAssignableFrom(mapperReturnType)) {
-                        throw new IllegalArgumentException("Provider mapper return type [" + mapperReturnType + "] does not match method return type [" + method.getReturnType() + "].");
-                    }
-
-                    literalMapping.add(
-                            (Class) mapMethod.getParameterTypes()[0],
-                            method.getReturnType(),
-                            (LiteralMapper) mapper.value().getDeclaredConstructor().newInstance());
-
-                } catch (InvocationTargetException | IllegalAccessException
-                        | InstantiationException | NoSuchMethodException e) {
-                    throw new IllegalStateException(e);
-                }
+            if (method.isAnnotationPresent(Injected.class)) {
+                getters.put(method, injector(method));
+                continue;
             }
 
             final Vocab declaredVocab = method.getDeclaringClass().getAnnotation(Vocab.class);
+            Vocab methodVocab = method.getAnnotation(Vocab.class);
+            final Term methodTerm = method.getAnnotation(Term.class);
+
+            final boolean isIdMethod = method.isAnnotationPresent(Id.class);
+            final boolean isTypeMethod = method.isAnnotationPresent(Type.class)
+                    || method.getReturnType().isAssignableFrom(FragmentType.class);
+            final boolean isLangMap = method.getReturnType().isAssignableFrom(LanguageMap.class);
+
+            // ignore if no annotation is found
+            if (methodVocab == null
+                    && methodTerm == null
+                    && !isIdMethod
+                    && !isTypeMethod
+                    && !isLangMap
+                    && !method.isAnnotationPresent(Mapper.class)
+                    && !method.isAnnotationPresent(Adapter.class)
+                    && !method.isAnnotationPresent(Compaction.class)) {
+                continue;
+            }
+//            Mapper mapper = method.getAnnotation(Mapper.class);
+//            if (mapper != null) {
+//                try {
+//                    Method mapMethod = Arrays.stream(mapper.value().getDeclaredMethods())
+//                            .filter(m -> !m.isDefault() && !m.isSynthetic())
+//                            .filter(m -> "map".equals(m.getName())
+//                                    && m.getParameterCount() == 1
+//                                    && LinkedLiteral.class.isAssignableFrom(m.getParameters()[0].getType()))
+//                            .findFirst()
+//                            .orElseThrow(() -> new IllegalStateException("LiteralMapper.map(LinkedLiteral) method is invalid."));
+//
+//                    Class<?> mapperReturnType = mapMethod.getReturnType();
+//
+//                    if (!method.getReturnType().isAssignableFrom(mapperReturnType)) {
+//                        throw new IllegalArgumentException("Provider mapper return type [" + mapperReturnType + "] does not match method return type [" + method.getReturnType() + "].");
+//                    }
+//
+//                    literalMapping.add(
+//                            (Class) mapMethod.getParameterTypes()[0],
+//                            method.getReturnType(),
+//                            (LiteralMapper) mapper.value().getDeclaredConstructor().newInstance());
+//
+//                } catch (InvocationTargetException | IllegalAccessException
+//                        | InstantiationException | NoSuchMethodException e) {
+//                    throw new IllegalStateException(e);
+//                }
+//            }
 
             Getter getter = null;
 
@@ -177,17 +230,13 @@ public class TreeMappingBuilder {
                 // @type
             } else if (method.isAnnotationPresent(Type.class)
                     || method.getReturnType().isAssignableFrom(FragmentType.class)) {
-                getter = TypeGetter.instance(method.getReturnType());
+                getter = TypeGetter.instance(method);
 
             } else {
-
-                Vocab methodVocab = method.getAnnotation(Vocab.class);
 
                 if (methodVocab == null) {
                     methodVocab = declaredVocab;
                 }
-
-                final Term methodTerm = method.getAnnotation(Term.class);
 
                 final String termUri = expand(
                         methodVocab,
@@ -216,7 +265,7 @@ public class TreeMappingBuilder {
                                 termUri,
                                 method.getReturnType(),
                                 componentClass,
-                                source -> mapper(method).map(source.asLiteral()));
+                                source -> mapper(method).object(source.asLiteral()));
                     }
 
                     // TODO arrays
@@ -249,75 +298,121 @@ public class TreeMappingBuilder {
             } else {
                 getters.put(method, getter);
             }
-
         }
 
-        final FragmentProxy proxy = new FragmentProxy(typeInterface, typeName, getters);
-        typeAdapters.put(typeInterface, proxy);
-
-        return this;
+        return FragmentProxy.of(
+                typeInterface,
+                typeName,
+                getters,
+                mutable,
+                true,
+                fragment.linkable());
     }
 
-    LiteralMapper<LinkedLiteral, ?> mapper(Method method) {
+    Getter injector(Method method) {
+        Injected injected = method.getAnnotation(Injected.class);
 
-        Literal literal = method.getAnnotation(Literal.class);
+        NodeAdapter<LinkedFragment, ?> adapter = injectors.get(injected.value());
 
-        if (literal != null) {
+        if (adapter == null) {
+            try {
+                adapter = injected.value().getConstructor().newInstance();
+                injectors.put(injected.value(), adapter);
+            } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+        return new InjectedGetter(adapter);
+    }
 
-            Class<? extends DataTypeAdapter> adapterType = literal.value();
+    ObjectReader<LinkedLiteral, ?> mapper(Method method) {
 
-            DataTypeAdapter adapter = literalAdapters.get(adapterType);
+        Adapter adapterType = method.getAnnotation(Adapter.class);
+        
+        DatatypeAdapter adapter = null;
+        String datatype = null;
+
+        if (adapterType != null) {
+
+            adapter = literalAdapters.get(adapterType.value());
 
             if (adapter == null) {
                 try {
-                    Constructor<? extends DataTypeAdapter> constructor = adapterType.getDeclaredConstructor();
+                    Constructor<? extends DatatypeAdapter> constructor = adapterType.value().getDeclaredConstructor();
                     constructor.setAccessible(true);
 
                     adapter = constructor.newInstance();
 
-                    // TODO move to build, merge params
-                    adapter.setup(literal.params());
+                    literalAdapters.put(adapterType.value(), adapter);
 
-                    literalAdapters.put(adapterType, adapter);
-
-                } catch (NodeAdapterError | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+                } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
                     throw new IllegalStateException(e);
                 }
             }
+            datatype = adapter.datatype();
+        }
 
-            final LiteralMapper<LinkedLiteral, ?> mapping = literalMapping.find(adapter.typeInterface(), method.getReturnType());
+        Mapper literal = method.getAnnotation(Mapper.class);
 
-            if (mapping == null) {
-                throw new IllegalArgumentException("Cannot find literal mapper from " + adapter.typeInterface() + " to " + method.getReturnType());
+        if (literal != null) {
+
+            Class<? extends ObjectReader<? extends LinkedLiteral, ?>> mapperType = literal.value();
+
+            if (mapperType != null) {
+                try {
+                    Constructor<? extends ObjectReader<? extends LinkedLiteral, ?>> constructor = mapperType.getDeclaredConstructor();
+                    constructor.setAccessible(true);
+
+                    ObjectReader<? extends LinkedLiteral, ?> mapping = constructor.newInstance();
+
+                    return enforceDatatype(mapping, datatype);
+
+                } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+                    throw new IllegalStateException(e);
+                }
             }
-
-            return mapping;
         }
 
         Class<?> type = method.getReturnType();
 
+        if (adapter != null) {
+            ObjectReader<LinkedLiteral, ?> mapping = literalMapping.find(adapter.typeInterface(), type);
+            if (mapping != null) {
+                return enforceDatatype(mapping, datatype);
+            }
+        }
+
+        final ObjectReader<LinkedLiteral, ?> mapping;
+
         if (type.isAssignableFrom(LinkedLiteral.class)
                 || type.isAssignableFrom(LinkedNode.class)) {
-            return source -> source;
-        }
+            mapping = source -> source;
 
-        if (type.isAssignableFrom(String.class)) {
-            return source -> source.lexicalValue();
-        }
+        } else if (type.isAssignableFrom(String.class)) {
+            mapping = source -> source.lexicalValue();
 
-        if (type.isAssignableFrom(JsonValue.class)) {
-            return source -> ((JsonLiteral) source).jsonValue();
-        }
+        } else if (type.isAssignableFrom(JsonValue.class)) {
+            mapping = source -> ((JsonLiteral) source).jsonValue();
 
-        final LiteralMapper<LinkedLiteral, ?> mapping = literalMapping.find(LinkedLiteral.class, method.getReturnType());
+        } else {
+            mapping = literalMapping.find(LinkedLiteral.class, method.getReturnType());
+        }
 
         if (mapping == null) {
-            throw new IllegalArgumentException("Cannot find literal mapper from " + LinkedLiteral.class + " to " + method.getReturnType() + ". Method " + method.getName());
+            throw new IllegalArgumentException("Cannot find literal mapper from " + LinkedLiteral.class.getTypeName() + " to " + method.getReturnType().getTypeName() + " on " + method);
         }
 
-        return mapping;
+        return enforceDatatype(mapping, datatype);
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    static final ObjectReader<LinkedLiteral, ?> enforceDatatype(ObjectReader<? extends LinkedLiteral, ?> reader, String datatype) {
+        if (datatype == null) {
+            return (ObjectReader<LinkedLiteral, ?>) reader;
+        }
+        return new DatatypeEnforcer(datatype, reader);
+    }
+    
     static final boolean isAbsoluteUri(final String uri, final boolean validate) {
 
         // if URI validation is disabled
@@ -382,8 +477,8 @@ public class TreeMappingBuilder {
                 : prefix + uri;
     }
 
-    public TreeMapping build() {
-        return new TreeMapping(
+    public TreeReaderMapping build() {
+        return new TreeReaderMapping(
                 Collections.unmodifiableMap(typeAdapters),
                 typeAdapters.values().stream()
                         .filter(adapter -> adapter.type() != null)
@@ -392,7 +487,7 @@ public class TreeMappingBuilder {
                                 Function.identity())),
                 literalAdapters.values().stream()
                         .collect(Collectors.toUnmodifiableMap(
-                                DataTypeAdapter::datatype,
+                                DatatypeAdapter::datatype,
                                 Function.identity())));
     }
 

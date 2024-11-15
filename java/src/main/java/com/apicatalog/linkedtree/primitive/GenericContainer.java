@@ -10,15 +10,26 @@ import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 
-public record GenericContainer(
-        ContainerType containerType,
-        Collection<LinkedNode> nodes,
-        LinkedTree root,
-        Map<Integer, Collection<ProcessingInstruction>> ops) implements LinkedContainer {
+public class GenericContainer implements LinkedContainer {
 
-    public GenericContainer {
+    protected final ContainerType containerType;
+    protected final Collection<LinkedNode> nodes;
+    protected final LinkedTree root;
+    protected final Map<Integer, Collection<ProcessingInstruction>> ops;
+
+    public GenericContainer(
+            ContainerType containerType,
+            Collection<LinkedNode> nodes,
+            LinkedTree root,
+            Map<Integer, Collection<ProcessingInstruction>> ops) {
+
         Objects.requireNonNull(containerType);
         Objects.requireNonNull(nodes);
+
+        this.containerType = containerType;
+        this.nodes = nodes;
+        this.root = root;
+        this.ops = ops;
     }
 
     @Override
@@ -27,21 +38,7 @@ public record GenericContainer(
                 ? ops.getOrDefault(processingOrder, Collections.emptyList())
                 : Collections.emptyList();
     }
-
-    @Override
-    public int hashCode() {
-        return System.identityHashCode(this);
-    }
-
-    @Override
-    // containers cannot be compared as instances
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        return (obj != null);
-    }
-
+    
     @Override
     public String toString() {
         return "GenericContainer [containerType=" + containerType + ", nodes=" + nodes.size() + ", ops=" + ops.size() + "]";
@@ -53,5 +50,24 @@ public record GenericContainer(
                 Collections.emptyList(),
                 root,
                 Collections.emptyMap());
+    }
+    
+
+    @Override
+    public ContainerType containerType() {
+        return containerType;
+    }
+
+    @Override
+    public Collection<LinkedNode> nodes() {
+        return nodes;
+    }
+
+    public LinkedTree root() {
+        return root;
+    }
+    
+    public Map<Integer, Collection<ProcessingInstruction>> ops() {
+        return ops;
     }
 }

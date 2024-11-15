@@ -15,7 +15,7 @@ public @interface Term {
      * 
      * @return a type name
      */
-    String value();
+    String value() default "";
 
     /**
      * A vocabulary URI, ignored when {@link Term#value()} is an absolute URI.
