@@ -328,7 +328,9 @@ public class TreeReaderMappingBuilder {
     ObjectReader<LinkedLiteral, ?> mapper(Method method) {
 
         Adapter adapterType = method.getAnnotation(Adapter.class);
+        
         DatatypeAdapter adapter = null;
+        String datatype = null;
 
         if (adapterType != null) {
 
@@ -347,6 +349,7 @@ public class TreeReaderMappingBuilder {
                     throw new IllegalStateException(e);
                 }
             }
+            datatype = adapter.datatype();
         }
 
         Mapper literal = method.getAnnotation(Mapper.class);
@@ -362,7 +365,7 @@ public class TreeReaderMappingBuilder {
 
                     ObjectReader<? extends LinkedLiteral, ?> mapping = constructor.newInstance();
 
-                    return (ObjectReader<LinkedLiteral, ?>) mapping;
+                    return enforceDatatype(mapping, datatype);
 
                 } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
                     throw new IllegalStateException(e);
@@ -375,7 +378,7 @@ public class TreeReaderMappingBuilder {
         if (adapter != null) {
             ObjectReader<LinkedLiteral, ?> mapping = literalMapping.find(adapter.typeInterface(), type);
             if (mapping != null) {
-                return mapping;
+                return enforceDatatype(mapping, datatype);
             }
         }
 
@@ -399,9 +402,17 @@ public class TreeReaderMappingBuilder {
             throw new IllegalArgumentException("Cannot find literal mapper from " + LinkedLiteral.class.getTypeName() + " to " + method.getReturnType().getTypeName() + " on " + method);
         }
 
-        return mapping;
+        return enforceDatatype(mapping, datatype);
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    static final ObjectReader<LinkedLiteral, ?> enforceDatatype(ObjectReader<? extends LinkedLiteral, ?> reader, String datatype) {
+        if (datatype == null) {
+            return (ObjectReader<LinkedLiteral, ?>) reader;
+        }
+        return new DatatypeEnforcer(datatype, reader);
+    }
+    
     static final boolean isAbsoluteUri(final String uri, final boolean validate) {
 
         // if URI validation is disabled
