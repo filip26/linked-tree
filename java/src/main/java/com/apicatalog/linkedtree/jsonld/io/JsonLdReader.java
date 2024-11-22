@@ -1,5 +1,6 @@
 package com.apicatalog.linkedtree.jsonld.io;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -38,6 +39,10 @@ public class JsonLdReader {
     }
 
     public <T> T read(Class<T> typeInterface, JsonObject fragment) throws TreeBuilderError, NodeAdapterError {
+        return read(typeInterface, fragment, null);
+    }
+    
+    public <T> T read(Class<T> typeInterface, JsonObject fragment, URI base) throws TreeBuilderError, NodeAdapterError {
 
         JsonObject input = fragment;
 
@@ -56,6 +61,7 @@ public class JsonLdReader {
             final JsonArray expanded = JsonLd
                     .expand(JsonDocument.of(fragment))
                     .context(expandContext)
+                    .base(base)
                     .loader(loader)
                     .get();
 
