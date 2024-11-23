@@ -18,7 +18,7 @@ import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.fragment.GenericFragment;
 import com.apicatalog.linkedtree.lang.ImmutableLangString;
-import com.apicatalog.linkedtree.lang.LangString.LanguageDirection;
+import com.apicatalog.linkedtree.lang.LangStringLiteral.LanguageDirection;
 import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.link.MutableLink;
 import com.apicatalog.linkedtree.literal.ImmutableLiteral;

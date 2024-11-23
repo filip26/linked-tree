@@ -8,7 +8,7 @@ public record ImmutableLangString(
         String lexicalValue,
         String language,
         LanguageDirection direction,
-        LinkedTree root) implements LangString {
+        LinkedTree root) implements LangStringLiteral {
 
     @Override
     public String toString() {

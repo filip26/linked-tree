@@ -4,7 +4,7 @@ import java.net.URI;
 import java.time.Instant;
 import java.util.Collection;
 
-import com.apicatalog.linkedtree.lang.LangStringSelector;
+import com.apicatalog.linkedtree.lang.LocalizedString;
 import com.apicatalog.linkedtree.orm.Context;
 import com.apicatalog.linkedtree.orm.Adapter;
 import com.apicatalog.linkedtree.orm.Fragment;
@@ -33,10 +33,10 @@ public interface AnnotatedCredential {
     FragmentType type();
 
     @Vocab("https://schema.org/")
-    LangStringSelector name();
+    LocalizedString name();
 
     @Vocab("https://schema.org/")
-    LangStringSelector description();
+    LocalizedString description();
 
     @Term("credentialSubject")
     GenericSubject subject();

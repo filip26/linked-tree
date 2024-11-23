@@ -8,24 +8,24 @@ import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 
-public class LanguageMap implements LangStringSelector {
+public class LanguageMap implements LocalizedString {
 
-    protected Map<String, LangString> langMap;
+    protected Map<String, LangStringLiteral> langMap;
 
-    protected LanguageMap(Map<String, LangString> langMap) {
+    protected LanguageMap(Map<String, LangStringLiteral> langMap) {
         this.langMap = langMap;
     }
 
     public static LanguageMap of(LinkedContainer container) throws NodeAdapterError {
 
-        final Map<String, LangString> map = new HashMap<>(container.size());
+        final Map<String, LangStringLiteral> map = new HashMap<>(container.size());
 
         for (LinkedNode node : container) {
             if (!node.isLiteral()) {
                 throw new IllegalArgumentException();
             }
 
-            if (node instanceof LangString langString) {
+            if (node instanceof LangStringLiteral langString) {
                 map.put(langString.language(), langString);
                 continue;
             }
@@ -37,7 +37,7 @@ public class LanguageMap implements LangStringSelector {
     }
 
     @Override
-    public Collection<LangString> values() {
+    public Collection<LangStringLiteral> values() {
         return langMap.values();
     }
 
@@ -47,7 +47,7 @@ public class LanguageMap implements LangStringSelector {
     }
 
     @Override
-    public LangString locale(String langCode) {
+    public LangStringLiteral get(String langCode) {
         return langMap.get(langCode);
     }
 

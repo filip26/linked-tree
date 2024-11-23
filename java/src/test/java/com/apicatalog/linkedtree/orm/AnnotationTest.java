@@ -155,7 +155,7 @@ class AnnotationTest {
 
         assertEquals(1, vc.name().size());
         assertEquals("Alumni Credential", vc.name().first().lexicalValue());
-        assertNull(vc.name().locale("en-US"));
+        assertNull(vc.name().get("en-US"));
         assertNull(vc.name().first().language());
 
         assertEquals(1, vc.name().values().size());

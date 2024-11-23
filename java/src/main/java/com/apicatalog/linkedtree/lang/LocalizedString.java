@@ -3,32 +3,32 @@ package com.apicatalog.linkedtree.lang;
 import java.util.Collection;
 import java.util.Collections;
 
-public interface LangStringSelector {
+public interface LocalizedString {
 
-    Collection<LangString> values();
+    Collection<LangStringLiteral> values();
 
     Collection<String> languages();
 
-    LangString locale(String langCode);
+    LangStringLiteral get(String langCode);
 
     int size();
 
-    default LangString first() {
-        final Collection<LangString> strings = values();
+    default LangStringLiteral first() {
+        final Collection<LangStringLiteral> strings = values();
         if (strings != null && !strings.isEmpty()) {
             return strings.iterator().next();
         }
         return null;
     }
 
-    static LangStringSelector empty() {
+    static LocalizedString empty() {
         return EMPTY;
     }
 
-    final static LangStringSelector EMPTY = new LangStringSelector() {
+    final static LocalizedString EMPTY = new LocalizedString() {
 
         @Override
-        public Collection<LangString> values() {
+        public Collection<LangStringLiteral> values() {
             return Collections.emptyList();
         }
 
@@ -38,7 +38,7 @@ public interface LangStringSelector {
         }
 
         @Override
-        public LangString locale(String langCode) {
+        public LangStringLiteral get(String langCode) {
             return null;
         }
 

@@ -3,7 +3,7 @@ package com.apicatalog.linkedtree.lang;
 import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.xsd.XsdVocab;
 
-public interface LangString extends LinkedLiteral {
+public interface LangStringLiteral extends LinkedLiteral {
 
     public enum LanguageDirection {
         LTR,

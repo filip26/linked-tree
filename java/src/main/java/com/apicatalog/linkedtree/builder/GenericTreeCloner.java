@@ -13,7 +13,7 @@ import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.LinkedTree;
 import com.apicatalog.linkedtree.fragment.GenericFragment;
 import com.apicatalog.linkedtree.lang.ImmutableLangString;
-import com.apicatalog.linkedtree.lang.LangString;
+import com.apicatalog.linkedtree.lang.LangStringLiteral;
 import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.link.MutableLink;
 import com.apicatalog.linkedtree.literal.ImmutableLiteral;
@@ -159,7 +159,7 @@ public class GenericTreeCloner implements NodeConsumer<LinkedNode>, NodeSelector
             return fragment;
 
         } else if (source.isLiteral()) {
-            if (source.asLiteral() instanceof LangString langString) {
+            if (source.asLiteral() instanceof LangStringLiteral langString) {
                 return new ImmutableLangString(
                         langString.lexicalValue(),
                         langString.language(),

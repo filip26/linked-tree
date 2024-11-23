@@ -8,7 +8,7 @@ import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.LinkedNode;
-import com.apicatalog.linkedtree.lang.LangString;
+import com.apicatalog.linkedtree.lang.LangStringLiteral;
 import com.apicatalog.linkedtree.link.Link;
 
 public class DictionaryWriter {
@@ -113,7 +113,7 @@ public class DictionaryWriter {
 
         print("datatype: ").println(literal.datatype());
         print("value: ").println(literal.lexicalValue());
-        if (literal instanceof LangString langString) {
+        if (literal instanceof LangStringLiteral langString) {
             if (langString.language() != null) {
                 print("language: ").println(langString.language());
             }

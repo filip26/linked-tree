@@ -15,7 +15,7 @@ import com.apicatalog.linkedtree.json.JsonLiteral;
 import com.apicatalog.linkedtree.json.JsonScalar;
 import com.apicatalog.linkedtree.json.pi.JsonObjectWrite;
 import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
-import com.apicatalog.linkedtree.lang.LangString;
+import com.apicatalog.linkedtree.lang.LangStringLiteral;
 import com.apicatalog.linkedtree.literal.NumericValue;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 import com.apicatalog.linkedtree.rdf.RdfVocab;
@@ -285,7 +285,7 @@ public class JsonLdTreeWriter {
 //            type = literal.datatype();
 //        }
 
-        if (literal instanceof LangString langString) {
+        if (literal instanceof LangStringLiteral langString) {
             if (langString.language() != null) {
                 result.add(JsonLdKeyword.LANGUAGE, Json.createValue(langString.language()));
             }

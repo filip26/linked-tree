@@ -24,7 +24,7 @@ import com.apicatalog.linkedtree.jsonld.JsonLdContext;
 import com.apicatalog.linkedtree.jsonld.JsonLdId;
 import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 import com.apicatalog.linkedtree.jsonld.JsonLdType;
-import com.apicatalog.linkedtree.lang.LangString.LanguageDirection;
+import com.apicatalog.linkedtree.lang.LangStringLiteral.LanguageDirection;
 import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.link.MutableLink;
 import com.apicatalog.linkedtree.literal.adapter.LiteralAdapter;

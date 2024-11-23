@@ -12,7 +12,7 @@ import com.apicatalog.linkedtree.adapter.NodeAdapter;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.fragment.FragmentPropertyError;
 import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
-import com.apicatalog.linkedtree.lang.LangStringSelector;
+import com.apicatalog.linkedtree.lang.LocalizedString;
 import com.apicatalog.linkedtree.lang.LanguageMap;
 import com.apicatalog.linkedtree.link.Link;
 import com.apicatalog.linkedtree.type.FragmentType;
@@ -253,7 +253,7 @@ public interface LinkedFragment extends LinkedNode {
         }
     }
 
-    default LangStringSelector languageMap(String term) throws NodeAdapterError {
+    default LocalizedString languageMap(String term) throws NodeAdapterError {
         final LinkedContainer container = container(term);
         if (container != null) {
             try {
@@ -262,7 +262,7 @@ public interface LinkedFragment extends LinkedNode {
                 throw new FragmentPropertyError(e, term);
             }
         }
-        return LangStringSelector.empty();
+        return LocalizedString.empty();
     }
 
     default <T> Collection<T> collection(

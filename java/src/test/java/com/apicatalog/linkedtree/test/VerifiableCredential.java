@@ -7,7 +7,7 @@ import java.util.Collection;
 import com.apicatalog.linkedtree.LinkedContainer;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
-import com.apicatalog.linkedtree.lang.LangStringSelector;
+import com.apicatalog.linkedtree.lang.LocalizedString;
 import com.apicatalog.linkedtree.type.FragmentType;
 import com.apicatalog.linkedtree.type.GenericTypeAdapter;
 import com.apicatalog.linkedtree.type.TypeAdapter;
@@ -24,8 +24,8 @@ public class VerifiableCredential {
     protected URI id;
     protected FragmentType type;
 
-    protected LangStringSelector name;
-    protected LangStringSelector description;
+    protected LocalizedString name;
+    protected LocalizedString description;
 
     protected Instant validFrom;
     protected Instant validUntil;
@@ -81,11 +81,11 @@ public class VerifiableCredential {
         return issuer;
     }
 
-    public LangStringSelector name() {
+    public LocalizedString name() {
         return name;
     }
 
-    public LangStringSelector description() {
+    public LocalizedString description() {
         return name;
     }
 
