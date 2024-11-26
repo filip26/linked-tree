@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.IOException;
 import java.net.URI;
@@ -66,14 +67,19 @@ class JsonLdAdapterTest {
 
         assertNotNull(tree);
 
-        ByteArrayValue literal = tree
+        var literal = tree
                 .fragment()
-                .container("http://example.org/test#property4")
-                .materialize(ByteArrayValue.class);
+                .literal("http://example.org/test#property4");
 
         assertEquals("RW5jb2RlIHRvIEJhc2U2NCBmb3JtYXQ=", literal.lexicalValue());
-        assertArrayEquals("Encode to Base64 format".getBytes(), literal.byteArrayValue());
-
+        
+        if (literal instanceof ByteArrayValue byteArrayValue) {
+            assertArrayEquals("Encode to Base64 format".getBytes(), byteArrayValue.byteArrayValue());
+    
+        } else {
+            fail();
+        }
+        
         ((Base64ByteArray) literal).byteArrayValue("test X".getBytes());
         assertEquals("dGVzdCBY", literal.lexicalValue());
 

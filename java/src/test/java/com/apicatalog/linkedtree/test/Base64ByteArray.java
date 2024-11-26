@@ -2,11 +2,12 @@ package com.apicatalog.linkedtree.test;
 
 import java.util.Base64;
 
+import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.literal.ByteArrayValue;
 import com.apicatalog.linkedtree.literal.adapter.DatatypeAdapter;
 import com.apicatalog.linkedtree.literal.adapter.GenericLiteralAdapter;
 
-public class Base64ByteArray implements ByteArrayValue {
+public class Base64ByteArray implements ByteArrayValue, LinkedLiteral {
 
     public static String TYPE = "https://test/base64array";
 

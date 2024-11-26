@@ -3,9 +3,7 @@ package com.apicatalog.linkedtree.literal;
 import java.time.Instant;
 import java.util.Date;
 
-import com.apicatalog.linkedtree.LinkedLiteral;
-
-public interface DateTimeValue extends LinkedLiteral {
+public interface DateTimeValue {
 
     Instant datetime();
 

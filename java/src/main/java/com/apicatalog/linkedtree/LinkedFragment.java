@@ -168,7 +168,10 @@ public interface LinkedFragment extends LinkedNode {
 //            throw new InvalidSelector(e, term);
 //        }
     }
-
+    default LinkedLiteral literal(String term) throws FragmentPropertyError {
+        return literal(term, LinkedLiteral.class);
+    }
+    
     default <T> T literal(String term, Class<T> clazz) throws FragmentPropertyError {
         return literal(term, clazz, Function.identity());
     }

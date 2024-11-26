@@ -7,13 +7,13 @@ import com.apicatalog.linkedtree.LinkedLiteral;
 
 class ObjectReaderProvider {
 
-    final Map<MappingKey, ObjectReader<? extends LinkedLiteral, ?>> mapping;
+    final Map<MappingKey, ObjectReader<?, ?>> mapping;
 
     public ObjectReaderProvider() {
         this.mapping = new LinkedHashMap<>();
     }
 
-    public <T extends LinkedLiteral, R> ObjectReaderProvider add(
+    public <T, R> ObjectReaderProvider add(
             Class<T> sourceType,
             Class<R> targetType,
             ObjectReader<T, R> mapper) {
@@ -39,15 +39,15 @@ class ObjectReaderProvider {
 
     static class MappingKey {
 
-        Class<? extends LinkedLiteral> literal;
+        Class<?> literal;
         Class<?> target;
 
-        public MappingKey(Class<? extends LinkedLiteral> literalType, Class<?> targetType) {
+        public MappingKey(Class<?> literalType, Class<?> targetType) {
             this.literal = literalType;
             this.target = targetType;
         }
 
-        public boolean match(Class<? extends LinkedLiteral> typeInterface, Class<?> targetType) {
+        public boolean match(Class<?> typeInterface, Class<?> targetType) {
             return literal.isAssignableFrom(typeInterface) && targetType.isAssignableFrom(target);
         }
     }
