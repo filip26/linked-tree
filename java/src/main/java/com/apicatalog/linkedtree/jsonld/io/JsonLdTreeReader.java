@@ -197,7 +197,7 @@ public class JsonLdTreeReader extends JsonTreeReader {
 
         final Collection<ProcessingInstruction> ops = context == null || context.isEmpty()
                 ? Collections.emptyList()
-                : List.of(new JsonLdContext(context));
+                : List.of(JsonLdContext.of(context));
 
         if (source.size() == 1
                 && ValueType.OBJECT == source.iterator().next().getValueType()
