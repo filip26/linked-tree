@@ -9,14 +9,14 @@ import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.LinkedNode;
 import com.apicatalog.linkedtree.LinkedTree;
-import com.apicatalog.linkedtree.json.JsonDecimal;
-import com.apicatalog.linkedtree.json.JsonInteger;
 import com.apicatalog.linkedtree.json.JsonLiteral;
+import com.apicatalog.linkedtree.json.JsonNode;
 import com.apicatalog.linkedtree.json.JsonScalar;
 import com.apicatalog.linkedtree.json.pi.JsonObjectWrite;
 import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 import com.apicatalog.linkedtree.lang.LangStringLiteral;
-import com.apicatalog.linkedtree.literal.NumericValue;
+import com.apicatalog.linkedtree.literal.DoubleValue;
+import com.apicatalog.linkedtree.literal.IntegerValue;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 import com.apicatalog.linkedtree.rdf.RdfVocab;
 import com.apicatalog.linkedtree.xsd.XsdVocab;
@@ -24,6 +24,7 @@ import com.apicatalog.linkedtree.xsd.XsdVocab;
 import jakarta.json.Json;
 import jakarta.json.JsonArray;
 import jakarta.json.JsonArrayBuilder;
+import jakarta.json.JsonNumber;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.json.JsonValue;
@@ -205,30 +206,30 @@ public class JsonLdTreeWriter {
                 convertedValue = jsonScalar.jsonValue();
                 type = literal.datatype();
 
-            } else if (XsdVocab.INTEGER.equals(literal.datatype()) 
-                    || XsdVocab.INT.equals(literal.datatype()) 
+            } else if (XsdVocab.INTEGER.equals(literal.datatype())
+                    || XsdVocab.INT.equals(literal.datatype())
                     || XsdVocab.LONG.equals(literal.datatype())) {
 
                 convertedValue = Json.createValue(Long.parseLong(literal.lexicalValue()));
 
-            } else if (literal instanceof JsonInteger jsonInteger) {
+            } else if (literal instanceof IntegerValue number) {
 
-                convertedValue = Json.createValue(jsonInteger.integerValue());
+                convertedValue = Json.createValue(number.integerValue());
                 type = literal.datatype();
 
             } else if (XsdVocab.DOUBLE.equals(literal.datatype()) || XsdVocab.FLOAT.equals(literal.datatype())) {
 
                 convertedValue = Json.createValue(Double.parseDouble(literal.lexicalValue()));
 
-            } else if (literal instanceof JsonDecimal jsonDecimal) {
+            } else if (literal instanceof DoubleValue number) {
 
-                convertedValue = Json.createValue(jsonDecimal.doubleValue());
-                type = jsonDecimal.datatype();
-                
-            } else if (literal instanceof NumericValue numericValue) {
+                convertedValue = Json.createValue(number.doubleValue());
+                type = literal.datatype();
 
-                convertedValue = Json.createValue(numericValue.numberValue().doubleValue());
-                type = numericValue.datatype();
+            } else if (literal instanceof JsonNumber number) {
+
+                convertedValue = Json.createValue(number.numberValue().doubleValue());
+                type = literal.datatype();
 
             } else if (literal instanceof JsonLiteral jsonLiteral) {
 
@@ -243,6 +244,10 @@ public class JsonLdTreeWriter {
                     convertedValue = parser.getValue();
                 }
                 type = JsonLdKeyword.JSON;
+
+            } else if (literal instanceof JsonNode jsonValue) {
+                convertedValue = jsonValue.jsonValue();
+                type = literal.datatype();
 
             } else {
                 type = literal.datatype();

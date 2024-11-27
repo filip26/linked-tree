@@ -1,12 +1,13 @@
 package com.apicatalog.linkedtree.json;
 
+import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.literal.IntegerValue;
 import com.apicatalog.linkedtree.literal.NumericValue;
 import com.apicatalog.linkedtree.xsd.XsdVocab;
 
 import jakarta.json.JsonValue;
 
-public class JsonInteger implements NumericValue, IntegerValue, JsonNode {
+public class JsonInteger implements NumericValue, IntegerValue, JsonNode, LinkedLiteral {
 
     protected jakarta.json.JsonNumber jsonValue;
     protected String datatype;

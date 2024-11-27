@@ -4,11 +4,12 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
+import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.literal.DoubleValue;
 import com.apicatalog.linkedtree.literal.NumericValue;
 import com.apicatalog.linkedtree.xsd.XsdVocab;
 
-public class JsonDecimal implements NumericValue, DoubleValue, JsonNode {
+public class JsonDecimal implements NumericValue, DoubleValue, JsonNode, LinkedLiteral {
 
     protected static final DecimalFormat xsdNumberFormat = new DecimalFormat("0.0##############E0", new DecimalFormatSymbols(Locale.ENGLISH));
 
