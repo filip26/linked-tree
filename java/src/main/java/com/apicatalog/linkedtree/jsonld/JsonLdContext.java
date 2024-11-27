@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.apicatalog.linkedtree.json.JsonUtils;
+import com.apicatalog.jsonld.json.JsonUtils;
 import com.apicatalog.linkedtree.pi.ProcessingInstruction;
 
 import jakarta.json.Json;

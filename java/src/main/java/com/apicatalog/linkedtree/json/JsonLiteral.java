@@ -1,5 +1,6 @@
 package com.apicatalog.linkedtree.json;
 
+import com.apicatalog.jsonld.json.JsonCanonicalizer;
 import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.rdf.RdfVocab;
 

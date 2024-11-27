@@ -12,7 +12,7 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.stream.Stream;
 
-import com.apicatalog.linkedtree.jsonld.JsonLdComparison;
+import com.apicatalog.jsonld.json.JsonLdComparison;
 
 import jakarta.json.Json;
 import jakarta.json.JsonArray;

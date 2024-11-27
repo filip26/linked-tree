@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import com.apicatalog.linkedtree.json.JsonUtils;
+import com.apicatalog.jsonld.json.JsonUtils;
 
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
