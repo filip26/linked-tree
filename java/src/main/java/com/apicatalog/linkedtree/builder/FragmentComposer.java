@@ -9,8 +9,13 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
+import com.apicatalog.linkedtree.json.JsonFragment;
+import com.apicatalog.linkedtree.jsonld.JsonLdContext;
+
+import jakarta.json.JsonObject;
 
 public class FragmentComposer {
 
@@ -18,9 +23,12 @@ public class FragmentComposer {
 
     protected final float javaVersion;
 
+    protected Function<Object, JsonObject> writer;
+
     protected FragmentComposer() {
         this.values = new HashMap<>();
         this.javaVersion = Float.parseFloat(System.getProperty("java.class.version"));
+        this.writer = null;
     }
 
     public static FragmentComposer create() {
@@ -36,7 +44,9 @@ public class FragmentComposer {
     public <T> T get(Class<T> type) throws NodeAdapterError {
         return (T) Proxy.newProxyInstance(
                 type.getClassLoader(),
-                new Class<?>[] { type },
+                writer == null
+                        ? new Class<?>[] { type }
+                        : new Class<?>[] { type, JsonFragment.class },
                 new InvocationHandler() {
 
                     @Override
@@ -70,6 +80,15 @@ public class FragmentComposer {
                             return values.get(method.getName());
                         }
 
+                        if (JsonFragment.class.equals(method.getDeclaringClass())
+                                && "jsonObject".equals(method.getName())
+                                && JsonObject.class.equals(method.getReturnType())) {
+
+                            JsonObject result = writer.apply(proxy);
+                            values.put("jsonObject", result);
+                            return result;
+                        }
+
                         if (Object.class.equals(method.getDeclaringClass())) {
                             return method.invoke(proxy, args);
                         }
@@ -81,6 +100,12 @@ public class FragmentComposer {
                         throw new UnsupportedOperationException(method.toGenericString());
                     }
                 });
+    }
+
+    public FragmentComposer json(JsonLdContext documentContext, Function<Object, JsonObject> writer) {
+
+        this.writer = writer;
+        return this;
     }
 
 }

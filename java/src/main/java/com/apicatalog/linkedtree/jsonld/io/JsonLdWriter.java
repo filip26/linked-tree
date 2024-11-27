@@ -52,7 +52,7 @@ public class JsonLdWriter {
     Map<Class<?>, ObjectWriter<?>> datatypes;
 
     ObjectWriterProvider defaultWriters;
-    
+
     public JsonLdWriter() {
         this.contextReducer = new ContextReducer();
         this.typeDefinitons = new HashMap<>();
