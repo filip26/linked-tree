@@ -261,6 +261,7 @@ public class JsonLdWriter {
         return defs;
     }
 
+    @SuppressWarnings("unchecked")
     JsonValue compacted(final Collection<String> context, final Object object, Collection<String> processedIds, boolean attachContext) {
 
         final Map<String, JsonValue> fragment = new LinkedHashMap<>(7);
@@ -482,7 +483,8 @@ public class JsonLdWriter {
             return compacted(context, object, processedIds, false);
         }
 
-        ObjectWriter normalizer = propertyDef.objectWriter();
+        @SuppressWarnings("unchecked")
+        ObjectWriter<Object> normalizer = (ObjectWriter<Object>) propertyDef.objectWriter();
 
         if (normalizer != null) {
 

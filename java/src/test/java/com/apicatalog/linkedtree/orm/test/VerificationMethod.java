@@ -11,7 +11,6 @@ import com.apicatalog.linkedtree.orm.Term;
 import com.apicatalog.linkedtree.orm.Vocab;
 import com.apicatalog.linkedtree.type.FragmentType;
 import com.apicatalog.linkedtree.xsd.XsdDateTimeAdapter;
-import com.apicatalog.linkedtree.xsd.XsdVocab;
 
 /**
  * Represents a verification method declaration.

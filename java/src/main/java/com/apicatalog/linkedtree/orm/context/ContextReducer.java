@@ -3,6 +3,7 @@ package com.apicatalog.linkedtree.orm.context;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
@@ -31,9 +32,9 @@ public class ContextReducer {
             return contexts[0];
         }
 
-        Collection<JsonValue> json = new LinkedList<>(); // TODO ArrayList
-        Collection<String> reduced = new LinkedList<>();
-        Collection<String> processed = new LinkedList<>();
+        Collection<JsonValue> json = new LinkedHashSet<>();
+        Collection<String> reduced = new LinkedHashSet<>();
+        Collection<String> processed = new LinkedHashSet<>();
 
         Collection<ContextDefinition> prev = new LinkedList<>();
 

@@ -5,12 +5,9 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.logging.Logger;
 
 public class GetterMethod {
 
-    private static final Logger LOGGER = Logger.getLogger(GetterMethod.class.getName());
-    
     public static Collection<Method> filter(Class<?> type, boolean includeDefault) {
         
         if (type.getMethods() == null || type.getMethods().length == 0) {
