@@ -53,7 +53,7 @@ class FragmentProxyInvocation implements InvocationHandler {
                 } catch (Exception e) {
 
                     String termName = entry.getKey().getName();
-                    
+
                     Term term = entry.getKey().getAnnotation(Term.class);
                     if (term != null && term.compact()) {
                         termName = term.value();
@@ -116,15 +116,16 @@ class FragmentProxyInvocation implements InvocationHandler {
         if (getter != null) {
             return cache(method.getName(), getter.get(target));
         }
-//        if (fragmentProxy.typeInterface.equals(method.getDeclaringClass())) {
-//            return cache(method.getName(), method.invoke(target, args));
-//        }
+
         if (Object.class.equals(method.getDeclaringClass())) {
             return method.invoke(target, args);
         }
+
         if (PropertyValueConsumer.class.equals(method.getDeclaringClass())
                 && "acceptFragmentPropertyValue".equals(method.getName())
-                && args.length == 2) {
+                && method.getParameterCount() == 2
+                && args.length == 2
+                && String.class.equals(method.getParameters()[0].getType())) {
             cache((String) args[0], args[1]);
             return null;
         }

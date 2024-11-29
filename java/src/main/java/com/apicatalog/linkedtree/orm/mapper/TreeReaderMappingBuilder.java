@@ -117,7 +117,7 @@ public class TreeReaderMappingBuilder {
     }
 
     public TreeReaderMappingBuilder scan(final Class<?> typeInterface) {
-        return scan(typeInterface, false);
+        return scan(typeInterface, true);
     }
 
     public TreeReaderMappingBuilder scan(final Class<?> typeInterface, boolean eager) {

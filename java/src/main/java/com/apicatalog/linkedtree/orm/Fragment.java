@@ -13,9 +13,9 @@ import com.apicatalog.linkedtree.orm.proxy.PropertyValueConsumer;
 public @interface Fragment {
 
     /**
-     * A generic fragment, i.e. untyped super type
+     * A generic fragment, i.e. untyped.
      * 
-     * @return <code>true</code> if the interface denotes a type
+     * @return <code>true</code> if the interface denotes a fragment type
      */
     boolean generic() default false;
 

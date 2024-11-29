@@ -236,7 +236,7 @@ public class JsonLdWriter {
         }
     }
 
-    public JsonObject compacted(Object object) {
+    public JsonObject compact(Object object) {
         Objects.requireNonNull(object);
 
         return (JsonObject) compacted(new LinkedHashSet<>(2), object, new ArrayList<>(10), true);

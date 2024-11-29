@@ -13,7 +13,6 @@ import java.util.function.Function;
 
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.json.JsonFragment;
-import com.apicatalog.linkedtree.jsonld.JsonLdContext;
 
 import jakarta.json.JsonObject;
 
@@ -102,8 +101,7 @@ public class FragmentComposer {
                 });
     }
 
-    public FragmentComposer json(JsonLdContext documentContext, Function<Object, JsonObject> writer) {
-
+    public FragmentComposer json(Function<Object, JsonObject> writer) {
         this.writer = writer;
         return this;
     }

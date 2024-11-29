@@ -91,7 +91,7 @@ class JsonLdObjectWriterTest {
                 () -> "publicKeyValue",
                 () -> "privateKeyValue");
 
-        JsonObject jsonld = writer.compacted(multikey);
+        JsonObject jsonld = writer.compact(multikey);
 
         assertNotNull(jsonld);
 
@@ -108,7 +108,7 @@ class JsonLdObjectWriterTest {
 
         assertNotNull(tree);
 
-        var output = WRITER.compacted(tree);
+        var output = WRITER.compact(tree);
 
         assertNotNull(output);
 

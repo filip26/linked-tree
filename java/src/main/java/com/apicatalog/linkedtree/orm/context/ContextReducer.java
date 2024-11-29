@@ -59,7 +59,7 @@ public class ContextReducer {
 
                     processed.add(contextUri);
                     
-                } else {
+                } else if (!json.contains(context)){
                     json.add(context);
                 }
             }
