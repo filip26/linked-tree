@@ -2,25 +2,30 @@
 
 # Linked Tree
 
-Another abstract data model to process linked data, intended to be used for small datasets processed in real time as tree-like structures. 
+An alternative abstract data model for processing linked data, designed for small datasets to be handled in real-time as tree-like structures.
 
-Influenced by JSON-LD expanded and flattened document forms. Linked tree terms and values are fully expanded but only identifiable node fragments are merged and flattened. Nodes with no identifiers are kept embedded.
+Inspired by the expanded and flattened document forms of JSON-LD, Linked Tree terms and values are fully expanded. However, only identifiable node fragments are merged and flattened, while nodes without identifiers remain embedded.
 
-The project is an experiment, please share feedback.
+JSON-LD offers a comprehensive set of features to transform any JSON into any graph structure. Linked Trees, by contrast, takes a different approach, aiming to provide a simple and straightforward way to convert JSON into Linked Data while leaving complex corner cases aside.
+
+In many cases, <20% of JSON-LD’s functionality is sufficient. The absence of features like @reverse, @nested, or framing is outweighed by the simplicity and clarity that Linked Trees offer.
+
+This project is an experiment - your feedback is highly appreciated!
 
 ## Goals
 
-  * easily work with linked data programmatically  
-  * fast intrinsic canonicalization
-  * finest processing granularity, i.e. a statement level
-  * translation from/into different representations (JSON-LD, RDF forms, CBOR-LD, etc.)
-  * language-agnostic
+ * **Effortless Programmatic Interaction** - Enable seamless handling of linked data programmatically.
+ * **Fast Intrinsic Canonicalization** - Ensure rapid and efficient canonicalization.
+ * **Fine-Grained Processing** - Support the finest level of granularity, down to individual statements.
+ * **Interoperable Representation** - Facilitate translation to and from various representations (e.g., JSON-LD, RDF forms, CBOR-LD).
+ * **Language-Agnostic** - Maintain compatibility across diverse programming languages.
 
 ## Motivation
-We like to think in graphs, and we like to map things to graphs, but then we prefer to work with trees.
 
-Graphs are great to catch ideas, plans, and knowledge. There are many successful examples. A tree is a basic data structure. It's easy to work it programmatically, and there are many successful examples.
+We often think in terms of graphs and map concepts to graphs, but when it comes to practical application, we prefer working with trees.
 
-When it comes to software engineering, graphs are hard to work with, graphs are too generic and add unnecessary complexity to a domain limited use-cases.
+Graphs excel at capturing ideas, plans, and knowledge, with numerous successful examples showcasing their utility. However, trees, as a fundamental data structure, are simpler to work with programmatically and are also backed by many success stories.
+
+In software engineering, graphs can be challenging to handle. Their generic nature often introduces unnecessary complexity, especially in domains with limited use cases.
 
 Think in graphs, work with trees.
