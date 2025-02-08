@@ -6,9 +6,11 @@ An experiment inspired by JSON-LD's expanded and flattened forms, followed by qu
 * How would this affect the design of type and definition systems?
 * What if we simplify JSON-LD context definitions by reducing their expressivity to basic mappings? This approach could improve analytics, facilitate comparisons to identify differences in definitions and shifts in meaning, and boost processing performance.
 
+The downside? LTF is a fixed, mandated format. An existing JSON or JSON-LD document must be transformed into this format using separate tools, specialized JSON-LD to LTF converters, or through declarative or programmatic custom transformations with third-party technologies.
+
 ## Processing
 
-LinkedTree has a single form (LTF)—that's it. The LinkedTree processor provides different layers, such as a semantic layer, which follows the same structural form but offers different types of contextual information. 
+LinkedTree has a single form (LTF) - that's it. The LinkedTree processor provides different layers, such as a semantic layer, which follows the same structural form but offers different types of contextual information. 
 
 This is a major distinction from JSON-LD processing, where a document is transformed into multiple forms, and the document structure is changed.
 
