@@ -1,4 +1,4 @@
-# Canonical Linked Tree Format (CLTF)
+# Canonical Linked Tree Format
 
 - **Top-Level Identifiable Nodes:**  
   Nodes with unique identifiers are maintained at the top level of the hierarchy, ensuring they are directly accessible.
@@ -34,7 +34,8 @@
      },
      {
      }
-  ]
-
+  ],
+  "@root": "id" or // blank node { ... }
+  
 }
 ```
