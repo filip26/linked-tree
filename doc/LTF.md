@@ -95,6 +95,10 @@ interface Node {
 
 ```
 
+### Definitions
+
+A definition is a straightforward key-value mapping that represents a vocabulary in its simplest form-just the term and its definition, expressed as an absolute URI.
+
 
 ### JSON Representations of Typed Value Nodes
 
