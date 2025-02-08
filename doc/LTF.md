@@ -1,8 +1,9 @@
-# Canonical Linked Tree Format
+# Linked Tree Format
 
 An experiment inspired by JSON-LD's expanded and flattened forms, followed by questions such as: 
 * What if we detach identifiers from nodes and limit type declarations to a single one?
 * Would this help reduce processing complexity, improve speed, diagnostics, and analytics (i.e., adaptability), and could it enable faster canonicalization?
+* Would that impact the design of type and definition systems?
 
 ### Traits
 
