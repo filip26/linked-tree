@@ -5,6 +5,7 @@ An experiment inspired by JSON-LD's expanded and flattened forms, followed by qu
 * Would this help reduce processing complexity, improve speed, diagnostics, and analytics (i.e., adaptability), and could it enable faster canonicalization?
 * How would this affect the design of type and definition systems?
 * What if we simplify JSON-LD context definitions by reducing their expressivity to basic mappings? This approach could improve analytics, facilitate comparisons to identify differences in definitions and shifts in meaning, and boost processing performance.
+* 
 ### Traits
 
 - **Top-Level Identifiable Nodes:**  
@@ -18,6 +19,12 @@ An experiment inspired by JSON-LD's expanded and flattened forms, followed by qu
 
 - **Direct Reference by Identifier:**  
   Nodes with unique identifiers can be directly referenced using their identifier.
+
+### Processing
+
+LinkedTree has a single form (LTF)—that's it. The LinkedTree processor provides different layers, such as a semantic layer, which follows the same structural form but offers different types of contextual information. 
+
+This is a major distinction from JSON-LD processing, where a document is transformed into multiple forms.
 
 ### Outline
 
@@ -99,7 +106,7 @@ interface Node {
 
 A definition is a straightforward key-value mapping that represents a vocabulary in its simplest form-just the term and its definition, expressed as an absolute URI.
 
-A JSON-LD document can be converted to Linked Tree Format (LTF) in a compacted form using a set of existing dictionaries and mapping rules. And vice versa, LTF can be converted into JSON-LD with an appropriate context or a set of contexts. The conversions are performed through the JSON-LD expanded form, to which both formats can be transformed.
+A JSON-LD document can be converted to Linked Tree Format (LTF) using a set of existing dictionaries and mapping rules. And vice versa, LTF can be converted into JSON-LD with an appropriate context or a set of contexts. The conversions are performed through the JSON-LD expanded form, to which both formats can be transformed.
 
 ### JSON Representations of Typed Value Nodes
 
