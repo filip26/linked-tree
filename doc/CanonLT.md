@@ -20,20 +20,20 @@ type NodeOrRef = URI | Node;
 // A type alias for node entries which may be a single NodeOrRef or an array of them.
 type NodeEntry = NodeOrRef | NodeOrRef[];
 
-interface CanonLT {
+interface LinkedTree {
   // The root can be a single NodeOrRef or an array of NodeOrRef.
   root: NodeOrRef | NodeOrRef[];
   
-  // A mapping of terms to their corresponding Node objects.
-  nodes: Map<URI, Node | Node[]>;
+  // A mapping of identifiers to their corresponding Node objects.
+  nodes: Map<URI, CNLTNode | Node[]>;
 }
 
 interface Node {
   // The type of the node, represented as a single URI.
   type: URI;
   
-  // A mapping of URIs to node entries, which can be direct node references, URIs, or arrays thereof.
-  entries: Map<URI, NodeEntry>;
+  // A mapping of terms to node entries, which can be direct node references, URIs, or arrays thereof.
+  predicates: Map<URI, NodeEntry>;
 }
 
 ```
