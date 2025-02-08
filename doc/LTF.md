@@ -99,6 +99,7 @@ interface Node {
 
 A definition is a straightforward key-value mapping that represents a vocabulary in its simplest form-just the term and its definition, expressed as an absolute URI.
 
+A JSON-LD document can be converted to Linked Tree Format (LTF) in a compacted form using a set of existing dictionaries and mapping rules. And vice versa, LTF can be converted into JSON-LD with an appropriate context or a set of contexts. The conversions are performed through the JSON-LD expanded form, to which both formats can be transformed.
 
 ### JSON Representations of Typed Value Nodes
 
