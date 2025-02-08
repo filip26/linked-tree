@@ -38,6 +38,34 @@ interface Node {
 
 ```
 
+### JSON Representations of Typed Value Nodes
+
+- **Typed Value Node:**  
+Represents a value with an associated type.
+```javascript
+{ "@value": value, "@type": URI }
+```
+
+- **Ordered List Value Node:**  
+Represents a list of items with a specified order.
+```javascript
+{ "@value": [ items ], "@type": "@list" }
+```
+
+- **Unordered Set Value Node:**  
+Represents a set of items where order does not matter.
+```javascript
+{ "@value": [ items ], "@type": "@set" }
+```
+
+- **Map or Sparse Array Value Node:**  
+Represents a mapping of key-value pairs or a sparse array.
+```javascript
+{ "@value": { "key|[index]": value }, "@type": "@map" }
+```
+
+### Template
+
 ```json
 {
  "id|@keyword" : [
