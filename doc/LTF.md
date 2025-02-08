@@ -5,7 +5,8 @@ An experiment inspired by JSON-LD's expanded and flattened forms, followed by qu
 * Would this help reduce processing complexity, improve speed, diagnostics, and analytics (i.e., adaptability), and could it enable faster canonicalization?
 * How would this affect the design of type and definition systems?
 * What if we simplify JSON-LD context definitions by reducing their expressivity to basic mappings? This approach could improve analytics, facilitate comparisons to identify differences in definitions and shifts in meaning, and boost processing performance.
-* 
+
+
 ### Traits
 
 - **Top-Level Identifiable Nodes:**  
@@ -19,6 +20,7 @@ An experiment inspired by JSON-LD's expanded and flattened forms, followed by qu
 
 - **Direct Reference by Identifier:**  
   Nodes with unique identifiers can be directly referenced using their identifier.
+
 
 ### Processing
 
