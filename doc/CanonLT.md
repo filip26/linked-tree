@@ -37,6 +37,55 @@ interface Node {
 }
 
 ```
+### Example
+
+#### Source JSON-LD
+```javascript
+{
+  "@context": [
+    "https://www.w3.org/ns/credentials/v2",
+    "https://www.w3.org/ns/credentials/examples/v2"
+  ],
+  "id": "http://university.example/credentials/3732",
+  "type": ["VerifiableCredential", "ExampleDegreeCredential"],
+  "issuer": "https://university.example/issuers/565049",
+  "validFrom": "2010-01-01T00:00:00Z",
+  "credentialSubject": {
+    "id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
+    "degree": {
+      "type": "ExampleBachelorDegree",
+      "name": "Bachelor of Science and Arts"
+    }
+  }
+}
+```
+#### Equivalent LinkedTree
+
+```javascript
+{
+  "@root": "http://university.example/credentials/3732",
+
+  "http://university.example/credentials/3732" : [{
+    "@def": "https://www.w3.org/ns/credentials/v2",
+    "type": "VerifiableCredential"
+    "issuer": "https://university.example/issuers/565049",
+    "validFrom": "2010-01-01T00:00:00Z",
+    "credentialSubject": "did:example:ebfeb1f712ebc6f1c276e12ec21"
+  }, {
+    "@def": "https://www.w3.org/ns/credentials/examples/v2",
+    "type": "ExampleDegreeCredential"
+  }],
+  "did:example:ebfeb1f712ebc6f1c276e12ec21": {
+    "@def": "https://www.w3.org/ns/credentials/examples/v2",
+    "degree": {
+      "type": "ExampleBachelorDegree",
+      "name": "Bachelor of Science and Arts"
+    }
+  }
+}
+
+```
+
 
 ### JSON Representations of Typed Value Nodes
 
