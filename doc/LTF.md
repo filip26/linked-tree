@@ -4,7 +4,7 @@ An experiment inspired by JSON-LD's expanded and flattened forms, followed by qu
 * What if we detach identifiers from nodes and limit type declarations to a single one?
 * Would this help reduce processing complexity, improve speed, diagnostics, and analytics (i.e., adaptability), and could it enable faster canonicalization?
 * Would that impact the design of type and definition systems?
-* and What if we simplify JSON-LD context definitions by reducing their capabilities and expressivity to simple mappings? This approach could enable greater analytics and facilitate comparisons to identify differences in definitions, changes in meaning, and boost processing performance.
+* and what if we simplify JSON-LD context definitions by reducing their capabilities and expressivity to simple mappings? This approach could enable greater analytics and facilitate comparisons to identify differences in definitions, changes in meaning, and boost processing performance.
 
 ### Traits
 
