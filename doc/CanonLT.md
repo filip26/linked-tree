@@ -17,15 +17,15 @@
 // A type alias for values that can either be a URI or a Node.
 type NodeOrRef = URI | Node;
 
-// A type alias for node entries which may be a single NodeOrRef or an array of them.
+// A type alias for node entries which may be a single NodeOrRef or an unordered set of them.
 type NodeEntry = NodeOrRef | NodeOrRef[];
 
 interface LinkedTree {
-  // The root can be a single NodeOrRef or an array of NodeOrRef.
+  // The root can be a single NodeOrRef or an unordered set of NodeOrRef.
   root: NodeOrRef | NodeOrRef[];
   
-  // A mapping of identifiers to their corresponding Node objects.
-  nodes: Map<URI, CNLTNode | Node[]>;
+  // A mapping of identifiers to their corresponding Node objects (an unordered set).
+  nodes: Map<URI, Node | Node[]>;
 }
 
 interface Node {
