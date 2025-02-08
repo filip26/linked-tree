@@ -14,6 +14,14 @@ LinkedTree has a single form (LTF) - that's it. The LinkedTree processor provide
 
 This is a major distinction from JSON-LD processing, where a document is transformed into multiple forms, and the document structure is changed.
 
+### Layers
+
+* Base
+* Sematic
+* Meta ~ Statements about statements
+* ??? Validation|Shape Check?
+* Query?
+
 ## Format
 
 ### Traits
