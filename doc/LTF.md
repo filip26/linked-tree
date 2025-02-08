@@ -10,7 +10,7 @@ An experiment inspired by JSON-LD's expanded and flattened forms, followed by qu
 
 LinkedTree has a single form (LTF)—that's it. The LinkedTree processor provides different layers, such as a semantic layer, which follows the same structural form but offers different types of contextual information. 
 
-This is a major distinction from JSON-LD processing, where a document is transformed into multiple forms.
+This is a major distinction from JSON-LD processing, where a document is transformed into multiple forms, and the document structure is changed.
 
 ## Format
 
