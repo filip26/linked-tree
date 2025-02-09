@@ -2,9 +2,9 @@
 
 An experiment inspired by JSON-LD's expanded and flattened forms, followed by questions such as: 
 * What if we detach identifiers from nodes and limit type declarations to a single one?
+* What if we simplify JSON-LD context definitions by reducing their expressivity to basic mappings? This approach could improve analytics, facilitate comparisons to identify differences in definitions and shifts in meaning, and boost processing performance.
 * Would this help reduce processing complexity, improve speed, diagnostics, and analytics (i.e., adaptability), and could it enable faster canonicalization?
 * How would this affect the design of type and definition systems?
-* What if we simplify JSON-LD context definitions by reducing their expressivity to basic mappings? This approach could improve analytics, facilitate comparisons to identify differences in definitions and shifts in meaning, and boost processing performance.
 
 The downside? LTF is a fixed, mandated format. An existing JSON or JSON-LD document must be transformed into this format using separate tools, specialized JSON-LD to LTF converters, or through declarative or programmatic custom transformations with third-party technologies.
 
