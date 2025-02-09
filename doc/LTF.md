@@ -125,7 +125,7 @@ LayeredLinkedTree is an illustrative example of how layers can add to the base L
 ```javascript
 {
   "@root": "http://university.example/credentials/3732",
-
+  "@type": "ltf:dataset",
   "http://university.example/credentials/3732" : [{
     "@type": "ltf:layer",
     "ltf:layer:base": {
