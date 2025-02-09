@@ -117,6 +117,40 @@ interface Node {
 
 ```
 
+#### Layered LinkedTree
+
+```javascript
+{
+  "@root": "http://university.example/credentials/3732",
+
+  "http://university.example/credentials/3732" : [{
+    "ltf:layer:base": {
+      "@def": "https://www.w3.org/ns/credentials/v2",
+      "type": "VerifiableCredential"
+      "issuer": "https://university.example/issuers/565049",
+      "validFrom": "2010-01-01T00:00:00Z",
+      "credentialSubject": "did:example:ebfeb1f712ebc6f1c276e12ec21"
+    },
+    "ltf:layer:semantic": {
+      "type": { "@value": "@type", "@def: "" },
+      "issuer": { "@value": "@type", "@def: "" },
+???      
+    }
+  }, {
+    "@def": "https://www.w3.org/ns/credentials/examples/v2",
+    "type": "ExampleDegreeCredential"
+  }],
+  "did:example:ebfeb1f712ebc6f1c276e12ec21": {
+    "@def": "https://www.w3.org/ns/credentials/examples/v2",
+    "degree": {
+      "type": "ExampleBachelorDegree",
+      "name": "Bachelor of Science and Arts"
+    }
+  }
+}
+
+```
+
 ### Definitions
 
 A definition is a straightforward key-value mapping that represents a vocabulary in its simplest form-just the term and its definition, expressed as an absolute URI.
