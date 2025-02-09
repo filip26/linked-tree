@@ -124,6 +124,7 @@ interface Node {
   "@root": "http://university.example/credentials/3732",
 
   "http://university.example/credentials/3732" : [{
+    "@type": "ltf:layer",
     "ltf:layer:base": {
       "@def": "https://www.w3.org/ns/credentials/v2",
       "type": "VerifiableCredential"
@@ -133,8 +134,8 @@ interface Node {
     },
     "ltf:layer:semantic": {
       "type": { "@value": "@type", "@def: "" },
-      "issuer": { "@value": "@type", "@def: "" },
-???      
+      "issuer": { "@value": "https://...", "@def: "" }
+    
     }
   }, {
     "@def": "https://www.w3.org/ns/credentials/examples/v2",
