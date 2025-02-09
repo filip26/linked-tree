@@ -120,6 +120,8 @@ interface Node {
 
 #### Layered LinkedTree
 
+LayeredLinkedTree is an illustrative example of how layers can add to the base LTF, enhancing it with specific context, such as identity, predicates, or even various render options.
+
 ```javascript
 {
   "@root": "http://university.example/credentials/3732",
@@ -140,7 +142,7 @@ interface Node {
     },
     "ltf:layer:render:article:section": {
        "name": { "@type": "@title", "@default": "..."},
-       "sort": [ "issuer", "validFrom", "validUntil" ],
+       "@sort": [ "issuer", "validFrom", "validUntil" ],
     }
   }, {
     "@def": "https://www.w3.org/ns/credentials/examples/v2",
