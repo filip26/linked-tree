@@ -21,6 +21,7 @@ This is a major distinction from JSON-LD processing, where a document is transfo
 * Meta ~ Statements about statements
 * ??? Validation|Shape Check?
 * Query? - Resource Layer, Predicate Layer
+* Render
 
 Layers can be organized in a hierarchical structure and can be composite, meaning they can combine multiple layers. For example, the Resource Layer depends directly on the base LTF layer for identifiable or referenced resources, while the Predicate Layer, optimized for querying, relies on the Semantic Layer.
 
@@ -136,6 +137,10 @@ interface Node {
       "type": { "@value": "@type", "@def: "" },
       "issuer": { "@value": "https://...", "@def: "" }
     
+    },
+    "ltf:layer:render:article:section": {
+       "name": { "@type": "@title", "@default": "..."},
+       "sort": [ "issuer", "validFrom", "validUntil" ],
     }
   }, {
     "@def": "https://www.w3.org/ns/credentials/examples/v2",
