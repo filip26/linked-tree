@@ -22,7 +22,7 @@ This is a major distinction from JSON-LD processing, where a document is transfo
 * ??? Validation|Shape Check?
 * Query? - Resource Layer, Predicate Layer
 
-Layers can be organized in a hierarchical structure and can be composite, meaning they can combine multiple layers. For example, the Resource Layer depends directly on the base LTF layer for identifiable resources, while the Predicate Layer, optimized for querying, relies on the Semantic Layer.
+Layers can be organized in a hierarchical structure and can be composite, meaning they can combine multiple layers. For example, the Resource Layer depends directly on the base LTF layer for identifiable or referenced resources, while the Predicate Layer, optimized for querying, relies on the Semantic Layer.
 
 ## Format
 
