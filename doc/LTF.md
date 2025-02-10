@@ -1,10 +1,14 @@
 # Linked Tree Format
 
 An experiment inspired by JSON-LD's expanded and flattened forms, followed by questions such as: 
-* What if we detach identifiers from nodes and limit type declarations to a single one?
-* What if we simplify JSON-LD context definitions by reducing their expressivity to basic mappings? This approach could improve analytics, facilitate comparisons to identify differences in definitions and shifts in meaning, and boost processing performance.
-* Would this help reduce processing complexity, improve speed, diagnostics, and analytics (i.e., adaptability), and could it enable faster canonicalization?
-* How would this affect the design of type and definition systems?
+
+Here is a refined version for better readability and clarity:
+
+- What if we detach identifiers from nodes and limit type declarations to a single one?  
+- Would this help reduce processing complexity, boost performance, and enable faster canonicalization?  
+- What if we simplify JSON-LD context definitions by reducing their expressivity to basic mappings?  
+- Would this improve analytics and diagnostics (i.e., adaptability) and facilitate comparisons to identify differences in definitions and shifts in meaning?  
+- How would this affect the design of type and definition systems?
 
 The downside? LTF is a fixed, mandated format. An existing JSON or JSON-LD document must be transformed into this format using separate tools, specialized JSON-LD to LTF converters, or through declarative or programmatic custom transformations with third-party technologies.
 
@@ -118,7 +122,7 @@ interface Node {
 
 ```
 
-#### Layered LinkedTree
+#### Layered LinkedTree [WiP]
 
 LayeredLinkedTree is an illustrative example of how layers can add to the base LTF, enhancing it with specific context, such as identity, predicates, or even various render options.
 
@@ -135,15 +139,7 @@ LayeredLinkedTree is an illustrative example of how layers can add to the base L
       "validFrom": "2010-01-01T00:00:00Z",
       "credentialSubject": "did:example:ebfeb1f712ebc6f1c276e12ec21"
     },
-    "ltf:layer:semantic": {
-      "type": { "@value": "@type", "@def: "" },
-      "issuer": { "@value": "https://...", "@def: "" }
-    
-    },
-    "ltf:layer:render:article:section": {
-       "name": { "@type": "@title", "@default": "..."},
-       "@sort": [ "issuer", "validFrom", "validUntil" ],
-    }
+...TODO separate lateyers/trees
   }, {
     "@def": "https://www.w3.org/ns/credentials/examples/v2",
     "type": "ExampleDegreeCredential"
@@ -157,6 +153,16 @@ LayeredLinkedTree is an illustrative example of how layers can add to the base L
   }
 }
 
+
+    "ltf:layer:semantic": {
+      "type": { "@value": "@type", "@def: "" },
+      "issuer": { "@value": "https://...", "@def: "" }
+    
+    },
+    "ltf:layer:render:article:section": {
+       "name": { "@type": "@title", "@default": "..."},
+       "@sort": [ "issuer", "validFrom", "validUntil" ],
+    }
 ```
 
 ### Definitions
