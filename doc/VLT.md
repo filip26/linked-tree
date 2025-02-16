@@ -17,11 +17,21 @@
 
 ```
 // root 
-[ first child, first free node, capacity]
+[ _,  first child, first free node, last free node, capacity]
 ```
 
 ```javascript
+
+tree.allocate(term);
+tree.allocate(declared type, native type, value);
+
+tree.link(parent, prev, node);
+
+tree.insert(parent, prev, term);
 tree.insert(parent, prev, declared type, native type, value);
+
+tree.insert(node, term);
+tree.update(node, declared type, native type, value);
 
 tree.remove(node);
 
