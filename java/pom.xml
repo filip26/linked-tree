@@ -61,7 +61,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <argLine>-Dfile.encoding=UTF-8</argLine>
 
-        <titanium.version>1.5.0</titanium.version>
+        <titanium.version>1.6.0</titanium.version>
         <jakarta.json.version>2.0.1</jakarta.json.version>
 
         <!-- test resources -->
