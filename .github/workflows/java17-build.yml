@@ -3,6 +3,9 @@
 
 name: Java 17 PR CI
 
+permissions:
+  contents: read
+
 on:
   pull_request:
     branches: [ main ]
