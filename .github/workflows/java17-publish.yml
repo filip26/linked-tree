@@ -1,7 +1,9 @@
+name: Publish JRE17 to the Maven Central
+
 permissions:
   contents: read
   packages: write
-name: Publish JRE17 to the Maven Central
+
 on:
   release:
     types: [created]
