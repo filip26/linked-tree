@@ -28,9 +28,11 @@ enabling performant, semantics-aware JSON-LD manipulation - **without** requirin
   @root: {   // or @root : "id" -> @subject, @graph
   
   },
-  id1: [{
+  id1: [
+   // grouped by @graph to keep @type compact 
+   {
     @container: "@subject",  // default
-    @graph: id2,
+    @graph: id2, // or path starting with @root/ for anon graphs?
     ...
     p1: [{
        
