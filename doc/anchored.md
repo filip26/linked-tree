@@ -22,3 +22,23 @@ Keeping blank nodes embedded:
 
 The **anchored form** goal is to balances global addressability of named nodes with locality of anonymous structures, 
 enabling performant, semantics-aware JSON-LD manipulation - **without** requiring an intermediate RDF phase.
+
+```javascript
+{
+  @root: {   // or graph : [ {} ]
+  
+  },
+  id1: {
+    @container: "Subject",  // default
+    ...
+    p1: [{
+       @graph: 
+    }]
+  },
+  id2: {
+    @id: "...",
+    @container: "Graph",
+  },
+...
+}
+```
