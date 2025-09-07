@@ -25,19 +25,25 @@ enabling performant, semantics-aware JSON-LD manipulation - **without** requirin
 
 ```javascript
 {
-  @root: {   // or graph : [ {} ]
+  @root: {   // or @root : "id" -> @subject, @graph
   
   },
-  id1: {
-    @container: "Subject",  // default
+  id1: [{
+    @container: "@subject",  // default
+    @graph: id2,
     ...
     p1: [{
-       @graph: 
+       
     }]
   },
   id2: {
     @id: "...",
-    @container: "Graph",
+    @container: "@graph",
+    @items: [
+       id1,
+       {
+       }
+     ]
   },
 ...
 }
