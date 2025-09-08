@@ -11,7 +11,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.apicatalog.linkedtree.Linkable;
+import com.apicatalog.linkedtree.LinkedData;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.fragment.FragmentPropertyError;
@@ -21,7 +21,7 @@ import com.apicatalog.linkedtree.orm.getter.Getter;
 
 class FragmentProxyInvocation implements InvocationHandler {
 
-    protected static final Method LD_METHOD = Linkable.method();
+    protected static final Method LD_METHOD = LinkedData.method();
 
     protected final float javaVersion;
 

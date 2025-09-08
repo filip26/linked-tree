@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
-import com.apicatalog.linkedtree.Linkable;
+import com.apicatalog.linkedtree.LinkedData;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.TestUtils;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
@@ -171,9 +171,9 @@ class AnnotationTest {
                 URI.create("https://vc.example/issuers/5678"),
                 vc.issuer());
 
-        assertTrue(vc instanceof Linkable);
-        assertNotNull(((Linkable) vc).ld());
-        assertTrue(((Linkable) vc).ld() instanceof LinkedFragment);
+        assertTrue(vc instanceof LinkedData);
+        assertNotNull(((LinkedData) vc).ld());
+        assertTrue(((LinkedData) vc).ld() instanceof LinkedFragment);
 
         assertEquals(URI.create("did:example:abcdefgh"), vc.subject().id());
         assertTrue(vc.subject().type().isEmpty());

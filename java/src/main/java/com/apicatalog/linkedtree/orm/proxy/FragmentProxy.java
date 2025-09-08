@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
-import com.apicatalog.linkedtree.Linkable;
+import com.apicatalog.linkedtree.LinkedData;
 import com.apicatalog.linkedtree.LinkedFragment;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.orm.getter.Getter;
@@ -17,7 +17,7 @@ import com.apicatalog.linkedtree.type.TypeAdapter;
  */
 public class FragmentProxy implements TypeAdapter {
 
-    static final Method LD_METHOD = Linkable.method();
+    static final Method LD_METHOD = LinkedData.method();
 
     protected final String typeName;
     protected final Class<?> typeInterface;
@@ -43,7 +43,7 @@ public class FragmentProxy implements TypeAdapter {
             interfaces.add(PropertyValueConsumer.class);
         }
         if (linkable) {
-            interfaces.add(Linkable.class);
+            interfaces.add(LinkedData.class);
         }
         
         return new FragmentProxy(typeInterface, typeName, getters, interfaces.toArray(Class[]::new), eager);

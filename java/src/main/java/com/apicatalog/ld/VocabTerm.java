@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import com.apicatalog.linkedtree.jsonld.JsonLdKeyword;
 
+@Deprecated
 public final class VocabTerm implements Serializable {
 
     private static final long serialVersionUID = -543670450852760002L;
@@ -28,7 +29,7 @@ public final class VocabTerm implements Serializable {
         this.uri = vocabulary + name;
     }
 
-    public static final VocabTerm create(String name, String vocabulary) {
+    public static final VocabTerm of(String name, String vocabulary) {
         return new VocabTerm(name, vocabulary);
     }
 

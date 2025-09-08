@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
-import com.apicatalog.linkedtree.Linkable;
+import com.apicatalog.linkedtree.LinkedData;
 import com.apicatalog.linkedtree.LinkedLiteral;
 import com.apicatalog.linkedtree.def.PropertyDefinition;
 import com.apicatalog.linkedtree.def.TypeDefinition;
@@ -327,7 +327,7 @@ public class JsonLdWriter {
         if (id == null && type == null && fragment.isEmpty()) {
 
             // fallback
-            if (object instanceof Linkable linkable) {
+            if (object instanceof LinkedData linkable) {
                 return JsonLdTreeWriter.fragment(linkable.ld().asFragment());
             }
             // TODO
@@ -495,7 +495,7 @@ public class JsonLdWriter {
             }
         }
 
-        if (object instanceof Linkable linkable) {
+        if (object instanceof LinkedData linkable) {
             return JsonLdTreeWriter.node(linkable.ld());
         }
 

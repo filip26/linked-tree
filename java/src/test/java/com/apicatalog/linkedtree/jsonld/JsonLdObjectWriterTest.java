@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import com.apicatalog.linkedtree.Linkable;
+import com.apicatalog.linkedtree.LinkedData;
 import com.apicatalog.linkedtree.TestUtils;
 import com.apicatalog.linkedtree.adapter.NodeAdapterError;
 import com.apicatalog.linkedtree.builder.TreeBuilderError;
@@ -112,7 +112,7 @@ class JsonLdObjectWriterTest {
 
         assertNotNull(output);
 
-        assertTrue(TestUtils.compareJson(name, ((Linkable) tree).ld(), output, expected));
+        assertTrue(TestUtils.compareJson(name, ((LinkedData) tree).ld(), output, expected));
     }
 
     static final Stream<Object[]> resources() throws IOException, URISyntaxException {

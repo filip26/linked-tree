@@ -5,7 +5,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.apicatalog.linkedtree.Linkable;
+import com.apicatalog.linkedtree.LinkedData;
 import com.apicatalog.linkedtree.orm.proxy.PropertyValueConsumer;
 
 @Retention(RetentionPolicy.RUNTIME)
@@ -28,7 +28,7 @@ public @interface Fragment {
     boolean mutable() default false;
 
     /**
-     * Add {@link Linkable} interface to a materialized instance.
+     * Add {@link LinkedData} interface to a materialized instance.
      * 
      * @return
      */
