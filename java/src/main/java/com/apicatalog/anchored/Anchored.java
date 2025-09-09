@@ -1,12 +1,13 @@
 package com.apicatalog.anchored;
 
 import java.util.Collection;
+import java.util.Set;
 
 public interface Anchored {
 
-    Node root();
+    Resource root();
 
-    Collection<String> ids();
+    Set<String> ids();
 
-    Collection<Structure> resources(String id);
+    Collection<Resource> resources(String id);
 }

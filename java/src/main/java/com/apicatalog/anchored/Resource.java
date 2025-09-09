@@ -3,19 +3,14 @@ package com.apicatalog.anchored;
 import java.util.Collection;
 import java.util.Set;
 
-/**
- * Represents the description of a resource in an RDF graph.
- * <p>
- * A Description corresponds to the set of RDF statements where this resource is
- * the subject. Conceptually, it can be seen as a mapping from predicates to one
- * or more objects (nodes). It extends {@link Node} so that a Description can
- * itself be treated as a node in a tree or graph structure.
- * </p>
- */
-public interface Structure extends Node {
+public interface Resource extends Node {
 
+    String id();
+
+    Collection<String> type();
+    
     /**
-     * Returns the set of predicates used in this resource description.
+     * Returns the set of predicates used in this resource
      * <p>
      * Each predicate is represented as a String (typically a URI). There are no
      * duplicates: each predicate appears at most once.

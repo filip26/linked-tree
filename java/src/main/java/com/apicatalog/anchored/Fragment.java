@@ -2,7 +2,7 @@ package com.apicatalog.anchored;
 
 import java.util.Collection;
 
-public interface Fragment extends Structure {
+public interface Fragment extends Resource {
 
     @Override
     default NodeType nodeType() {

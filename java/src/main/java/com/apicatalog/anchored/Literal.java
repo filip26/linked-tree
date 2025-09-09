@@ -8,5 +8,7 @@ public interface Literal extends Node {
     }
     
     String datatype();
+    
+    String lexicalValue();
 
 }

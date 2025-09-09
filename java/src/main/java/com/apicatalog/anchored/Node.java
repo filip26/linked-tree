@@ -5,8 +5,8 @@ public interface Node {
     public enum NodeType {
         Graph,
         Fragment,
-        Literal,
         Sequence,
+        Literal,
     }
 
     NodeType nodeType();

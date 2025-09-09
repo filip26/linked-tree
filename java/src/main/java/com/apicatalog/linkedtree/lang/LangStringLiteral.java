@@ -1,7 +1,6 @@
 package com.apicatalog.linkedtree.lang;
 
 import com.apicatalog.linkedtree.LinkedLiteral;
-import com.apicatalog.linkedtree.xsd.XsdVocab;
 
 public interface LangStringLiteral extends LinkedLiteral {
 
@@ -13,7 +12,7 @@ public interface LangStringLiteral extends LinkedLiteral {
 
     @Override
     default String datatype() {
-        return XsdVocab.STRING;
+        return "http://www.w3.org/1999/02/22-rdf-syntax-ns#langString";
     }
 
     /**
