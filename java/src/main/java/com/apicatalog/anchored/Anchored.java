@@ -8,5 +8,5 @@ public interface Anchored {
 
     Collection<String> ids();
 
-    Collection<Resource> resources(String id);
+    Collection<Structure> resources(String id);
 }
