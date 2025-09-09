@@ -1,4 +1,4 @@
-package com.apicatalog.anchored;
+package com.apicatalog.ld.anchor;
 
 public interface LocalizedString extends Literal {
 

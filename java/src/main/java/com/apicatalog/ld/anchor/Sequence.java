@@ -1,4 +1,4 @@
-package com.apicatalog.anchored;
+package com.apicatalog.ld.anchor;
 
 import java.util.Collection;
 

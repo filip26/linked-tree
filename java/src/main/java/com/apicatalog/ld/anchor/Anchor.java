@@ -1,9 +1,9 @@
-package com.apicatalog.anchored;
+package com.apicatalog.ld.anchor;
 
 import java.util.Collection;
 import java.util.Set;
 
-public interface Anchored {
+public interface Anchor {
 
     Resource root();
 
