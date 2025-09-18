@@ -18,10 +18,13 @@ Keeping blank nodes embedded:
 - enables **efficient canonicalization** via deterministic hashing of embedded subtrees (blank-node neighborhoods are contiguous and stable), and
 - reduces cross-document joins during processing, since related anonymous data remains **co-located** with its parent subject.
 
----
-
 The **anchored form** goal is to balances global addressability of named nodes with locality of anonymous structures, 
 enabling performant, semantics-aware JSON-LD manipulation - **without** requiring an intermediate RDF phase.
+
+```javascript
+
+```
+
 
 ```javascript
 {
