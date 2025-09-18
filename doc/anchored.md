@@ -31,17 +31,16 @@ enabling performant, semantics-aware JSON-LD manipulation - **without** requirin
   id1: [
    // grouped by @graph to keep @type compact 
    {
-    @container: "@subject",  // default
-    @graph: id2, // or path starting with @root/ for anon graphs?
+    @graph: id2, // or path starting with @root/ for anon graphs?????
     ...
     p1: [{
+     "@list": [{
        
-    }]
+    }, 10, false]
+     }]
   },
   id2: {
-    @id: "...",
-    @container: "@graph",
-    @items: [
+    @graph: [
        id1,
        {
        }
