@@ -22,7 +22,16 @@ The **anchored form** goal is to balances global addressability of named nodes w
 enabling performant, semantics-aware JSON-LD manipulation - **without** requiring an intermediate RDF phase.
 
 ```javascript
-
+{
+  @root : [uri] | {},
+  [uri] : {  // subject
+     [uri] | [/path] : {  // graph
+        [predicate] : [
+              // objects
+        ]
+     }
+  }
+}
 ```
 
 
